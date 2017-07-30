@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JAGBE.GB.Computation
+namespace JAGBE.GB.Computation.Execution
 {
     internal sealed class Opcode
     {
