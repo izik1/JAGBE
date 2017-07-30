@@ -5,13 +5,28 @@ using JAGBE.GB.Computation.Execution;
 
 namespace JAGBE.GB.Computation
 {
-    internal sealed partial class Cpu
+    internal sealed class Cpu
     {
-        public Cpu(byte[] bootRom, byte[] rom) => Reset(rom, bootRom);
+        /// <summary>
+        /// The clock speed in hz
+        /// </summary>
+        /// <value>4194304</value>
+        internal const int ClockSpeedHz = 4194304;
 
-        public bool WriteToConsole { get; set; } = true;
+        internal const int DelayStep = 4;
+
+        /// <summary>
+        /// The delay until the next cycle.
+        /// </summary>
+        private int delay;
 
         private GbMemory memory = new GbMemory();
+
+        public Cpu(byte[] bootRom, byte[] rom) => Reset(rom, bootRom);
+
+        public int[] DisplayMemory => this.memory.lcdMemory.displayMemory;
+
+        public bool WriteToConsole { get; set; } = true;
 
         public void Reset(byte[] rom, byte[] bootRom)
         {
@@ -139,17 +154,14 @@ namespace JAGBE.GB.Computation
         }
 
         /// <summary>
-        /// The clock speed in hz
+        /// Disables the LCD renderer.
         /// </summary>
-        /// <value>4194304</value>
-        internal const int ClockSpeedHz = 4194304;
-
-        internal const int DelayStep = 4;
+        internal void DisableLcdRenderer() => this.memory.lcdMemory.ForceNullRender = true;
 
         /// <summary>
-        /// The delay until the next cycle.
+        /// Enables the LCD renderer.
         /// </summary>
-        private int delay;
+        internal void EnableLcdRenderer() => this.memory.lcdMemory.ForceNullRender = false;
 
         /// <summary>
         /// Handles the interupts.
@@ -174,11 +186,6 @@ namespace JAGBE.GB.Computation
                 this.memory.R.Pc = new GbUInt16(0, (byte)x);
                 this.memory.IME = false;
             }
-        }
-
-        private static class IoReg
-        {
-            public const ushort IF = 0xFF0F;
         }
     }
 }
