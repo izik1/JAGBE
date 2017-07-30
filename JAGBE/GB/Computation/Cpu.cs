@@ -134,7 +134,6 @@ namespace JAGBE.GB.Computation
                 }
 
                 inst = new Instruction(this.memory.GetMappedMemory(this.memory.R.Pc++));
-                this.delay += DelayStep;
 
                 int ticks = 0;
                 while (!inst.Run(this.memory, ticks))
@@ -144,6 +143,8 @@ namespace JAGBE.GB.Computation
                     TickDMA();
                     this.delay += DelayStep;
                 }
+
+                this.delay += DelayStep;
             }
 
             while (syncDelay < 0)

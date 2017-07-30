@@ -4,8 +4,8 @@ namespace JAGBE.GB.Computation.Execution
 {
     internal sealed class Opcode
     {
-        internal byte data1;
-        internal byte data2;
+        internal byte Data1;
+        internal byte Data2;
         internal readonly byte Dest;
         internal readonly byte Src;
 

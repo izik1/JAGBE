@@ -21,6 +21,11 @@ namespace JAGBE.GB.Computation.Execution
                 ops[i] = new Opcode((byte)i, 1, Unimplemented);
             }
 
+            for (int i = 0; i < 0x40; i++)
+            {
+                ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bit);
+            }
+
             return ops;
         }
 
@@ -32,9 +37,23 @@ namespace JAGBE.GB.Computation.Execution
                 ops[i] = new Opcode((byte)i, 0, Unimplemented);
             }
 
-            // Put opcodes here.
-
+            ops[0xCB] = new Opcode(0, 0, CbPrefix);
             return ops;
+        }
+
+        private static bool CbPrefix(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                op.Data1 = mem.LdI8();
+            }
+
+            return CbOps[op.Data1].Invoke(mem, step - 1);
         }
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
