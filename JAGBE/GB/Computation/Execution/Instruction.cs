@@ -46,11 +46,14 @@ namespace JAGBE.GB.Computation.Execution
         private static Opcode[] GetNmOps()
         {
             Opcode[] ops = new Opcode[0x100];
+
+            // Keep as a fallback instead of NullRefrenceExceptions, which are much harder to debug.
             for (int i = 0; i < 0x100; i++)
             {
                 ops[i] = new Opcode((byte)i, 0, Unimplemented);
             }
 
+            ops[0] = new Opcode(0, 0, (a, b, c) => true); // NOP
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
             return ops;
         }

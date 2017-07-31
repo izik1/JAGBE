@@ -20,6 +20,17 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private int delay;
 
+        internal GbUInt16 Pc => this.memory.R.Pc;
+
+        /// <summary>
+        /// This re-dumps the memory each time it's called.
+        /// </summary>
+        /// <value>The ram dump.</value>
+        internal byte[] RamDump
+        {
+            get => memory.DumpRam();
+        }
+
         private GbMemory memory = new GbMemory();
 
         public Cpu(byte[] bootRom, byte[] rom) => Reset(rom, bootRom);
