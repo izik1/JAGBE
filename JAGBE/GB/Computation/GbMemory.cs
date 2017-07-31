@@ -127,6 +127,8 @@ namespace JAGBE.GB.Computation
             return builder.ToString();
         }
 
+        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
+
         /// <summary>
         /// Gets the memory at the address.
         /// </summary>

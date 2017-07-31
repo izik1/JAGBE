@@ -21,9 +21,23 @@ namespace JAGBE.GB.Computation.Execution
                 ops[i] = new Opcode((byte)i, 1, Unimplemented);
             }
 
+            for (int i = 0; i < 8; i++)
+            {
+                ops[i + 0x00] = new Opcode(0, (byte)i, Alu.Rlc);
+                ops[i + 0x08] = new Opcode(0, (byte)i, Alu.Rrc);
+                ops[i + 0x10] = new Opcode(0, (byte)i, Alu.Rl);
+                ops[i + 0x18] = new Opcode(0, (byte)i, Alu.Rr);
+                ops[i + 0x20] = new Opcode(0, (byte)i, Alu.Sla);
+                ops[i + 0x28] = new Opcode(0, (byte)i, Alu.Sra);
+                ops[i + 0x30] = new Opcode(0, (byte)i, Alu.Swap);
+                ops[i + 0x38] = new Opcode(0, (byte)i, Alu.Srl);
+            }
+
             for (int i = 0; i < 0x40; i++)
             {
                 ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bit);
+                ops[i + 0x80] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Res);
+                ops[i + 0xC0] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Set);
             }
 
             return ops;

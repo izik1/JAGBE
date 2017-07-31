@@ -20,7 +20,13 @@ namespace JAGBE.UI
 
         private Window(int width, int height) : base(width, height, GraphicsMode.Default, "JAGBE Emulator",
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
-            => this.gameBoy = new GameBoy(Console.ReadLine(), Console.ReadLine());
+
+        {
+            Console.WriteLine("Enter path to rom");
+            string romPath = Console.ReadLine();
+            Console.WriteLine("Enter path to boot rom");
+            this.gameBoy = new GameBoy(romPath, Console.ReadLine());
+        }
 
         protected override void OnFocusedChanged(EventArgs e)
         {
