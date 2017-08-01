@@ -14,6 +14,6 @@ namespace JAGBE.GB
         {
         }
 
-        internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.WriteToConsole ? 40 : Cpu.ClockSpeedHz / targetUpdateRate);
+        internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.WriteToConsole ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
     }
 }

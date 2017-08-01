@@ -61,7 +61,6 @@ namespace JAGBE.GB.Computation
         /// <param name="cycles">The number of clock ticks (NOT INSTRUCTIONS) to run</param>
         public void Tick(int cycles)
         {
-            Console.WriteLine("Click");
             this.delay -= cycles;
 
             // This is to sync the cpu (with variable clock length instructions) to the GPU and APU

@@ -65,12 +65,36 @@ namespace JAGBE.GB.Computation.Execution
                 }
             }
 
+            for (int i = 0; i < 8; i++)
+            {
+                ops[i + 0xA8] = new Opcode(0, (byte)(i & 7), Alu.Arithmetic.Xor);
+            }
+
             for (int i = 0; i < 4; i++)
             {
                 ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.Loading.LdD16);
+                ops[(i * 0x10) + 0x20] = new Opcode((byte)(i % 2), (byte)((i / 2) + 1), Alu.Branching.Jr8);
             }
 
-            ops[0] = new Opcode(0, 0, (a, b, c) => true); // NOP
+            ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
+            ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
+
+            // LD (HL-), A (FIXME)
+            ops[0x32] = new Opcode(0, 0, (op, mem, step) =>
+            {
+                if (step == 0)
+                {
+                    return false;
+                }
+
+                if (step == 1)
+                {
+                    mem.SetMappedMemory(mem.R.Hl--, mem.R.A);
+                    return true;
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(step));
+            });
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
             return ops;
         }

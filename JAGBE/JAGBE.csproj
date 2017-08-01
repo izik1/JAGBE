@@ -73,7 +73,10 @@
     <Compile Include="GB\ByteExtensions.cs" />
     <Compile Include="GB\Computation\Cpu.cs" />
     <Compile Include="GB\Computation\CpuState.cs" />
-    <Compile Include="GB\Computation\Execution\Alu.cs" />
+    <Compile Include="GB\Computation\Execution\Alu\Arithmetic.cs" />
+    <Compile Include="GB\Computation\Execution\Alu\Bitwise.cs" />
+    <Compile Include="GB\Computation\Execution\Alu\Branching.cs" />
+    <Compile Include="GB\Computation\Execution\Alu\Loading.cs" />
     <Compile Include="GB\Computation\Flags.cs" />
     <Compile Include="GB\Computation\Lcd.cs" />
     <Compile Include="GB\Computation\GbMemory.cs" />
