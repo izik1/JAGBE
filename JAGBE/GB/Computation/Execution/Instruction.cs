@@ -53,6 +53,23 @@ namespace JAGBE.GB.Computation.Execution
                 ops[i] = new Opcode((byte)i, 0, Unimplemented);
             }
 
+            for (int i = 0; i < 0x40; i++)
+            {
+                if (i != 0x36)
+                {
+                    ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Ld8);
+                }
+                else
+                {
+                    // Put Stop instruction here.
+                }
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.LdD16);
+            }
+
             ops[0] = new Opcode(0, 0, (a, b, c) => true); // NOP
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
             return ops;
