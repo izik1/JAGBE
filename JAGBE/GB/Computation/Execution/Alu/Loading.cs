@@ -31,7 +31,42 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return true;
                 }
 
-                memory.SetMappedMemory(memory.R.Hl, memory.R.GetR8(op.Src));
+                if (op.Dest == 6)
+                {
+                    memory.SetMappedMemory(memory.R.Hl, memory.R.GetR8(op.Src));
+                    return true;
+                }
+
+                // Should never throw.
+                throw new InvalidOperationException();
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool LdD8(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                op.Data1 = mem.LdI8();
+                if (op.Dest == 6)
+                {
+                    return false;
+                }
+
+                mem.R.SetR8(op.Dest, op.Data1);
+                return true;
+            }
+
+            if (step == 2)
+            {
+                mem.R.SetR8(op.Dest, op.Data1);
+                return true;
             }
 
             throw new ArgumentOutOfRangeException(nameof(step));
