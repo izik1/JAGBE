@@ -23,21 +23,21 @@ namespace JAGBE.GB.Computation.Execution
 
             for (int i = 0; i < 8; i++)
             {
-                ops[i + 0x00] = new Opcode(0, (byte)i, Alu.Rlc);
-                ops[i + 0x08] = new Opcode(0, (byte)i, Alu.Rrc);
-                ops[i + 0x10] = new Opcode(0, (byte)i, Alu.Rl);
-                ops[i + 0x18] = new Opcode(0, (byte)i, Alu.Rr);
-                ops[i + 0x20] = new Opcode(0, (byte)i, Alu.Sla);
-                ops[i + 0x28] = new Opcode(0, (byte)i, Alu.Sra);
-                ops[i + 0x30] = new Opcode(0, (byte)i, Alu.Swap);
-                ops[i + 0x38] = new Opcode(0, (byte)i, Alu.Srl);
+                ops[i + 0x00] = new Opcode(0, (byte)i, Alu.Bitwise.Rlc);
+                ops[i + 0x08] = new Opcode(0, (byte)i, Alu.Bitwise.Rrc);
+                ops[i + 0x10] = new Opcode(0, (byte)i, Alu.Bitwise.Rl);
+                ops[i + 0x18] = new Opcode(0, (byte)i, Alu.Bitwise.Rr);
+                ops[i + 0x20] = new Opcode(0, (byte)i, Alu.Bitwise.Sla);
+                ops[i + 0x28] = new Opcode(0, (byte)i, Alu.Bitwise.Sra);
+                ops[i + 0x30] = new Opcode(0, (byte)i, Alu.Bitwise.Swap);
+                ops[i + 0x38] = new Opcode(0, (byte)i, Alu.Bitwise.Srl);
             }
 
             for (int i = 0; i < 0x40; i++)
             {
-                ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bit);
-                ops[i + 0x80] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Res);
-                ops[i + 0xC0] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Set);
+                ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bitwise.Bit);
+                ops[i + 0x80] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bitwise.Res);
+                ops[i + 0xC0] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Bitwise.Set);
             }
 
             return ops;
@@ -57,7 +57,7 @@ namespace JAGBE.GB.Computation.Execution
             {
                 if (i != 0x36)
                 {
-                    ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Ld8);
+                    ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Loading.Ld8);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace JAGBE.GB.Computation.Execution
 
             for (int i = 0; i < 4; i++)
             {
-                ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.LdD16);
+                ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.Loading.LdD16);
             }
 
             ops[0] = new Opcode(0, 0, (a, b, c) => true); // NOP
