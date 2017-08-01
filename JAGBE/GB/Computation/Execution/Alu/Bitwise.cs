@@ -66,12 +66,10 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
                 bool oldC = memory.R.F.GetBit(RFlags.C);
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = b.GetBit(7) ? RFlags.CB : (byte)0;
                 memory.R.SetR8(code.Src, (byte)((b << 1) | (oldC ? 0x80 : 0)));
-                memory.R.F = memory.R.F.AssignBit(RFlags.Z, b == 0);
+                memory.R.F = (b.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.Z, b == 0);
                 return true;
             }
 
@@ -84,9 +82,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 bool oldC = memory.R.F.GetBit(RFlags.C);
-                memory.R.F = code.Data1.GetBit(7) ? RFlags.CB : (byte)0;
+
                 memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 << 1) | (oldC ? 0x80 : 0)));
-                memory.R.F = memory.R.F.AssignBit(RFlags.Z, code.Data1 == 0);
+                memory.R.F = (code.Data1.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.Z, code.Data1 == 0);
                 return true;
             }
 
