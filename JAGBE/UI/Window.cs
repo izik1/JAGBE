@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using JAGBE.GB;
+using System.IO;
 
 namespace JAGBE.UI
 {
@@ -22,10 +23,30 @@ namespace JAGBE.UI
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
 
         {
-            Console.WriteLine("Enter path to rom");
-            string romPath = Console.ReadLine();
-            Console.WriteLine("Enter path to boot rom");
-            this.gameBoy = new GameBoy(romPath, Console.ReadLine());
+            string romPath;
+            string bootRomPath;
+            if (File.Exists("config.cfg"))
+            {
+                string[] strs = File.ReadAllLines("config.cfg");
+                if (strs.Length == 2)
+                {
+                    romPath = strs[0];
+                    bootRomPath = strs[1];
+                    Console.WriteLine("Loaded from config.");
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Enter path to rom");
+                romPath = Console.ReadLine();
+                Console.WriteLine("Enter path to boot rom");
+                bootRomPath = Console.ReadLine();
+            }
+            this.gameBoy = new GameBoy(romPath, bootRomPath);
         }
 
         protected override void OnFocusedChanged(EventArgs e)
