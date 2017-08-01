@@ -15,9 +15,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 }
 
                 memory.R.F = memory.R.F.AssignBit(RFlags.Z, !memory.R.GetR8(code.Src).GetBit(code.Dest)).Res(RFlags.N).Set(RFlags.H);
-                Console.WriteLine(code.Dest);
-                Console.WriteLine(Convert.ToString(memory.R.H, 2).PadLeft(8, '0'));
-                Console.WriteLine(Convert.ToString(memory.R.F, 2).PadLeft(8, '0'));
                 return true;
             }
 
