@@ -99,6 +99,8 @@ namespace JAGBE.GB.Computation.Execution
             });
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
+            ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
+
             // LD (C), A (FIXME)
             ops[0xE2] = new Opcode(0, 0, (op, mem, step) =>
             {
@@ -115,6 +117,8 @@ namespace JAGBE.GB.Computation.Execution
 
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
+            ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
+
             return ops;
         }
 
