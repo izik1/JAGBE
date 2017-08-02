@@ -159,5 +159,27 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             throw new ArgumentOutOfRangeException(nameof(step));
         }
+
+        public static bool Push(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0 || step == 1)
+            {
+                return false;
+            }
+
+            if (step == 2)
+            {
+                mem.Push(mem.R.GetR16(op.Dest, true).HighByte);
+                return false;
+            }
+
+            if (step == 3)
+            {
+                mem.Push(mem.R.GetR16(op.Dest, true).LowByte);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
     }
 }
