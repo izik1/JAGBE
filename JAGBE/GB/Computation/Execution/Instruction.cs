@@ -81,10 +81,12 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 0x10) + 0x0A] = new Opcode(0, (byte)i, Alu.Loading.LdR);
 
                 ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Jr8);
+                ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Call);
             }
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
+            ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
 
             // LD (HL-), A (FIXME)
             ops[0x32] = new Opcode(0, 0, (op, mem, step) =>
@@ -140,6 +142,15 @@ namespace JAGBE.GB.Computation.Execution
             }
 
             return CbOps[op.Data1].Invoke(mem, step - 1);
+        }
+
+        internal static void WriteAllUnimplementedNmOpcodes()
+        {
+            GbMemory m = new GbMemory();
+            for (int i = 0; i < 0x100; i++)
+            {
+                NmOps[i].Invoke(m, 0);
+            }
         }
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
