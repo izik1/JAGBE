@@ -88,22 +88,6 @@ namespace JAGBE.GB.Computation.Execution
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
 
-            // LD (HL-), A (FIXME)
-            ops[0x32] = new Opcode(0, 0, (op, mem, step) =>
-            {
-                if (step == 0)
-                {
-                    return false;
-                }
-
-                if (step == 1)
-                {
-                    mem.SetMappedMemory(mem.R.Hl--, mem.R.A);
-                    return true;
-                }
-
-                throw new ArgumentOutOfRangeException(nameof(step));
-            });
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
