@@ -54,7 +54,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             {
                 mem.R.F = mem.R.F.AssignBit(RFlags.Z, op.Data1 == 255)
                     .Res(RFlags.N).AssignBit(RFlags.H, op.Data1.GetHFlag((byte)(op.Data1 + 1)));
-                mem.R.SetR8(op.Dest, (byte)(op.Data1 + 1));
+                mem.SetMappedMemory(mem.R.Hl, (byte)(op.Data1 + 1));
 
                 return true;
             }
