@@ -80,10 +80,10 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 0, Alu.Loading.LdR);
                 ops[(i * 0x10) + 0x0A] = new Opcode(0, (byte)i, Alu.Loading.LdR);
 
-                ops[(i * 0x10) + 0xC5] = new Opcode((byte)i, 0, Alu.Loading.Push);
-
                 ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Jr8);
+                ops[(i * 0x10) + 0xC1] = new Opcode((byte)i, 0, Alu.Loading.Pop);
                 ops[(i * 0x08) + 0xC4] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Call);
+                ops[(i * 0x10) + 0xC5] = new Opcode((byte)i, 0, Alu.Loading.Push);
             }
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
