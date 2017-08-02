@@ -67,8 +67,8 @@ namespace JAGBE.GB.Computation.Execution
 
             for (int i = 0; i < 8; i++)
             {
-                ops[(i * 8) + 0x04] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc);
-                ops[(i * 8) + 0x05] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec);
+                ops[(i * 8) + 0x04] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc8);
+                ops[(i * 8) + 0x05] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec8);
                 ops[(i * 8) + 0x06] = new Opcode((byte)i, 0, Alu.Loading.LdD8);
                 ops[(i * 1) + 0xA8] = new Opcode(0, (byte)(i & 7), Alu.Arithmetic.Xor);
             }
@@ -76,6 +76,8 @@ namespace JAGBE.GB.Computation.Execution
             for (int i = 0; i < 4; i++)
             {
                 ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.Loading.LdD16);
+                ops[(i * 0x10) + 0x03] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc16);
+                ops[(i * 0x10) + 0x0B] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec16);
 
                 // How to get the right arguments on both instances of this instruction?
                 ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 0, Alu.Loading.LdR);

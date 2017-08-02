@@ -1,4 +1,5 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
@@ -28,7 +29,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Inc(Opcode op, GbMemory mem, int step)
+        public static bool Inc8(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
             {
@@ -62,7 +63,23 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Dec(Opcode op, GbMemory mem, int step)
+        public static bool Inc16(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + 1, false);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool Dec8(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
             {
@@ -90,6 +107,22 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     .Res(RFlags.N).AssignBit(RFlags.H, op.Data1.GetHFlag((byte)(op.Data1 - 1)));
                 mem.R.SetR8(op.Dest, (byte)(op.Data1 - 1));
 
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool Dec16(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                mem.R.SetR16(op.Dest, (GbUInt16)(mem.R.GetR16(op.Dest, false) - 1), false);
                 return true;
             }
 
