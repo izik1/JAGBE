@@ -84,6 +84,7 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 0x10) + 0x0A] = new Opcode(0, (byte)i, Alu.Loading.LdR);
 
                 ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Jr8);
+                ops[(i * 0x08) + 0xC0] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.RetC);
                 ops[(i * 0x10) + 0xC1] = new Opcode((byte)i, 0, Alu.Loading.Pop);
                 ops[(i * 0x08) + 0xC4] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Call);
                 ops[(i * 0x10) + 0xC5] = new Opcode((byte)i, 0, Alu.Loading.Push);
@@ -101,9 +102,13 @@ namespace JAGBE.GB.Computation.Execution
             });
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
 
+            ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);
+
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
+
+            ops[0xD9] = new Opcode(1, 0, Alu.Branching.Ret); //RetI
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 
