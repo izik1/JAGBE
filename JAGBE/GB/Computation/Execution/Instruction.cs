@@ -86,9 +86,10 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
-            ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
 
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
+
+            ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 

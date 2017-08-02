@@ -71,17 +71,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 3)
             {
-                if (op.Src == 0)
-                {
-                    return false;
-                }
-
-                if (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest == 0))
-                {
-                    return true;
-                }
-
-                return false;
+                return op.Src != 0 && (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest == 0));
             }
 
             if (step == 4)
