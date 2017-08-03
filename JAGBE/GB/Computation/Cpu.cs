@@ -91,7 +91,7 @@ namespace JAGBE.GB.Computation
                     this.memory.lcdMemory.DMA += DelayStep;
                 }
             }
-            Instruction inst = null;
+
             while (this.delay < 0)
             {
                 if (this.memory.IME)
@@ -143,7 +143,7 @@ namespace JAGBE.GB.Computation
                         "(" + this.memory.GetMappedMemory(this.memory.R.Pc).ToString("X2") + ") {" + this.memory.R.Pc.ToString("X4") + "}");
                 }
 
-                inst = new Instruction(this.memory.GetMappedMemory(this.memory.R.Pc++));
+                Instruction inst = new Instruction(this.memory.LdI8());
 
                 int ticks = 0;
                 while (!inst.Run(this.memory, ticks))
