@@ -63,6 +63,30 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool Cp(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src == 6 || op.Src == 8)
+                {
+                    return false;
+                }
+
+                byte r = (byte)(mem.R.A - mem.R.GetR8(op.Src));
+                mem.R.F = RFlags.NB.AssignBit(RFlags.Z, r == 0).AssignBit(RFlags.H, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.C, r > mem.R.A);
+                return true;
+            }
+
+            if (step == 1)
+            {
+                byte r = op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8();
+                mem.R.F = RFlags.NB.AssignBit(RFlags.Z, r == 0).AssignBit(RFlags.H, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.C, r > mem.R.A);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Inc8(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)

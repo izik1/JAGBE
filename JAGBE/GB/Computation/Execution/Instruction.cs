@@ -70,8 +70,9 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 8) + 0x04] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc8);
                 ops[(i * 8) + 0x05] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec8);
                 ops[(i * 8) + 0x06] = new Opcode((byte)i, 0, Alu.Loading.LdD8);
-                ops[(i * 1) + 0x88] = new Opcode(0, (byte)(i & 7), Alu.Arithmetic.Adc);
-                ops[(i * 1) + 0xA8] = new Opcode(0, (byte)(i & 7), Alu.Arithmetic.Xor);
+                ops[(i * 1) + 0x88] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Adc);
+                ops[(i * 1) + 0xA8] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Xor);
+                ops[(i * 1) + 0xB8] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Cp);
             }
 
             for (int i = 0; i < 4; i++)
@@ -132,6 +133,7 @@ namespace JAGBE.GB.Computation.Execution
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
+            ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
 
             return ops;
         }
