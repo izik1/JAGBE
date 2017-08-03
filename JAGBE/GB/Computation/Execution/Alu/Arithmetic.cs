@@ -123,7 +123,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 }
 
                 byte b = mem.R.GetR8(op.Dest);
-                mem.R.F = mem.R.F.AssignBit(RFlags.Z, b == 1).Res(RFlags.N).AssignBit(RFlags.H, b.GetHFlag((byte)(b - 1)));
+                mem.R.F = mem.R.F.AssignBit(RFlags.Z, b == 1).Set(RFlags.N).AssignBit(RFlags.H, b.GetHFlagN((byte)(b - 1)));
                 mem.SetMappedMemory(mem.R.Hl, (byte)(op.Data1 - 1));
                 return true;
             }
