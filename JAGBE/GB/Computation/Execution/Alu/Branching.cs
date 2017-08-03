@@ -121,7 +121,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             {
                 // High Byte.
                 op.Data2 = mem.Pop();
-                return true;
+                return false;
             }
 
             if (step == 4)
@@ -151,7 +151,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             {
                 // High Byte.
                 op.Data2 = mem.Pop();
-                return true;
+                return false;
             }
 
             if (step == 3)
