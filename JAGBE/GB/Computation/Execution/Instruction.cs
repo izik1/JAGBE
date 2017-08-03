@@ -84,8 +84,8 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 0x10) + 0x0B] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec16);
 
                 // How to get the right arguments on both instances of this instruction?
-                ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 0, Alu.Loading.LdR);
-                ops[(i * 0x10) + 0x0A] = new Opcode(0, (byte)i, Alu.Loading.LdR);
+                ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 8, Alu.Loading.LdR);
+                ops[(i * 0x10) + 0x0A] = new Opcode(8, (byte)i, Alu.Loading.LdR);
 
                 ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Jr8);
                 ops[(i * 0x08) + 0xC0] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.RetC);

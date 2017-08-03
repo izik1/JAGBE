@@ -11,7 +11,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             {
                 if (op.Src > 2)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(op));
+                    throw new ArgumentException(nameof(op));
                 }
 
                 return false;
@@ -24,7 +24,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                if (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest == 0))
+                if (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest != 0))
                 {
                     mem.R.Pc++;
                     return true;

@@ -135,7 +135,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                byte r = op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8();
+                byte r = (byte)(mem.R.A - (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
                 mem.R.F = RFlags.NB.AssignBit(RFlags.Z, r == 0).AssignBit(RFlags.H, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.C, r > mem.R.A);
                 return true;
             }

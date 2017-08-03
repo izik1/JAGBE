@@ -37,7 +37,7 @@ namespace JAGBE.GB.Computation
 
         public int[] DisplayMemory => this.memory.lcdMemory.displayMemory;
 
-        public bool WriteToConsole { get; set; } = true;
+        public bool WriteToConsole { get; set; }
 
         public void Reset(byte[] rom, byte[] bootRom)
         {

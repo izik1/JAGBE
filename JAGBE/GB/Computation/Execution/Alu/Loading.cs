@@ -65,7 +65,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                mem.R.SetR8(op.Dest, op.Data1);
+                mem.SetMappedMemory(mem.R.Hl, op.Data1);
                 return true;
             }
 
@@ -147,21 +147,23 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                if (op.Dest > 0)
+                if (op.Src == 8)
                 {
-                    mem.SetMappedMemory(mem.R.GetR16(op.Dest, false), mem.R.A);
+                    mem.SetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16(op.Dest, false), mem.R.A);
                 }
-
-                if (op.Src > 0)
+                else if (op.Dest == 8)
                 {
-                    mem.R.A = mem.GetMappedMemory(mem.R.GetR16(op.Src, false));
+                    mem.R.A = mem.GetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
                 }
-
-                if (op.Src == 3 || op.Dest == 3)
+                else
+                {
+                    throw new ArgumentException(nameof(op));
+                }
+                if (op.Src == 2 || op.Dest == 2)
                 {
                     mem.R.Hl++;
                 }
-                else if (op.Src == 4 || op.Dest == 4)
+                else if (op.Src == 3 || op.Dest == 3)
                 {
                     mem.R.Hl--;
                 }
