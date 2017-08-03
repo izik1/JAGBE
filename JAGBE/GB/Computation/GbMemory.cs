@@ -8,6 +8,23 @@ using JAGBE.Attributes;
 
 namespace JAGBE.GB.Computation
 {
+    /// <summary>
+    /// </summary>
+    /// <remarks>
+    /// * General Memory Map <br/>
+    /// * 0000-3FFF 16KB ROM Bank 00 (in cartridge, private at bank 00) <br/>
+    /// * 4000-7FFF 16KB ROM Bank 01..NN(in cartridge, switchable bank number) <br/>
+    /// * 8000-9FFF 8KB Video RAM(VRAM)(switchable bank 0-1 in CGB Mode) <br/>
+    /// * A000-BFFF 8KB External RAM(in cartridge, switchable bank, if any) <br/>
+    /// * C000-CFFF 4KB Work RAM Bank 0(WRAM) <br/>
+    /// * D000-DFFF 4KB Work RAM Bank 1(WRAM)(switchable bank 1-7 in CGB Mode) <br/>
+    /// * E000-FDFF Same as 0xC000-DDFF(ECHO)(typically not used) <br/>
+    /// * FE00-FE9F Sprite Attribute Table(OAM) <br/>
+    /// * FEA0-FEFF Not Usable <br/>
+    /// * FF00-FF7F IO Ports <br/>
+    /// * FF80-FFFE High RAM(HRAM) <br/>
+    /// * FFFF Interrupt Enable Register <br/>
+    /// </remarks>
     internal sealed class GbMemory
     {
         /// <summary>
@@ -38,6 +55,8 @@ namespace JAGBE.GB.Computation
         /// The Object Atribute Memory.
         /// </summary>
         internal readonly byte[] Oam = new byte[MemoryRange.OAMSIZE];
+
+        internal CpuState Status;
 
         /// <summary>
         /// The Video Ram.
@@ -76,8 +95,6 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private int MappedRamBank;
 
-        internal CpuState Status;
-
         /// <summary>
         /// The mapped rom bank
         /// </summary>
@@ -94,6 +111,8 @@ namespace JAGBE.GB.Computation
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
 
+        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
+
         /// <summary>
         /// Dumps the currently mapped ram.
         /// </summary>
@@ -108,8 +127,6 @@ namespace JAGBE.GB.Computation
 
             return b;
         }
-
-        internal byte LdI8() => GetMappedMemory(this.R.Pc++);
 
         /// <summary>
         /// Dumps the registers.
@@ -127,26 +144,9 @@ namespace JAGBE.GB.Computation
             return builder.ToString();
         }
 
-        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
-
         /// <summary>
         /// Gets the memory at the address.
         /// </summary>
-        /// <remarks>
-        /// * General Memory Map <br/>
-        /// * 0000-3FFF 16KB ROM Bank 00 (in cartridge, private at bank 00) <br/>
-        /// * 4000-7FFF 16KB ROM Bank 01..NN(in cartridge, switchable bank number) <br/>
-        /// * 8000-9FFF 8KB Video RAM(VRAM)(switchable bank 0-1 in CGB Mode) <br/>
-        /// * A000-BFFF 8KB External RAM(in cartridge, switchable bank, if any) <br/>
-        /// * C000-CFFF 4KB Work RAM Bank 0(WRAM) <br/>
-        /// * D000-DFFF 4KB Work RAM Bank 1(WRAM)(switchable bank 1-7 in CGB Mode) <br/>
-        /// * E000-FDFF Same as 0xC000-DDFF(ECHO)(typically not used) <br/>
-        /// * FE00-FE9F Sprite Attribute Table(OAM) <br/>
-        /// * FEA0-FEFF Not Usable <br/>
-        /// * FF00-FF7F IO Ports <br/>
-        /// * FF80-FFFE High RAM(HRAM) <br/>
-        /// * FFFF Interrupt Enable Register <br/>
-        /// </remarks>
         /// <param name="address"></param>
         /// <returns></returns>
         internal byte GetMappedMemory(ushort address)
@@ -220,6 +220,8 @@ namespace JAGBE.GB.Computation
             return new GbUInt16(GetMappedMemory(++this.R.Pc), i);
         }
 
+        internal byte LdI8() => GetMappedMemory(this.R.Pc++);
+
         /// <summary>
         /// Pops a 8-bit value from the stack.
         /// </summary>
@@ -269,6 +271,10 @@ namespace JAGBE.GB.Computation
 
             return (number > 0x7 && number < 0x0F) || number >= 0x50;
         }
+
+        private static void UnimplementedRead(string identifer) => Console.WriteLine("Attempt to read " + identifer + " —Unimplemented");
+
+        private static void UnimplementedWrite(string identifier) => Console.WriteLine("Write to " + identifier + " unimplemented");
 
         /// <summary>
         /// Gets data from ERAM.
@@ -388,25 +394,45 @@ namespace JAGBE.GB.Computation
         /// Gets the timer control.
         /// </summary>
         /// <returns></returns>
-        [Stub] private byte GetTimerControl() => 0xFF;
+        [Stub]
+        private byte GetTimerControl()
+        {
+            UnimplementedRead("Timer_Crl");
+            return 0xFF;
+        }
 
         /// <summary>
         /// Gets the timer counter.
         /// </summary>
         /// <returns></returns>
-        [Stub] private byte GetTimerCounter() => 0xFF;
+        [Stub]
+        private byte GetTimerCounter()
+        {
+            UnimplementedRead("Timer_Ctr");
+            return 0xFF;
+        }
 
         /// <summary>
         /// Gets the timer div.
         /// </summary>
         /// <returns></returns>
-        [Stub] private byte GetTimerDiv() => 0xFF;
+        [Stub]
+        private byte GetTimerDiv()
+        {
+            UnimplementedRead("Timer_Div");
+            return 0xFF;
+        }
 
         /// <summary>
         /// Gets the timer modulo.
         /// </summary>
         /// <returns></returns>
-        [Stub] private byte GetTimerModulo() => 0xFF;
+        [Stub]
+        private byte GetTimerModulo()
+        {
+            UnimplementedRead("Timer_Mod");
+            return 0xFF;
+        }
 
         /// <summary>
         /// Gets the value Of VRam at <paramref name="address"/>.
@@ -422,6 +448,9 @@ namespace JAGBE.GB.Computation
         /// <param name="address">The address.</param>
         /// <returns></returns>
         private byte GetWRamMemory(int bank, ushort address) => this.WRam[address * (bank + 1)];
+
+        [Stub]
+        private void SetERam(int address, byte value) => UnimplementedWrite("External ram");
 
         /// <summary>
         /// Sets HRam at <paramref name="address"/> to <paramref name="value"/>.
@@ -490,50 +519,58 @@ namespace JAGBE.GB.Computation
         /// <param name="value">The value.</param>
         private void SetMappedMemoryNoMbc(ushort pointer, byte value)
         {
-            if (pointer >= 0x8000 && pointer <= 0x9FFF)
+            if (pointer < 0x8000)
+            {
+                // Put ram chip enabler here if needed.
+                return;
+            }
+
+            if (pointer <= 0x9FFF)
             {
                 SetVram(pointer - 0x8000, value);
             }
-            else if (pointer >= 0xC000 && pointer <= 0xCFFF)
+            else if (pointer <= 0xBFFF)
+            {
+                if (this.ERamEnabled)
+                {
+                    SetERam(pointer - 0xA000, value);
+                }
+            }
+            else if (pointer <= 0xCFFF)
             {
                 SetWRam(0, pointer - 0xC000, value);
             }
-            else if (pointer >= 0xD000 && pointer <= 0xDFFF)
+            else if (pointer <= 0xDFFF)
             {
                 SetWRam(1, pointer - 0xD000, value);
             }
-            else if (pointer >= 0xE000 && pointer <= 0xEFFF)
+            else if (pointer <= 0xEFFF)
             {
                 SetWRam(0, pointer - 0xE000, value);
             }
-            else if (pointer >= 0xF000 && pointer <= 0xFDFF)
+            else if (pointer <= 0xFDFF)
             {
                 SetWRam(1, pointer - 0xF000, value);
             }
-            else if (pointer >= 0xFE00 && pointer <= 0xFE9F)
+            else if (pointer <= 0xFE9F)
             {
                 this.Oam[pointer - 0xFE00] = value;
             }
-            else if (pointer >= 0xFEA0 && pointer <= 0xFEFF)
+            else if (pointer <= 0xFEFF)
             {
                 // Just return, this is ignored on DMG.
             }
-            else if (pointer >= 0xFF00 && pointer <= 0xFF7F)
+            else if (pointer <= 0xFF7F)
             {
                 SetIoRegisters(pointer - 0xFF00, value);
             }
-            else if (pointer >= 0xFF80 && pointer <= 0xFFFE)
+            else if (pointer <= 0xFFFE)
             {
                 SetHRam(pointer - 0xFF80, value);
             }
-            else if (pointer == 0xFFFF)
+            else // 0xFFFF
             {
                 this.IER = value;
-            }
-            else
-            {
-                Console.WriteLine("Failed write: " + pointer.ToString("X4") + " (ptr) " +
-                    this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
             }
         }
 
