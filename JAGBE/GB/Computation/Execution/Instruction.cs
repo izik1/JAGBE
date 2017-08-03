@@ -159,13 +159,20 @@ namespace JAGBE.GB.Computation.Execution
             return CbOps[op.Data1].Invoke(mem, step - 1);
         }
 
-        internal static void WriteAllUnimplementedNmOpcodes()
+        internal static void WriteAllUnimplementedOpcodes(Opcode[] ops)
         {
-            GbMemory m = new GbMemory();
+            int c = 0;
             for (int i = 0; i < 0x100; i++)
             {
-                NmOps[i].Invoke(m, 0);
+                GbMemory m = new GbMemory();
+                ops[i].Invoke(m, 0);
+                if (m.Status == CpuState.ERROR)
+                {
+                    c++;
+                }
             }
+
+            Console.WriteLine(256 - c);
         }
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
