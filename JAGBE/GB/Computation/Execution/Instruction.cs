@@ -142,7 +142,19 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
 
+            ops[0xF3] = new Opcode(0, 0, (op, mem, s) => // DI
+            {
+                mem.IME = false;
+                mem.NextIMEValue = false;
+                return true;
+            });
+
             ops[0xFA] = new Opcode(7, 0, Alu.Loading.LdA16);
+            ops[0xFB] = new Opcode(0, 0, (op, mem, s) => // EI
+            {
+                mem.NextIMEValue = true;
+                return true;
+            });
 
             ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
 
