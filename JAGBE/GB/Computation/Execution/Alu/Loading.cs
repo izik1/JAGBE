@@ -72,6 +72,43 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool LdA16(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                // Low byte.
+                op.Data1 = mem.LdI8();
+                return false;
+            }
+
+            if (step == 2)
+            {
+                // High byte.
+                op.Data2 = mem.LdI8();
+                return false;
+            }
+
+            if (step == 3)
+            {
+                if (op.Dest == 7)
+                {
+                    mem.R.A = mem.GetMappedMemory(new GbUInt16(op.Data2, op.Data1));
+                }
+                else
+                {
+                    mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1), mem.R.A);
+                }
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool LdH(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)

@@ -132,7 +132,13 @@ namespace JAGBE.GB.Computation.Execution
 
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
+
+            ops[0xEA] = new Opcode(0, 7, Alu.Loading.LdA16);
+
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
+
+            ops[0xFA] = new Opcode(7, 0, Alu.Loading.LdA16);
+
             ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
 
             return ops;
