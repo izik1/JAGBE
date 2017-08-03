@@ -19,12 +19,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                if (op.Src == 0)
-                {
-                    return false;
-                }
-
-                if (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest != 0))
+                if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
                 {
                     mem.R.Pc++;
                     return true;
@@ -71,7 +66,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 3)
             {
-                return op.Src != 0 && (mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest == 0));
+                return op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
             }
 
             if (step == 4)
@@ -91,6 +86,15 @@ namespace JAGBE.GB.Computation.Execution.Alu
         }
 
         /// <summary>
+        /// <see langword="true"/> is shouldn't jump.
+        /// </summary>
+        /// <param name="dest">The dest.</param>
+        /// <param name="src">The source.</param>
+        /// <param name="f">The f.</param>
+        /// <returns></returns>
+        private static bool GetConditionalJumpState(byte dest, byte src, byte f) => f.GetBit(src == 1 ? RFlags.Z : RFlags.C) ^ (dest != 0);
+
+        /// <summary>
         /// Conditional Return.
         /// </summary>
         /// <param name="op">The opcode.</param>
@@ -100,18 +104,18 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool RetC(Opcode op, GbMemory mem, int step)
         {
-            if (step == 0 || step == 1)
+            if (step == 0)
             {
                 return false;
             }
 
+            if (step == 1)
+            {
+                return GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
+            }
+
             if (step == 2)
             {
-                if (!mem.R.F.GetBit(op.Src == 1 ? RFlags.Z : RFlags.C) ^ (op.Dest == 0))
-                {
-                    return true;
-                }
-
                 // Low Byte.
                 op.Data1 = mem.Pop();
                 return false;
