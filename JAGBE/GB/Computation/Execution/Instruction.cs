@@ -111,6 +111,8 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
 
+            ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
+
             ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);
 
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
@@ -143,6 +145,8 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
 
             ops[0xEA] = new Opcode(0, 7, Alu.Loading.LdA16);
+
+            ops[0xEE] = new Opcode(7, 8, Alu.Arithmetic.Xor);
 
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
 

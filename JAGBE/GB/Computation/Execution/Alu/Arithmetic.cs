@@ -125,7 +125,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         {
             if (step == 0)
             {
-                if (op.Src == 6)
+                if (op.Src == 6 || op.Src == 8)
                 {
                     return false;
                 }
@@ -137,7 +137,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                memory.R.A ^= memory.GetMappedMemoryHl();
+                memory.R.A ^= op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8();
                 memory.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
                 return true;
             }
