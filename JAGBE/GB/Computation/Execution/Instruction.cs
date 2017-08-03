@@ -101,7 +101,7 @@ namespace JAGBE.GB.Computation.Execution
             {
                 bool b = mem.R.A.GetBit(7);
                 mem.R.A <<= 1;
-                mem.R.A |= (byte)(mem.R.F.GetBit(RFlags.C) ? 1 : 0);
+                mem.R.A |= (byte)(mem.R.F.GetBit(RFlags.CF) ? 1 : 0);
                 mem.R.F = b ? RFlags.CB : (byte)0;
 
                 return true;

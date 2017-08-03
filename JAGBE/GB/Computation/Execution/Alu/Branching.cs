@@ -127,7 +127,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <param name="src">The source.</param>
         /// <param name="f">The f.</param>
         /// <returns></returns>
-        private static bool GetConditionalJumpState(byte dest, byte src, byte f) => f.GetBit(src == 1 ? RFlags.Z : RFlags.C) ^ (dest != 0);
+        private static bool GetConditionalJumpState(byte dest, byte src, byte f) => f.GetBit(src == 1 ? RFlags.ZF : RFlags.CF) ^ (dest != 0);
 
         /// <summary>
         /// Conditional Return.
