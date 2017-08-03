@@ -85,6 +85,41 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool Jp(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src > 2)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(op));
+                }
+
+                return false;
+            }
+
+            if (step == 1)
+            {
+                // Low byte
+                op.Data1 = mem.LdI8();
+                return false;
+            }
+
+            if (step == 2)
+            {
+                // High byte.
+                op.Data2 = mem.LdI8();
+                return op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
+            }
+
+            if (step == 3)
+            {
+                mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         /// <summary>
         /// <see langword="true"/> is shouldn't jump.
         /// </summary>
