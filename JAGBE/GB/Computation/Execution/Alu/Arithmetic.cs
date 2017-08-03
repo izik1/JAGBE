@@ -39,6 +39,34 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool Sub(Opcode op, GbMemory memory, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src == 6 || op.Src == 8)
+                {
+                    return false;
+                }
+
+                byte s = (byte)(memory.R.A - memory.R.GetR8(op.Src));
+                memory.R.F = RFlags.NB.AssignBit(RFlags.Z, s == 0).AssignBit(
+                    RFlags.H, memory.R.A.GetHFlagN(s)).AssignBit(RFlags.C, s > memory.R.A);
+                memory.R.A = s;
+                return true;
+            }
+
+            if (step == 1)
+            {
+                byte s = (byte)(memory.R.A - (op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8()));
+                memory.R.F = RFlags.NB.AssignBit(RFlags.Z, s == 0).AssignBit(
+                    RFlags.H, memory.R.A.GetHFlagN(s)).AssignBit(RFlags.C, s > memory.R.A);
+                memory.R.A = s;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Xor(Opcode op, GbMemory memory, int step)
         {
             if (step == 0)
