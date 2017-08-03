@@ -270,7 +270,6 @@ namespace JAGBE.GB.Computation
             }
 
             // FIXME: Doesn't handle overlapping sprites.
-            Console.WriteLine("peek");
             for (int i = 0; i < 40; i++)
             {
                 byte spriteY = (byte)(mem.GetMappedMemory((ushort)(0xFE00 + (i * 4))) - 16);
@@ -300,8 +299,6 @@ namespace JAGBE.GB.Computation
         private static void ScanLineWindow(GbMemory mem)
         {
 #if PERLINERENDERER
-            Console.WriteLine("pook");
-
             ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x9C00 : 0x9800); // Base offset
             mapOffset += (ushort)((((mem.lcdMemory.WY + mem.lcdMemory.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(mem.lcdMemory.WX >> 3);
