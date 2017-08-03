@@ -5,6 +5,34 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Arithmetic
     {
+        public static bool Add(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src == 6 || op.Src == 8)
+                {
+                    return false;
+                }
+
+                byte s = (byte)(mem.R.A + mem.R.GetR8(op.Src));
+                mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
+                    RFlags.H, mem.R.A.GetHFlag(s)).AssignBit(RFlags.C, mem.R.A > s);
+                mem.R.A = s;
+                return true;
+            }
+
+            if (step == 1)
+            {
+                byte s = (byte)(mem.R.A + (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
+                mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
+                    RFlags.H, mem.R.A.GetHFlag(s)).AssignBit(RFlags.C, mem.R.A > s);
+                mem.R.A = s;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Adc(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
