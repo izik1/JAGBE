@@ -95,6 +95,32 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool And(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src == 6 || op.Src == 8)
+                {
+                    return false;
+                }
+
+                byte r = (byte)(mem.R.A & mem.R.GetR8(op.Src));
+                mem.R.A = r;
+                mem.R.F = (byte)((r == 0 ? RFlags.ZB : 0) | RFlags.HB);
+                return true;
+            }
+
+            if (step == 1)
+            {
+                byte r = (byte)(mem.R.A & (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
+                mem.R.A = r;
+                mem.R.F = (byte)((r == 0 ? RFlags.ZB : 0) | RFlags.HB);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Xor(Opcode op, GbMemory memory, int step)
         {
             if (step == 0)
