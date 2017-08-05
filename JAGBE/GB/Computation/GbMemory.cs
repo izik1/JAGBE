@@ -382,7 +382,7 @@ namespace JAGBE.GB.Computation
                 return this.BootRom[address];
             }
 
-            if (this.Rom == null || (address + (bank * MemoryRange.ROMBANKSIZE) >= Rom.Length))
+            if (this.Rom == null || (address + (bank * MemoryRange.ROMBANKSIZE) >= this.Rom.Length))
             {
                 return 0xFF;
             }

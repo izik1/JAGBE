@@ -113,6 +113,21 @@ namespace JAGBETests
             InstructionHlTest(cpu, memory, 12, 255, RFlags.HB | RFlags.NB, 1);
         }
 
+        [TestMethod]
+        [TestCategory("Arithmetic")]
+        public void CheckAddInstructions()
+        {
+            (Cpu cpu, GbMemory memory) = ConfigureCpu(0x1);
+            InitNmInstructionTest(memory, 0x80, 2);
+            memory.R.A = 254;
+            InstructionArithmeticTest(cpu, memory.R, 4, 0, RFlags.ZB | RFlags.HB | RFlags.CB, 1);
+            InstructionArithmeticTest(cpu, memory.R, 4, 2, 0, 1);
+            memory.R.A = 254;
+            memory.Rom[0] = 0x86;
+            InstructionArithmeticTest(cpu, memory.R, 8, 0, RFlags.ZB | RFlags.HB | RFlags.CB, 1);
+            InstructionArithmeticTest(cpu, memory.R, 8, 2, 0, 1);
+        }
+
         private static void InitNmInstructionTest(GbMemory m, byte inst, byte initVal)
         {
             m.Rom[0] = inst;
@@ -127,6 +142,14 @@ namespace JAGBETests
             Assert.AreEqual(expectedRegData, mem.R.B, "Data");
             Assert.AreEqual(expectedFlags, mem.R.F, "Flags");
             mem.R.Pc -= pcDecCount;
+        }
+
+        private static void InstructionArithmeticTest(Cpu c, GbRegisters R, int ticks, byte expectedRegVal, byte expectedFlags, ushort pcDecC)
+        {
+            c.Tick(ticks);
+            Assert.AreEqual(expectedRegVal, R.A, "Data");
+            Assert.AreEqual(expectedFlags, R.F, "Flags");
+            R.Pc -= pcDecC;
         }
 
         private static void InstructionHlTest(Cpu c, GbMemory mem, int ticks, byte expectedVal, byte expectedFlags, ushort pcDecCount)

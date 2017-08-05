@@ -16,16 +16,17 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
                 byte s = (byte)(mem.R.A + mem.R.GetR8(op.Src));
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(s)).AssignBit(RFlags.CF, mem.R.A > s);
+                    RFlags.HF, mem.R.A.GetHFlag(mem.R.GetR8(op.Src))).AssignBit(RFlags.CF, mem.R.A > s);
                 mem.R.A = s;
                 return true;
             }
 
             if (step == 1)
             {
-                byte s = (byte)(mem.R.A + (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
+                byte b = (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8());
+                byte s = (byte)(mem.R.A + b);
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(s)).AssignBit(RFlags.CF, mem.R.A > s);
+                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, mem.R.A > s);
                 mem.R.A = s;
                 return true;
             }
