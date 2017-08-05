@@ -16,11 +16,11 @@ namespace JAGBETests
             GbMemory memory = ConfigureMemory(1);
             InitNmTest(memory, 0x80, 2);
             memory.R.A = 254;
-            ArithmeticTest(memory, 0, RFlags.ZB | RFlags.HB | RFlags.CB);
+            ArithmeticTest(memory, 0, RFlags.ZHCB);
             ArithmeticTest(memory, 2, 0);
             memory.R.A = 254;
             memory.Rom[0] = 0x86;
-            ArithmeticTest(memory, 0, RFlags.ZB | RFlags.HB | RFlags.CB);
+            ArithmeticTest(memory, 0, RFlags.ZHCB);
             ArithmeticTest(memory, 2, 0);
         }
 
@@ -41,7 +41,7 @@ namespace JAGBETests
             memory.R.B = 0;
             for (int i = 0; i < 8; i++)
             {
-                RegTest(memory, 0, RFlags.ZB | RFlags.HB);
+                RegTest(memory, 0, RFlags.ZHB);
                 memory.Rom[1] += 8;
             }
 
@@ -57,7 +57,7 @@ namespace JAGBETests
             memory.SetMappedMemory(memory.R.Hl, 0);
             for (int i = 0; i < 8; i++)
             {
-                HlTest(memory, 0, RFlags.ZB | RFlags.HB);
+                HlTest(memory, 0, RFlags.ZHB);
                 memory.Rom[1] += 8;
             }
         }
