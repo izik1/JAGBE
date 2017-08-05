@@ -128,6 +128,20 @@ namespace JAGBETests
             InstructionArithmeticTest(cpu, memory.R, 8, 2, 0, 1);
         }
 
+        [TestMethod]
+        [TestCategory("Arithmetic")]
+        public void CheckXorInstructions()
+        {
+            (Cpu cpu, GbMemory memory) = ConfigureCpu(0x1);
+            InitNmInstructionTest(memory, 0xA8, 2);
+            memory.R.A = 2;
+            InstructionArithmeticTest(cpu, memory.R, 4, 0, RFlags.ZB, 1);
+            InstructionArithmeticTest(cpu, memory.R, 4, 2, 0, 1);
+            memory.Rom[0] = 0xAE;
+            InstructionArithmeticTest(cpu, memory.R, 8, 0, RFlags.ZB, 1);
+            InstructionArithmeticTest(cpu, memory.R, 8, 2, 0, 1);
+        }
+
         private static void InitNmInstructionTest(GbMemory m, byte inst, byte initVal)
         {
             m.Rom[0] = inst;
