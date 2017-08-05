@@ -12,10 +12,11 @@ namespace JAGBETests
     public class CpuTests
     {
         [TestMethod]
+        [TestCategory("Bitwise")]
         public void CheckRlcInstructions()
         {
             (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
-            InitBitwiseInstructions(cpu, memory, 0, 0b100_0000);
+            InitBitwiseInstructions(memory, 0, 0b100_0000);
             BitwiseRegTest(cpu, memory, 8, 0, 0b1000_0000, 0);
             BitwiseRegTest(cpu, memory, 8, 0, 0, RFlags.CB | RFlags.ZB);
             memory.Rom[1] = 0x06;
@@ -23,7 +24,8 @@ namespace JAGBETests
             BitwiseHlTest(cpu, memory, 16, 0, RFlags.CB | RFlags.ZB);
         }
 
-        private static void InitBitwiseInstructions(Cpu c, GbMemory m, byte inst, byte initVal)
+        [TestCategory("Bitwise")]
+        private static void InitBitwiseInstructions(GbMemory m, byte inst, byte initVal)
         {
             m.Rom[0] = 0xCB;
             m.Rom[1] = inst;
@@ -33,10 +35,11 @@ namespace JAGBETests
         }
 
         [TestMethod]
+        [TestCategory("Bitwise")]
         public void CheckRlInstructions()
         {
             (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
-            InitBitwiseInstructions(cpu, memory, 0x10, 0b100_0000);
+            InitBitwiseInstructions(memory, 0x10, 0b100_0000);
             BitwiseRegTest(cpu, memory, 8, 0, 0b1000_0000, 0);
             BitwiseRegTest(cpu, memory, 8, 0, 0, RFlags.CB | RFlags.ZB);
             BitwiseRegTest(cpu, memory, 8, 0, 1, 0);
@@ -48,10 +51,11 @@ namespace JAGBETests
         }
 
         [TestMethod]
+        [TestCategory("Bitwise")]
         public void CheckBitInstructions()
         {
             (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
-            InitBitwiseInstructions(cpu, memory, 0x40, 0b1111_1111);
+            InitBitwiseInstructions(memory, 0x40, 0b1111_1111);
 
             for (int i = 0; i < 8; i++)
             {
@@ -99,30 +103,6 @@ namespace JAGBETests
             Assert.AreEqual(expectedVal, mem.GetMappedMemoryHl(), " HL");
             Assert.AreEqual(expectedFlags, mem.R.F, " Flags");
             mem.R.Pc -= 2;
-        }
-
-        /// <summary>
-        /// Checks the CB opcodes.
-        /// </summary>
-        /// <remarks>In the future might do more, for now just checks if all CB opcodes are implemented.</remarks>
-        [TestMethod]
-        public void CheckCbOpCodes()
-        {
-            (Cpu cpu, GbMemory memory) = ConfigureCpu(0x200);
-            cpu.DisableLcdRenderer();
-            memory.Rom = new byte[0x200];
-            for (int i = 0; i < 0x100; i++)
-            {
-                memory.Rom[(ushort)((i * 2) + 0)] = 0xCD;
-                memory.Rom[(ushort)((i * 2) + 1)] = (byte)i;
-            }
-
-            memory.SetMappedMemory(0xFF50, 1); // Force bootmode to be disabled.
-
-            while (cpu.Pc < 0x200)
-            {
-                cpu.Tick(4);
-            }
         }
 
         private static (Cpu, GbMemory) ConfigureCpu(int romSize)
