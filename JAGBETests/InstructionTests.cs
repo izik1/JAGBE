@@ -25,6 +25,23 @@ namespace JAGBETests
         }
 
         [TestMethod]
+        [TestCategory("Arithmetic")]
+        public void CheckAnd()
+        {
+            GbMemory memory = ConfigureMemory(1);
+            InitNmTest(memory, 0xA0, 2);
+            memory.R.A = 2;
+            ArithmeticTest(memory, 2, RFlags.HB);
+            memory.R.A = 1;
+            ArithmeticTest(memory, 0, RFlags.ZHB);
+            memory.Rom[0] = 0xA6;
+            memory.R.A = 2;
+            ArithmeticTest(memory, 2, RFlags.HB);
+            memory.R.A = 1;
+            ArithmeticTest(memory, 0, RFlags.ZHB);
+        }
+
+        [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckBit()
         {
