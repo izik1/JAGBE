@@ -28,7 +28,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckBit()
         {
-            GbMemory memory = ConfigureMemory(0x2);
+            GbMemory memory = ConfigureMemory(2);
             InitCbTest(memory, 0x40, 0xFF);
 
             for (int i = 0; i < 8; i++)
@@ -66,7 +66,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckDec8()
         {
-            GbMemory memory = ConfigureMemory(0x2);
+            GbMemory memory = ConfigureMemory(1);
             InitNmTest(memory, 0x05, 1);
             RegTest(memory, 0, RFlags.ZNB);
             RegTest(memory, 255, RFlags.NHB);
@@ -79,7 +79,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckInc8()
         {
-            GbMemory memory = ConfigureMemory(0x2);
+            GbMemory memory = ConfigureMemory(1);
             InitNmTest(memory, 0x04, 255);
             RegTest(memory, 0, RFlags.ZHB);
             RegTest(memory, 1, 0);
@@ -117,7 +117,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckRlc()
         {
-            GbMemory memory = ConfigureMemory(0x2);
+            GbMemory memory = ConfigureMemory(2);
             InitCbTest(memory, 0, 0x40);
             RegTest(memory, 0x80, 0);
             RegTest(memory, 0, RFlags.ZCB);
@@ -130,7 +130,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckRl()
         {
-            GbMemory memory = ConfigureMemory(0x2);
+            GbMemory memory = ConfigureMemory(2);
             InitCbTest(memory, 0x10, 0x40);
             RegTest(memory, 0x80, 0);
             RegTest(memory, 0, RFlags.ZCB);
