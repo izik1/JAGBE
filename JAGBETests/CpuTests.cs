@@ -12,35 +12,6 @@ namespace JAGBETests
     public class CpuTests
     {
         [TestMethod]
-        public void EnsureRamValues()
-        {
-            Cpu cpu = new Cpu(File.ReadAllBytes("DMG_ROM.bin"), File.ReadAllBytes("Tetris (World).gb"));
-            cpu.DisableLcdRenderer();
-
-            Stopwatch sw = Stopwatch.StartNew();
-            while (cpu.Pc != 0x100 && sw.ElapsedTicks < Stopwatch.Frequency * 2)
-            {
-                cpu.Tick(Cpu.DelayStep);
-            }
-
-            Assert.IsTrue(cpu.Pc == 0x100, "Program counter is wrong (0x" + cpu.Pc.ToString("X4") + ")");
-            byte[] cpuRam = cpu.RamDump;
-            byte[] controlRam = File.ReadAllBytes("RamDump.dump");
-            if (controlRam != null)
-            {
-                for (int i = 0; i < controlRam.Length; i++)
-                {
-                    Assert.IsTrue(cpuRam[i] == controlRam[i], "Ram doesn't match {0x" + i.ToString("X4") + "} Expected: 0x" +
-                        controlRam[i].ToString() + " Got 0x" + cpuRam[i].ToString());
-                }
-            }
-            else
-            {
-                Assert.Fail("Control ram not found");
-            }
-        }
-
-        [TestMethod]
         public void CheckRlcInstructions()
         {
             (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
