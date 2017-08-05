@@ -15,54 +15,53 @@ namespace JAGBETests
         public void CheckRlcInstructions()
         {
             (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
-            memory.Rom[0] = 0xCB;
-            memory.Rom[1] = 0x00;
-
-            BitwiseRegTest(cpu, memory, 8, 0, 0b0100_0000, 0b1000_0000, 0);
-            memory.R.Pc -= 2;
-
-            BitwiseRegTest(cpu, memory, 8, 0, 0, 0, RFlags.ZB);
-            memory.R.Pc -= 2;
-
-            BitwiseRegTest(cpu, memory, 8, 0, 0b1100_0000, 0b1000_0000, RFlags.CB);
-            memory.R.Pc -= 2;
-
-            BitwiseRegTest(cpu, memory, 8, 0, 0b1000_0000, 0, RFlags.ZB | RFlags.CB);
-            memory.R.Pc -= 2;
-
-            memory.R.Hl = 0xD000;
+            InitBitwiseInstructions(cpu, memory, 0, 0b100_0000);
+            BitwiseRegTest(cpu, memory, 8, 0, 0b1000_0000, 0);
+            BitwiseRegTest(cpu, memory, 8, 0, 0, RFlags.CB | RFlags.ZB);
             memory.Rom[1] = 0x06;
-
-            BitwiseHlTest(cpu, memory, 16, 1 << 6, 1 << 7, 0);
-            memory.R.Pc -= 2;
-
-            BitwiseHlTest(cpu, memory, 16, 0, 0, RFlags.ZB);
-            memory.R.Pc -= 2;
-
-            BitwiseHlTest(cpu, memory, 16, 0b11 << 6, 1 << 7, RFlags.CB);
-            memory.R.Pc -= 2;
-
-            BitwiseHlTest(cpu, memory, 16, 1 << 7, 0, RFlags.ZB | RFlags.CB);
+            BitwiseHlTest(cpu, memory, 16, 0, 0b1000_0000, 0);
+            BitwiseHlTest(cpu, memory, 16, 0, 0, RFlags.CB | RFlags.ZB);
         }
 
-        private static void BitwiseRegTest(Cpu c, GbMemory mem, int ticks, int reg, byte initReg, byte expectedReg, byte expectedFlags)
+        private static void InitBitwiseInstructions(Cpu c, GbMemory m, byte inst, byte initVal)
         {
-            mem.R.F = 0;
-            mem.R.SetR8(reg, initReg);
+            m.Rom[0] = 0xCB;
+            m.Rom[1] = inst;
+            m.R.B = initVal;
+            m.R.Hl = 0xC000;
+            m.SetMappedMemory(m.R.Hl, initVal);
+        }
+
+        [TestMethod]
+        public void CheckRlInstructions()
+        {
+            (Cpu cpu, GbMemory memory) = ConfigureCpu(0x2);
+            InitBitwiseInstructions(cpu, memory, 0x10, 0b100_0000);
+            BitwiseRegTest(cpu, memory, 8, 0, 0b1000_0000, 0);
+            BitwiseRegTest(cpu, memory, 8, 0, 0, RFlags.CB | RFlags.ZB);
+            BitwiseRegTest(cpu, memory, 8, 0, 1, 0);
+            memory.Rom[1] = 0x16;
+            memory.R.F = 0;
+            BitwiseHlTest(cpu, memory, 16, 0, 0b1000_0000, 0);
+            BitwiseHlTest(cpu, memory, 16, 0, 0, RFlags.CB | RFlags.ZB);
+            BitwiseHlTest(cpu, memory, 16, 0, 1, 0);
+        }
+
+        private static void BitwiseRegTest(Cpu c, GbMemory mem, int ticks, int reg, byte expectedReg, byte expectedFlags)
+        {
             c.Tick(ticks);
             Assert.AreEqual(expectedReg, mem.R.GetR8(reg), "Data");
             Assert.AreEqual(expectedFlags, mem.R.F, "Flags");
+            mem.R.Pc -= 2;
         }
 
         private static void BitwiseHlTest(Cpu c, GbMemory mem, int ticks, byte initVal, byte expectedVal, byte expectedFlags)
         {
-            mem.R.F = 0;
-            mem.SetMappedMemory(mem.R.Hl, initVal);
-            Console.WriteLine(mem.GetMappedMemoryHl());
             c.Tick(ticks);
 
             Assert.AreEqual(expectedVal, mem.GetMappedMemoryHl(), " HL");
             Assert.AreEqual(expectedFlags, mem.R.F, " Flags");
+            mem.R.Pc -= 2;
         }
 
         /// <summary>
