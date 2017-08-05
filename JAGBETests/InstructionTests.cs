@@ -193,6 +193,23 @@ namespace JAGBETests
 
         [TestMethod]
         [TestCategory("Arithmetic")]
+        public void CheckCp()
+        {
+            GbMemory memory = ConfigureMemory(1);
+            InitNmTest(memory, 0xB8, 2);
+            memory.R.A = 2;
+            ArithmeticTest(memory, 2, RFlags.ZNB);
+            memory.R.A = 0;
+            ArithmeticTest(memory, 0, RFlags.NHCB);
+            memory.Rom[0] = 0xBE;
+            memory.R.A = 2;
+            ArithmeticTest(memory, 2, RFlags.ZNB);
+            memory.R.A = 0;
+            ArithmeticTest(memory, 0, RFlags.NHCB);
+        }
+
+        [TestMethod]
+        [TestCategory("Arithmetic")]
         public void CheckXor()
         {
             GbMemory memory = ConfigureMemory(1);
