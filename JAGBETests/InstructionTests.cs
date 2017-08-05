@@ -7,7 +7,7 @@ namespace JAGBETests
 
 {
     [TestClass]
-    public class CpuTests
+    public class InstructionTests
     {
         [TestMethod]
         [TestCategory("Arithmetic")]
