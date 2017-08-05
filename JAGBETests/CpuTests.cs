@@ -68,11 +68,11 @@ namespace JAGBETests
         {
             GbMemory memory = ConfigureMemory(0x2);
             InitNmInstructionTest(memory, 0x05, 1);
-            InstructionRegTest(memory, 0, RFlags.ZB | RFlags.NB);
-            InstructionRegTest(memory, 255, RFlags.HB | RFlags.NB);
+            InstructionRegTest(memory, 0, RFlags.ZNB);
+            InstructionRegTest(memory, 255, RFlags.NHB);
             memory.Rom[0] = 0x35;
-            InstructionHlTest(memory, 0, RFlags.ZB | RFlags.NB);
-            InstructionHlTest(memory, 255, RFlags.HB | RFlags.NB);
+            InstructionHlTest(memory, 0, RFlags.ZNB);
+            InstructionHlTest(memory, 255, RFlags.NHB);
         }
 
         [TestMethod]
@@ -81,10 +81,10 @@ namespace JAGBETests
         {
             GbMemory memory = ConfigureMemory(0x2);
             InitNmInstructionTest(memory, 0x04, 255);
-            InstructionRegTest(memory, 0, RFlags.ZB | RFlags.HB);
+            InstructionRegTest(memory, 0, RFlags.ZHB);
             InstructionRegTest(memory, 1, 0);
             memory.Rom[0] = 0x34;
-            InstructionHlTest(memory, 0, RFlags.ZB | RFlags.HB);
+            InstructionHlTest(memory, 0, RFlags.ZHB);
             InstructionHlTest(memory, 1, 0);
         }
 
@@ -109,7 +109,7 @@ namespace JAGBETests
                     memory.Rom[0] += 8;
                 }
 
-                memory.R.F = RFlags.CB | RFlags.ZB;
+                memory.R.F = RFlags.ZCB;
             }
         }
 
@@ -120,10 +120,10 @@ namespace JAGBETests
             GbMemory memory = ConfigureMemory(0x2);
             InitCbInstructionTest(memory, 0, 0x40);
             InstructionRegTest(memory, 0x80, 0);
-            InstructionRegTest(memory, 0, RFlags.CB | RFlags.ZB);
+            InstructionRegTest(memory, 0, RFlags.ZCB);
             memory.Rom[1] = 0x06;
             InstructionHlTest(memory, 0x80, 0);
-            InstructionHlTest(memory, 0, RFlags.CB | RFlags.ZB);
+            InstructionHlTest(memory, 0, RFlags.ZCB);
         }
 
         [TestMethod]
@@ -133,12 +133,12 @@ namespace JAGBETests
             GbMemory memory = ConfigureMemory(0x2);
             InitCbInstructionTest(memory, 0x10, 0x40);
             InstructionRegTest(memory, 0x80, 0);
-            InstructionRegTest(memory, 0, RFlags.CB | RFlags.ZB);
+            InstructionRegTest(memory, 0, RFlags.ZCB);
             InstructionRegTest(memory, 1, 0);
             memory.Rom[1] = 0x16;
             memory.R.F = 0;
             InstructionHlTest(memory, 0x80, 0);
-            InstructionHlTest(memory, 0, RFlags.CB | RFlags.ZB);
+            InstructionHlTest(memory, 0, RFlags.ZCB);
             InstructionHlTest(memory, 1, 0);
         }
 
