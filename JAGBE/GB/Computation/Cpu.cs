@@ -31,9 +31,18 @@ namespace JAGBE.GB.Computation
             get => memory.DumpRam();
         }
 
-        private GbMemory memory = new GbMemory();
+        private GbMemory memory;
 
         public Cpu(byte[] bootRom, byte[] rom) => Reset(rom, bootRom);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cpu"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This constructor should be used when the ability to freely check the memory is needed, IE tests.
+        /// </remarks>
+        /// <param name="memory">The memory.</param>
+        public Cpu(GbMemory memory) => this.memory = memory;
 
         public int[] DisplayMemory => this.memory.lcdMemory.displayMemory;
 
