@@ -286,12 +286,14 @@ namespace JAGBE.GB.DataTypes
                     this.L = value;
                     break;
 
+                case 6:
+                    throw new ArgumentException(nameof(index));
                 case 7:
                     this.A = value;
                     break;
 
                 default:
-                    throw new ArgumentException(nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
     }

@@ -100,6 +100,19 @@ namespace JAGBETests
             InstructionHlTest(cpu, memory, 12, 1, 0, 1);
         }
 
+        [TestMethod]
+        [TestCategory("Arithmetic")]
+        public void CheckDec8Instructions()
+        {
+            (Cpu cpu, GbMemory memory) = ConfigureCpu(0x1);
+            InitNmInstructionTest(memory, 0x05, 1);
+            InstructionRegTest(cpu, memory, 4, 0, RFlags.ZB | RFlags.NB, 1);
+            InstructionRegTest(cpu, memory, 4, 255, RFlags.HB | RFlags.NB, 1);
+            memory.Rom[0] = 0x35;
+            InstructionHlTest(cpu, memory, 12, 0, RFlags.ZB | RFlags.NB, 1);
+            InstructionHlTest(cpu, memory, 12, 255, RFlags.HB | RFlags.NB, 1);
+        }
+
         private static void InitNmInstructionTest(GbMemory m, byte inst, byte initVal)
         {
             m.Rom[0] = inst;
