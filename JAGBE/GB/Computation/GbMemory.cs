@@ -382,7 +382,7 @@ namespace JAGBE.GB.Computation
                 return this.BootRom[address];
             }
 
-            if (this.Rom == null)
+            if (this.Rom == null || (address + (bank * MemoryRange.ROMBANKSIZE) >= Rom.Length))
             {
                 return 0xFF;
             }
@@ -447,7 +447,7 @@ namespace JAGBE.GB.Computation
         /// <param name="bank">The bank.</param>
         /// <param name="address">The address.</param>
         /// <returns></returns>
-        private byte GetWRamMemory(int bank, ushort address) => this.WRam[address * (bank + 1)];
+        private byte GetWRamMemory(int bank, ushort address) => this.WRam[address + (MemoryRange.WRAMBANKSIZE * bank)];
 
         [Stub]
         private void SetERam(int address, byte value) => UnimplementedWrite("External ram");
