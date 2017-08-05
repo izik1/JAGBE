@@ -262,6 +262,8 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
+
         private static bool IsUnusedIoRegister(byte number)
         {
             if ((number != 0 && number < 0x4) || number == 0x15 || number == 0x1F)

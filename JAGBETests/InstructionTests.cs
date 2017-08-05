@@ -71,7 +71,7 @@ namespace JAGBETests
             }
 
             memory.Rom[1] = 0x46;
-            memory.SetMappedMemory(memory.R.Hl, 0);
+            memory.SetMappedMemoryHl(0);
             for (int i = 0; i < 8; i++)
             {
                 HlTest(memory, 0, RFlags.ZHB);
@@ -261,7 +261,7 @@ namespace JAGBETests
             m.Rom[1] = inst;
             m.R.B = initVal;
             m.R.Hl = 0xC000;
-            m.SetMappedMemory(m.R.Hl, initVal);
+            m.SetMappedMemoryHl(initVal);
         }
 
         private static void InitNmTest(GbMemory m, byte inst, byte initVal)
@@ -269,7 +269,7 @@ namespace JAGBETests
             m.Rom[0] = inst;
             m.R.B = initVal;
             m.R.Hl = 0xC000;
-            m.SetMappedMemory(m.R.Hl, initVal);
+            m.SetMappedMemoryHl(initVal);
         }
 
         private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags)

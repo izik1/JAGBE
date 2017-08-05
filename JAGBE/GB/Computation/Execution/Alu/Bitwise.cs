@@ -2,7 +2,6 @@
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
-    // TODO: Ensure flags get assigned everywhere, they currently aren't...
     internal static class Bitwise
     {
         public static bool Bit(Opcode code, GbMemory memory, int step)
@@ -48,7 +47,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.SetMappedMemory(memory.R.Hl, code.Data1.Res(code.Dest));
+                memory.SetMappedMemoryHl(code.Data1.Res(code.Dest));
                 return true;
             }
 
@@ -81,7 +80,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 bool oldC = memory.R.F.GetBit(RFlags.CF);
-                memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 << 1) | (oldC ? 1 : 0)));
+                memory.SetMappedMemoryHl((byte)((code.Data1 << 1) | (oldC ? 1 : 0)));
                 memory.R.F = (code.Data1.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, memory.GetMappedMemoryHl() == 0);
                 return true;
             }
@@ -98,10 +97,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(7));
+                memory.R.F = b.GetBit(7) ? RFlags.CB : (byte)0;
                 b <<= 1;
                 memory.R.SetR8(code.Src, b);
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
@@ -116,10 +114,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, code.Data1.GetBit(7));
+                memory.R.F = code.Data1.GetBit(7) ? RFlags.CB : (byte)0;
                 code.Data1 <<= 1;
-                memory.SetMappedMemory(memory.R.Hl, code.Data1);
+                memory.SetMappedMemoryHl(code.Data1);
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -138,10 +135,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
                 bool oldC = memory.R.F.GetBit(RFlags.CF);
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(0));
+                memory.R.F = b.GetBit(0) ? RFlags.CB : (byte)0;
                 memory.R.SetR8(code.Src, (byte)((b >> 1) | (oldC ? 1 : 0)));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
@@ -156,8 +152,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 bool oldC = memory.R.F.GetBit(RFlags.CF);
-                memory.R.F = ((byte)0).AssignBit(RFlags.CF, code.Data1.GetBit(0));
-                memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 >> 1) | (oldC ? 1 : 0)));
+                memory.R.F = code.Data1.GetBit(0) ? RFlags.CB : (byte)0;
+                memory.SetMappedMemoryHl((byte)((code.Data1 >> 1) | (oldC ? 1 : 0)));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -174,10 +170,10 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(0));
+                memory.R.F = b.GetBit(0) ? RFlags.CF : (byte)0;
+
                 memory.R.SetR8(code.Src, (byte)((b >> 1) | (b.GetBit(0) ? 1 : 0)));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
@@ -191,9 +187,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, code.Data1.GetBit(0));
-                memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 >> 1) | (code.Data1.GetBit(0) ? 1 : 0)));
+                memory.R.F = code.Data1.GetBit(0) ? RFlags.CF : (byte)0;
+                memory.SetMappedMemoryHl((byte)((code.Data1 >> 1) | (code.Data1.GetBit(0) ? 1 : 0)));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -222,7 +217,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.SetMappedMemory(memory.R.Hl, code.Data1.Set(code.Dest));
+                memory.SetMappedMemoryHl(code.Data1.Set(code.Dest));
                 return true;
             }
 
@@ -238,10 +233,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(7));
+                memory.R.F = b.GetBit(7) ? RFlags.CB : (byte)0;
                 memory.R.SetR8(code.Src, (byte)(b << 1));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
@@ -255,9 +249,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, code.Data1.GetBit(7));
-                memory.SetMappedMemory(memory.R.Hl, (byte)(code.Data1 << 1));
+                memory.R.F = code.Data1.GetBit(7) ? RFlags.CB : (byte)0;
+                memory.SetMappedMemoryHl((byte)(code.Data1 << 1));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -274,10 +267,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(0));
+                memory.R.F = b.GetBit(0) ? RFlags.CB : (byte)0;
                 memory.R.SetR8(code.Src, (byte)((b >> 1) | (b & (1 << 7))));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
@@ -291,9 +283,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, code.Data1.GetBit(7));
-                memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 << 1) | (code.Data1 & (1 << 7))));
+                memory.R.F = code.Data1.GetBit(0) ? RFlags.CB : (byte)0;
+                memory.SetMappedMemoryHl((byte)((code.Data1 << 1) | (code.Data1 & (1 << 7))));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -310,10 +301,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.F = 0; // Clear flags.
                 byte b = memory.R.GetR8(code.Src);
 
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, b.GetBit(0));
+                memory.R.F = b.GetBit(0) ? RFlags.CB : (byte)0;
                 memory.R.SetR8(code.Src, (byte)(b >> 1));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
@@ -327,9 +317,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.CF, code.Data1.GetBit(0));
-                memory.SetMappedMemory(memory.R.Hl, (byte)(code.Data1 >> 1));
+                memory.R.F = code.Data1.GetBit(0) ? RFlags.CB : (byte)0;
+                memory.SetMappedMemoryHl((byte)(code.Data1 >> 1));
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
@@ -348,8 +337,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
                 byte b = memory.R.GetR8(code.Src);
                 memory.R.SetR8(code.Src, (byte)((b << 4) | (b >> 4)));
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
+                memory.R.F = b == 0 ? RFlags.ZB : (byte)0;
                 return true;
             }
 
@@ -361,9 +349,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 2)
             {
-                memory.SetMappedMemory(memory.R.Hl, (byte)((code.Data1 << 4) | (code.Data1 >> 4)));
-                memory.R.F = 0; // Clear flags.
-                memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
+                memory.SetMappedMemoryHl((byte)((code.Data1 << 4) | (code.Data1 >> 4)));
+                memory.R.F = code.Data1 == 0 ? RFlags.ZB : (byte)0;
                 return true;
             }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using JAGBE.GB.DataTypes;
 using JAGBE.GB.Computation.Execution;
 
@@ -119,8 +118,7 @@ namespace JAGBE.GB.Computation
 
                 if (this.memory.Status == CpuState.ERROR)
                 {
-                    //TODO: Hang correctly. Since when a gameboy actually hangs gfx, sounds, DMA, etc still work.
-                    Console.WriteLine("(" + this.memory.GetMappedMemory((ushort)(this.memory.R.Pc - 1)).ToString("X2") +
+                    Console.WriteLine("(" + this.memory.GetMappedMemory(this.memory.R.Pc - 1).ToString("X2") +
                         ") {" + (this.memory.R.Pc - 1).ToString("X4") + "} ERR");
                     throw new InvalidOperationException();
                 }
@@ -190,6 +188,8 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private void HandleInterupts()
         {
+            // TODO: timing.
+
             byte I = (byte)(this.memory.GetMappedMemory(IoReg.IF) & this.memory.GetMappedMemory(0xFFFF));
             int x = 0;
             int i;
@@ -204,7 +204,7 @@ namespace JAGBE.GB.Computation
             if (x > 0)
             {
                 this.memory.SetMappedMemory(IoReg.IF, this.memory.GetMappedMemory(IoReg.IF).Res((byte)(i - 1)));
-                this.memory.Push(new GbUInt16((ushort)(this.memory.R.Pc - 1)));
+                this.memory.Push(new GbUInt16(this.memory.R.Pc - 1));
                 this.memory.R.Pc = new GbUInt16(0, (byte)x);
                 this.memory.IME = false;
             }
