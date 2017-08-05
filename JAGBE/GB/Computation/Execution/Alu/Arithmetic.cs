@@ -205,7 +205,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 }
 
                 byte b = mem.R.GetR8(op.Dest);
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 255).Res(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlag((byte)(b + 1)));
+                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 255).Res(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlag(1));
                 mem.R.SetR8(op.Dest, (byte)(b + 1));
                 return true;
             }
@@ -220,7 +220,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 255)
-                    .Res(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlag((byte)(op.Data1 + 1)));
+                    .Res(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlag(1));
                 mem.SetMappedMemory(mem.R.Hl, (byte)(op.Data1 + 1));
 
                 return true;
