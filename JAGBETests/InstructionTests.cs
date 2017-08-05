@@ -131,6 +131,23 @@ namespace JAGBETests
         }
 
         [TestMethod]
+        [TestCategory("Arithmetic")]
+        public void CheckOr()
+        {
+            GbMemory memory = ConfigureMemory(1);
+            InitNmTest(memory, 0xB0, 0);
+            memory.R.A = 0;
+            ArithmeticTest(memory, 0, RFlags.ZB);
+            memory.R.A = 1;
+            ArithmeticTest(memory, 1, 0);
+            memory.Rom[0] = 0xB6;
+            memory.R.A = 0;
+            ArithmeticTest(memory, 0, RFlags.ZB);
+            memory.R.A = 1;
+            ArithmeticTest(memory, 1, 0);
+        }
+
+        [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckRl()
         {
