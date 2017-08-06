@@ -5,6 +5,27 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Arithmetic
     {
+        /// <summary>
+        /// Complements the A register of the given <paramref name="mem"/>
+        /// </summary>
+        /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="mem">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">step</exception>
+        public static bool Cpl(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                mem.R.A = (byte)(~mem.R.A);
+                mem.R.F |= RFlags.NHB;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Add(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)

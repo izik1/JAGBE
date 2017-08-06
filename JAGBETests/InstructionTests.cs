@@ -98,6 +98,18 @@ namespace JAGBETests
 
         [TestMethod]
         [TestCategory("Arithmetic")]
+        public void CheckCpl()
+        {
+            GbMemory memory = ConfigureMemory(1);
+            InitNmTest(memory, 0x2F, 0);
+            memory.R.A = 0xAA;
+            ArithmeticTest(memory, 0x55, RFlags.NHB);
+            memory.R.F = RFlags.ZCB;
+            ArithmeticTest(memory, 0xAA, RFlags.ZNHCB);
+        }
+
+        [TestMethod]
+        [TestCategory("Arithmetic")]
         public void CheckDec8()
         {
             GbMemory memory = ConfigureMemory(1);
