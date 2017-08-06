@@ -196,6 +196,17 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Sets the src bit of the dest register to 1
+        /// </summary>
+        /// <remarks>Affected Flags: None.</remarks>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns>
+        /// <see langword="true"/> if the operation is complete, <see langword="false"/> otherwise
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Set(Opcode code, GbMemory memory, int step)
         {
             if (step == 0)

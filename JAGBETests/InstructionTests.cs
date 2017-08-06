@@ -195,6 +195,33 @@ namespace JAGBETests
 
         [TestMethod]
         [TestCategory("Bitwise")]
+        public void CheckSet()
+        {
+            GbMemory memory = ConfigureMemory(2);
+            InitCbTest(memory, 0xC0, 0);
+            byte v = 1;
+            for (int i = 0; i < 8; i++)
+            {
+                RegTest(memory, v, 0);
+                v <<= 1;
+                v++;
+                memory.Rom[1] += 8;
+            }
+
+            v = 1;
+            memory.Rom[1] = 0xC6;
+
+            for (int i = 0; i < 8; i++)
+            {
+                HlTest(memory, v, 0);
+                v <<= 1;
+                v++;
+                memory.Rom[1] += 8;
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Bitwise")]
         public void CheckSla()
         {
             GbMemory memory = ConfigureMemory(2);
