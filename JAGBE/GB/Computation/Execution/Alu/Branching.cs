@@ -5,62 +5,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Branching
     {
-        public static bool Rst(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0 || step == 1)
-            {
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.Push(mem.R.Pc.HighByte);
-                return false;
-            }
-
-            if (step == 3)
-            {
-                mem.Push(mem.R.Pc.LowByte);
-                mem.R.Pc = new GbUInt16(0, (byte)(op.Dest * 8));
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
-        public static bool Jr8(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0)
-            {
-                if (op.Src > 2)
-                {
-                    throw new ArgumentException(nameof(op));
-                }
-
-                return false;
-            }
-
-            if (step == 1)
-            {
-                if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
-                {
-                    mem.R.Pc++;
-                    return true;
-                }
-
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.R.Pc += (sbyte)mem.LdI8();
-                mem.R.Pc++;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
         public static bool Call(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -145,14 +89,72 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        /// <summary>
-        /// <see langword="true"/> is shouldn't jump.
-        /// </summary>
-        /// <param name="dest">The dest.</param>
-        /// <param name="src">The source.</param>
-        /// <param name="f">The f.</param>
-        /// <returns></returns>
-        private static bool GetConditionalJumpState(byte dest, byte src, byte f) => f.GetBit(src == 1 ? RFlags.ZF : RFlags.CF) ^ (dest != 0);
+        public static bool Jr8(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                if (op.Src > 2)
+                {
+                    throw new ArgumentException(nameof(op));
+                }
+
+                return false;
+            }
+
+            if (step == 1)
+            {
+                if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
+                {
+                    mem.R.Pc++;
+                    return true;
+                }
+
+                return false;
+            }
+
+            if (step == 2)
+            {
+                mem.R.Pc += (sbyte)mem.LdI8();
+                mem.R.Pc++;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool Ret(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                // Low Byte.
+                op.Data1 = mem.Pop();
+                return false;
+            }
+
+            if (step == 2)
+            {
+                // High Byte.
+                op.Data2 = mem.Pop();
+                return false;
+            }
+
+            if (step == 3)
+            {
+                mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+
+                // Unlike EI IME gets right away.
+                mem.IME |= op.Dest != 0;
+                mem.NextIMEValue = mem.IME;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
 
         /// <summary>
         /// Conditional Return.
@@ -197,38 +199,36 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Ret(Opcode op, GbMemory mem, int step)
+        public static bool Rst(Opcode op, GbMemory mem, int step)
         {
-            if (step == 0)
+            if (step == 0 || step == 1)
             {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                // Low Byte.
-                op.Data1 = mem.Pop();
                 return false;
             }
 
             if (step == 2)
             {
-                // High Byte.
-                op.Data2 = mem.Pop();
+                mem.Push(mem.R.Pc.HighByte);
                 return false;
             }
 
             if (step == 3)
             {
-                mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
-
-                // Unlike EI IME gets right away.
-                mem.IME |= op.Dest != 0;
-                mem.NextIMEValue = mem.IME;
+                mem.Push(mem.R.Pc.LowByte);
+                mem.R.Pc = new GbUInt16(0, (byte)(op.Dest * 8));
                 return true;
             }
 
             throw new ArgumentOutOfRangeException(nameof(step));
         }
+
+        /// <summary>
+        /// <see langword="true"/> is shouldn't jump.
+        /// </summary>
+        /// <param name="dest">The dest.</param>
+        /// <param name="src">The source.</param>
+        /// <param name="f">The f.</param>
+        /// <returns></returns>
+        private static bool GetConditionalJumpState(byte dest, byte src, byte f) => f.GetBit(src == 1 ? RFlags.ZF : RFlags.CF) ^ (dest != 0);
     }
 }
