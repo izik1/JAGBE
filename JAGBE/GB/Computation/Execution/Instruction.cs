@@ -164,6 +164,7 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xFB] = new Opcode(0, 0, (op, mem, s) => // EI
             {
                 mem.NextIMEValue = true;
+                mem.IME = false;
                 return true;
             });
 
