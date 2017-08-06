@@ -194,6 +194,19 @@ namespace JAGBETests
         }
 
         [TestMethod]
+        [TestCategory("Bitwise")]
+        public void CheckSla()
+        {
+            GbMemory memory = ConfigureMemory(2);
+            InitCbTest(memory, 0x20, 0x40);
+            RegTest(memory, 0x80, 0);
+            RegTest(memory, 0, RFlags.ZCB);
+            memory.Rom[1] = 0x26;
+            HlTest(memory, 0x80, 0);
+            HlTest(memory, 0, RFlags.ZCB);
+        }
+
+        [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckSub()
         {

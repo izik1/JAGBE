@@ -224,6 +224,20 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Shift left, bit 7 gets shifted into Carry.
+        /// </summary>
+        /// <remarks>
+        /// Flags affected: Z is set if the result of the operation is zero. Reset N,H. C = bit 7 of
+        /// The original number
+        /// </remarks>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns>
+        /// The state of the operation <see langword="true"/> if complete, <see langword="false"/> otherwise
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Sla(Opcode code, GbMemory memory, int step)
         {
             if (step == 0)
@@ -236,7 +250,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 byte b = memory.R.GetR8(code.Src);
 
                 memory.R.F = b.GetBit(7) ? RFlags.CB : (byte)0;
-                memory.R.SetR8(code.Src, (byte)(b << 1));
+                b <<= 1;
+                memory.R.SetR8(code.Src, b);
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
                 return true;
             }
@@ -250,7 +265,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 memory.R.F = code.Data1.GetBit(7) ? RFlags.CB : (byte)0;
-                memory.SetMappedMemoryHl((byte)(code.Data1 << 1));
+                code.Data1 <<= 1;
+                memory.SetMappedMemoryHl(code.Data1);
                 memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
                 return true;
             }
