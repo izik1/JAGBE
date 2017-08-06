@@ -108,6 +108,14 @@ namespace JAGBE.GB.Computation.Execution
             });
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
 
+            ops[0x1F] = new Opcode(0, 0, (op, mem, step) => // RRA
+            {
+                bool oldCf = mem.R.F.GetBit(RFlags.CF);
+                mem.R.F = mem.R.A.GetBit(0) ? RFlags.CB : (byte)0;
+                mem.R.A = (byte)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
+                return true;
+            });
+
             ops[0x2F] = new Opcode(0, 0, Alu.Arithmetic.Cpl);
 
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
