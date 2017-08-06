@@ -230,7 +230,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                mem.R.SetR16(op.Dest, mem.Pop(), false, true);
+                byte b = mem.Pop();
+                if (op.Dest == 3)
+                {
+                    b &= 0xF0;
+                }
+
+                mem.R.SetR16(op.Dest, b, false, true);
                 return false;
             }
 
