@@ -77,6 +77,7 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 1) + 0xA8] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Xor);
                 ops[(i * 1) + 0xB0] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Or);
                 ops[(i * 1) + 0xB8] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Cp);
+                ops[(i * 8) + 0xC7] = new Opcode((byte)i, 0, Alu.Branching.Rst);
             }
 
             for (int i = 0; i < 4; i++)

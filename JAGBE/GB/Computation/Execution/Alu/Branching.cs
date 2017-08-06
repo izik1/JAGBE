@@ -5,6 +5,29 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Branching
     {
+        public static bool Rst(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0 || step == 1)
+            {
+                return false;
+            }
+
+            if (step == 2)
+            {
+                mem.Push(mem.R.Pc.HighByte);
+                return false;
+            }
+
+            if (step == 3)
+            {
+                mem.Push(mem.R.Pc.LowByte);
+                mem.R.Pc = new GbUInt16(0, (byte)(op.Dest * 8));
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Jr8(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
