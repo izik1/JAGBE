@@ -104,7 +104,12 @@ namespace JAGBE.GB.Computation
             {
                 if (this.memory.IME)
                 {
-                    HandleInterupts();
+                    int step = 0;
+                    while (!HandleInterupts(step))
+                    {
+                        step++;
+                        this.delay += DelayStep;
+                    }
                 }
 
                 this.memory.IME = this.memory.NextIMEValue;
@@ -186,28 +191,45 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// Handles the interupts.
         /// </summary>
-        private void HandleInterupts()
+        /// <param name="step"></param>
+        private bool HandleInterupts(int step)
         {
-            // TODO: timing.
-
-            byte I = (byte)(this.memory.GetMappedMemory(IoReg.IF) & this.memory.GetMappedMemory(0xFFFF));
-            int x = 0;
-            int i;
-            for (i = 0; i < 5 && x == 0; i++)
+            if (step == 0)
             {
-                if (I.GetBit((byte)i))
+                return (this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(IoReg.IF) & 0xE0) == 0;
+            }
+
+            if (step == 1)
+            {
+                return false;
+            }
+
+            if (step == 2)
+            {
+                this.memory.Push(this.memory.R.Pc.HighByte);
+            }
+
+            if (step == 3)
+            {
+                this.memory.Push(this.memory.R.Pc.LowByte);
+            }
+
+            if (step == 4)
+            {
+                byte b = (byte)(this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(IoReg.IF) & 0xE0);
+                for (int i = 0; i < 5; i++)
                 {
-                    x = 0x40 + (8 * i);
+                    if (b.GetBit((byte)i))
+                    {
+                        this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
+                        return true;
+                    }
                 }
+
+                throw new InvalidOperationException();
             }
 
-            if (x > 0)
-            {
-                this.memory.SetMappedMemory(IoReg.IF, this.memory.GetMappedMemory(IoReg.IF).Res((byte)(i - 1)));
-                this.memory.Push(new GbUInt16(this.memory.R.Pc - 1));
-                this.memory.R.Pc = new GbUInt16(0, (byte)x);
-                this.memory.IME = false;
-            }
+            throw new ArgumentOutOfRangeException(nameof(step));
         }
     }
 }

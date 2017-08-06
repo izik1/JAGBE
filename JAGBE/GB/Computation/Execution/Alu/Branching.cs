@@ -71,12 +71,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 4)
             {
+                // Push Pc High.
                 mem.Push(mem.R.Pc.HighByte);
                 return false;
             }
 
             if (step == 5)
             {
+                // Push Pc Low.
                 mem.Push(mem.R.Pc.LowByte);
                 mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
                 return true;

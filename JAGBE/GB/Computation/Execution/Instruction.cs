@@ -167,7 +167,6 @@ namespace JAGBE.GB.Computation.Execution
             });
 
             ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
-
             return ops;
         }
 
