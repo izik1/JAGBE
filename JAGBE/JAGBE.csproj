@@ -91,6 +91,7 @@
     <Compile Include="GB\GameBoy.cs" />
     <Compile Include="GB\DataTypes\GbUInt16.cs" />
     <Compile Include="GB\DataTypes\MemoryBankController.cs" />
+    <Compile Include="GB\UShortExtensions.cs" />
     <Compile Include="Stats\AttributeReflector.cs" />
     <Compile Include="UI\ContentPipe.cs" />
     <Compile Include="Program.cs" />

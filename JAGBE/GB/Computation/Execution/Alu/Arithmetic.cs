@@ -68,6 +68,24 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool AddHl(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                ushort val = mem.R.GetR16(op.Src, false);
+                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHalfCarry(mem.R.Hl)).AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
+                mem.R.Hl += val;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool And(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
