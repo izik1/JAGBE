@@ -122,6 +122,8 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
 
+            ops[0xD6] = new Opcode(7, 8, Alu.Arithmetic.Sub);
+
             ops[0xD9] = new Opcode(1, 0, Alu.Branching.Ret); //RetI
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
