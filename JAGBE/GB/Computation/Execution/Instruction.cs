@@ -145,6 +145,17 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
 
+            ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>
+              {
+                  if (step == 0)
+                  {
+                      mem.R.Pc = mem.R.Hl;
+                      return true;
+                  }
+
+                  throw new ArgumentOutOfRangeException(nameof(step));
+              });
+
             ops[0xEA] = new Opcode(0, 7, Alu.Loading.LdA16);
 
             ops[0xEE] = new Opcode(7, 8, Alu.Arithmetic.Xor);
