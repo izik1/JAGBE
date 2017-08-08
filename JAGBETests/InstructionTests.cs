@@ -222,6 +222,21 @@ namespace JAGBETests
 
         [TestMethod]
         [TestCategory("Bitwise")]
+        public void CheckRr()
+        {
+            GbMemory memory = ConfigureMemory(2);
+            InitCbTest(memory, 0x18, 2);
+            RegTest(memory, 1, 0);
+            RegTest(memory, 0, RFlags.ZCB);
+            RegTest(memory, 0x80, 0);
+            memory.Rom[1] = 0x1E;
+            HlTest(memory, 1, 0);
+            HlTest(memory, 0, RFlags.ZCB);
+            HlTest(memory, 0x80, 0);
+        }
+
+        [TestMethod]
+        [TestCategory("Bitwise")]
         public void CheckSet()
         {
             GbMemory memory = ConfigureMemory(2);
