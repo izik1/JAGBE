@@ -157,6 +157,56 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool Daa(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                int res = mem.R.A;
+                if (mem.R.F.GetBit(RFlags.NF))
+                {
+                    if (mem.R.F.GetBit(RFlags.HF))
+                    {
+                        res = (res - 6) & 0xFF;
+                    }
+
+                    if (mem.R.F.GetBit(RFlags.CF))
+                    {
+                        res -= 0x60;
+                    }
+                }
+                else
+                {
+                    if (mem.R.F.GetBit(RFlags.HF) || (res & 0xF) > 9)
+                    {
+                        res += 0x06;
+                    }
+
+                    if (mem.R.F.GetBit(RFlags.CF) || res > 0x9F)
+                    {
+                        res += 0x60;
+                    }
+                }
+                mem.R.F &= RFlags.NB;
+
+                if ((res & 0x100) == 0x100)
+                {
+                    mem.R.F |= RFlags.CB;
+                }
+
+                res &= 0xFF;
+
+                if (res == 0)
+                {
+                    mem.R.F |= RFlags.ZB;
+                }
+
+                mem.R.A = (byte)res;
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
         public static bool Dec16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)

@@ -116,6 +116,8 @@ namespace JAGBE.GB.Computation.Execution
                 return true;
             });
 
+            ops[0x27] = new Opcode(0, 0, Alu.Arithmetic.Daa);
+
             ops[0x2F] = new Opcode(0, 0, Alu.Arithmetic.Cpl);
 
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
