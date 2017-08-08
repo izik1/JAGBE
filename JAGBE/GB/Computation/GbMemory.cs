@@ -157,7 +157,7 @@ namespace JAGBE.GB.Computation
         {
             if (address < 0x4000) // 0x0000-3FFF
             {
-                return GetRomMemory(0, (ushort)(address % MemoryRange.ROMBANKSIZE));
+                return GetRomMemory(0, address);
             }
 
             if (address < 0x8000) // 0x4000-7FFF
@@ -167,7 +167,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return GetVRam((ushort)(address - 0x8000));
+                return this.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -175,14 +175,9 @@ namespace JAGBE.GB.Computation
                 return GetERamMemory(this.MappedRamBank, (ushort)(address - 0xA000));
             }
 
-            if (address < 0xD000) // 0xC000-CFFF
+            if (address < 0xE000) // 0xC000-DFFF
             {
-                return GetWRamMemory(0, (ushort)(address - 0xC000));
-            }
-
-            if (address < 0xE000) // 0xD000-DFFF
-            {
-                return GetWRamMemory(1, (ushort)(address - 0xD000));
+                return this.WRam[address - 0xC000];
             }
 
             if (address < 0xFE00) // 0xE000-FDFF
@@ -192,12 +187,12 @@ namespace JAGBE.GB.Computation
                     return GetERamMemory(this.MappedRamBank, (ushort)(address - 0xE000));
                 }
 
-                return GetWRamMemory(0, (ushort)(address - 0xF000));
+                return this.WRam[address - 0xF000];
             }
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return GetObjectAttributeMemory((byte)(address - 0xFE00));
+                return this.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
@@ -212,7 +207,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xFFFF) // 0xFF80-FFFE
             {
-                return GetHRam((byte)(address - 0xFF80));
+                return this.HRam[address - 0xFF80];
             }
 
             return GetInterruptEnableRegister(); // 0xFFFF
@@ -307,13 +302,6 @@ namespace JAGBE.GB.Computation
         }
 
         /// <summary>
-        /// Gets HRAM at <paramref name="address"/>.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <returns>HRAM at <paramref name="address"/>.</returns>
-        private byte GetHRam(byte address) => this.HRam[address];
-
-        /// <summary>
         /// Gets the value of the interrupt enable register.
         /// </summary>
         /// <returns>The value of the interrupt enable register.</returns>
@@ -367,13 +355,6 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <returns></returns>
         [Stub] private byte GetJoypad() => 0xFF;
-
-        /// <summary>
-        /// Gets the object attribute memory at <paramref name="address"/>.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <returns></returns>
-        private byte GetObjectAttributeMemory(byte address) => this.Oam[address];
 
         /// <summary>
         /// Gets <paramref name="address"/> from <paramref name="bank"/> of ROM.
@@ -435,30 +416,8 @@ namespace JAGBE.GB.Computation
             return 0xFF;
         }
 
-        /// <summary>
-        /// Gets the value Of VRam at <paramref name="address"/>.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <returns>VRam</returns>
-        private byte GetVRam(ushort address) => this.VRam[address];
-
-        /// <summary>
-        /// Gets the WRam memory from bank at address.
-        /// </summary>
-        /// <param name="bank">The bank.</param>
-        /// <param name="address">The address.</param>
-        /// <returns></returns>
-        private byte GetWRamMemory(int bank, ushort address) => this.WRam[address + (MemoryRange.WRAMBANKSIZE * bank)];
-
         [Stub]
         private void SetERam(int address, byte value) => UnimplementedWrite("External ram");
-
-        /// <summary>
-        /// Sets HRam at <paramref name="address"/> to <paramref name="value"/>.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <param name="value">The value.</param>
-        private void SetHRam(int address, byte value) => this.HRam[address] = value;
 
         /// <summary>
         /// Sets the io registers.
@@ -528,7 +487,7 @@ namespace JAGBE.GB.Computation
 
             if (pointer <= 0x9FFF)
             {
-                SetVram(pointer - 0x8000, value);
+                this.VRam[pointer - 0x8000] = value;
             }
             else if (pointer <= 0xBFFF)
             {
@@ -537,21 +496,13 @@ namespace JAGBE.GB.Computation
                     SetERam(pointer - 0xA000, value);
                 }
             }
-            else if (pointer <= 0xCFFF)
-            {
-                SetWRam(0, pointer - 0xC000, value);
-            }
             else if (pointer <= 0xDFFF)
             {
-                SetWRam(1, pointer - 0xD000, value);
-            }
-            else if (pointer <= 0xEFFF)
-            {
-                SetWRam(0, pointer - 0xE000, value);
+                this.WRam[pointer - 0xC000] = value;
             }
             else if (pointer <= 0xFDFF)
             {
-                SetWRam(1, pointer - 0xF000, value);
+                this.WRam[pointer - 0xE000] = value;
             }
             else if (pointer <= 0xFE9F)
             {
@@ -567,22 +518,12 @@ namespace JAGBE.GB.Computation
             }
             else if (pointer <= 0xFFFE)
             {
-                SetHRam(pointer - 0xFF80, value);
+                this.HRam[pointer - 0xFF80] = value;
             }
             else // 0xFFFF
             {
                 this.IER = value;
             }
         }
-
-        private void SetVram(int address, byte value) => this.VRam[address] = value;
-
-        /// <summary>
-        /// Sets WRam <paramref name="bank"/> at <paramref name="address"/> to <paramref name="value"/>.
-        /// </summary>
-        /// <param name="bank">The bank.</param>
-        /// <param name="address">The address.</param>
-        /// <param name="value">The value.</param>
-        private void SetWRam(int bank, int address, byte value) => this.WRam[address + (bank * MemoryRange.WRAMBANKSIZE)] = value;
     }
 }
