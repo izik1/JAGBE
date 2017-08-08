@@ -187,7 +187,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                         res += 0x60;
                     }
                 }
-                mem.R.F &= RFlags.NB;
+                mem.R.F &= RFlags.NCB;
 
                 if ((res & 0x100) == 0x100)
                 {
