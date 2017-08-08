@@ -90,7 +90,6 @@ namespace JAGBE.GB.Computation
             {
                 if (mem.lcdMemory.cy == Cpu.DelayStep)
                 {
-                    //c.SetMappedMemory(IoReg.IF, (byte)(c.PeekMappedMemory(IoReg.IF) | 1));
                     if (mem.lcdMemory.STAT.GetBit(6) && mem.lcdMemory.LYC == 144)
                     {
                         mem.lcdMemory.IRC = true;
