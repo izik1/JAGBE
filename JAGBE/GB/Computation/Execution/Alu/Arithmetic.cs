@@ -15,10 +15,10 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 }
 
                 bool c = mem.R.F.GetBit(RFlags.CF);
-                byte b = (byte)((c ? 1 : 0) + mem.R.GetR8(op.Src));
+                byte b = (byte)(mem.R.GetR8(op.Src) + (c ? 1 : 0));
                 byte s = (byte)(mem.R.A + b);
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, c ? s - 1 < mem.R.A : s < mem.R.A);
+                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
                 mem.R.A = s;
 
                 return true;
@@ -31,7 +31,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 byte s = (byte)(mem.R.A + b);
 
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, c ? s == mem.R.A : s < mem.R.A);
+                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
 
                 mem.R.A = s;
                 return true;

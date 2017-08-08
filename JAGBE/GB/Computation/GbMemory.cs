@@ -53,10 +53,7 @@ namespace JAGBE.GB.Computation
 
         internal bool NextIMEValue;
 
-        internal void IncDiv(GbUInt16 value)
-        {
-            this.Div += value;
-        }
+        internal void IncDiv(GbUInt16 value) => this.Div += value;
 
         /// <summary>
         /// The Object Atribute Memory.
