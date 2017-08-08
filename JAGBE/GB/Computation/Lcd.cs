@@ -1,5 +1,4 @@
 ﻿#define PERLINERENDERER
-#define GREENSCALE
 
 using System;
 
@@ -13,18 +12,11 @@ namespace JAGBE.GB.Computation
 
         private static readonly uint[] COLORS =
         {
-#if GREENSCALE
                 0xFF9BBC0F,
                 0xFF8BAC0F,
                 0xFF306230,
                 0xFF0F380F
-#else
-                0xFFFFFFFF,
-                0xC0C0C0FF,
-                0x606060FF,
-                0x000000FF
-#endif
-            };
+        };
 
         public static void Tick(GbMemory mem)
         {
