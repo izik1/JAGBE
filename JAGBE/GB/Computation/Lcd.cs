@@ -159,7 +159,6 @@ namespace JAGBE.GB.Computation
             {
                 mem.lcdMemory.STAT = (byte)((mem.lcdMemory.STAT & 0xFC) | 0x3);
 
-                // HACK: pls do better. (draws the entire line at once)
 #if NULLRENDERER
 
 #elif PERLINERENDERER
@@ -213,9 +212,10 @@ namespace JAGBE.GB.Computation
             }
         }
 
+#if PERLINERENDERER
+
         private static void ScanLine(GbMemory mem)
         {
-#if PERLINERENDERER
             ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x9C00 : 0x9800); // Base offset
             mapOffset += (ushort)((((mem.lcdMemory.SCY + mem.lcdMemory.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(mem.lcdMemory.SCX >> 3);
@@ -248,13 +248,13 @@ namespace JAGBE.GB.Computation
                     }
                 }
             }
-#endif
         }
+
+#endif
+#if PERLINERENDERER
 
         private static void ScanLineSprite(GbMemory mem)
         {
-#if PERLINERENDERER
-
             if (mem.lcdMemory.Lcdc.GetBit(2))
             {
                 throw new NotSupportedException();
@@ -263,10 +263,11 @@ namespace JAGBE.GB.Computation
             // FIXME: Doesn't handle overlapping sprites.
             for (int i = 0; i < 40; i++)
             {
-                byte spriteY = (byte)(mem.GetMappedMemory((ushort)(0xFE00 + (i * 4))) - 16);
-                byte spriteX = (byte)(mem.GetMappedMemory((ushort)(0xFE01 + (i * 4))) - 8);
-                byte tile = (mem.GetMappedMemory((ushort)(0xFE02 + (i * 4))));
-                byte flags = (mem.GetMappedMemory((ushort)(0xFE03 + (i * 4))));
+                int oamOffset = i * 4;
+                byte spriteY = (byte)(mem.Oam[oamOffset] - 16);
+                byte spriteX = (byte)(mem.Oam[oamOffset + 1] - 8);
+                byte tile = mem.Oam[oamOffset + 2];
+                byte flags = mem.Oam[oamOffset + 3];
                 if (spriteY <= mem.lcdMemory.LY && spriteY + 8 > mem.lcdMemory.LY)
                 {
                     byte pallet = flags.GetBit(4) ? mem.lcdMemory.objPallet1 : mem.lcdMemory.objPallet0;
@@ -284,12 +285,13 @@ namespace JAGBE.GB.Computation
                     }
                 }
             }
-#endif
         }
+
+#endif
+#if PERLINERENDERER
 
         private static void ScanLineWindow(GbMemory mem)
         {
-#if PERLINERENDERER
             ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x9C00 : 0x9800); // Base offset
             mapOffset += (ushort)((((mem.lcdMemory.WY + mem.lcdMemory.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(mem.lcdMemory.WX >> 3);
@@ -305,7 +307,6 @@ namespace JAGBE.GB.Computation
 
             for (int i = 0; i < Width; i++)
             {
-                // pixel part 1, pixel part 2......>>
                 int index = GetPixelIndex(mem, y, x, tileOffset, tile);
                 mem.lcdMemory.displayMemory[((Height - mem.lcdMemory.LY - 1) * Width) + i] =
                     (int)COLORS[(mem.lcdMemory.BgPallet >> (index * 2)) & 0x3];
@@ -322,7 +323,8 @@ namespace JAGBE.GB.Computation
                     }
                 }
             }
-#endif
         }
+
+#endif
     }
 }
