@@ -47,9 +47,16 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal bool IME;
 
+        private GbUInt16 Div = 0;
+
         internal LcdMemory lcdMemory = new LcdMemory();
 
         internal bool NextIMEValue;
+
+        internal void IncDiv(GbUInt16 value)
+        {
+            this.Div += value;
+        }
 
         /// <summary>
         /// The Object Atribute Memory.
@@ -418,12 +425,7 @@ namespace JAGBE.GB.Computation
         /// Gets the timer div.
         /// </summary>
         /// <returns></returns>
-        [Stub]
-        private byte GetTimerDiv()
-        {
-            UnimplementedRead("Timer_Div");
-            return 0xFF;
-        }
+        private byte GetTimerDiv() => this.Div.HighByte;
 
         /// <summary>
         /// Gets the timer modulo.

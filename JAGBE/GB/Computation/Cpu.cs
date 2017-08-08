@@ -79,6 +79,7 @@ namespace JAGBE.GB.Computation
             void TickIoDevices()
             {
                 Lcd.Tick(this.memory);
+                this.memory.IncDiv(DelayStep);
                 syncDelay += DelayStep;
             }
             void TickDMA()
