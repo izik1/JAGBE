@@ -15,9 +15,10 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 }
 
                 bool c = mem.R.F.GetBit(RFlags.CF);
-                byte s = (byte)((c ? 1 : 0) + mem.R.A + mem.R.GetR8(op.Src));
+                byte b = (byte)((c ? 1 : 0) + mem.R.GetR8(op.Src));
+                byte s = (byte)(mem.R.A + b);
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(s)).AssignBit(RFlags.CF, c ? s == mem.R.A : s < mem.R.A);
+                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, c ? s - 1 < mem.R.A : s < mem.R.A);
                 mem.R.A = s;
 
                 return true;
@@ -25,12 +26,12 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                byte s;
                 bool c = mem.R.F.GetBit(RFlags.CF);
-                s = op.Src == 6 ? (byte)((c ? 1 : 0) + mem.R.A + mem.GetMappedMemoryHl()) : (byte)((c ? 1 : 0) + mem.R.A + mem.LdI8());
+                byte b = (byte)((op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()) + (c ? 1 : 0));
+                byte s = (byte)(mem.R.A + b);
 
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(s)).AssignBit(RFlags.CF, c ? s == mem.R.A : s < mem.R.A);
+                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, c ? s == mem.R.A : s < mem.R.A);
 
                 mem.R.A = s;
                 return true;

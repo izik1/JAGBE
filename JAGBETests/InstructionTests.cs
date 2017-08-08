@@ -11,6 +11,21 @@ namespace JAGBETests
     {
         [TestMethod]
         [TestCategory("Arithmetic")]
+        public void CheckAdc()
+        {
+            GbMemory memory = ConfigureMemory(1);
+            InitNmTest(memory, 0x88, 2);
+            memory.R.A = 254;
+            ArithmeticTest(memory, 0, RFlags.ZHCB);
+            ArithmeticTest(memory, 3, 0);
+            memory.R.A = 254;
+            memory.Rom[0] = 0x8E;
+            ArithmeticTest(memory, 0, RFlags.ZHCB);
+            ArithmeticTest(memory, 3, 0);
+        }
+
+        [TestMethod]
+        [TestCategory("Arithmetic")]
         public void CheckAdd()
         {
             GbMemory memory = ConfigureMemory(1);
