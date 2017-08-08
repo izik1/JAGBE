@@ -210,13 +210,7 @@ namespace JAGBE.GB.Computation
                 return this.HRam[address - 0xFF80];
             }
 
-            return GetInterruptEnableRegister(); // 0xFFFF
-        }
-
-        internal GbUInt16 LdI16()
-        {
-            byte i = GetMappedMemory(++this.R.Pc); // GameBoy is little endian.
-            return new GbUInt16(GetMappedMemory(++this.R.Pc), i);
+            return this.IER; // 0xFFFF
         }
 
         internal byte LdI8() => GetMappedMemory(this.R.Pc++);
@@ -226,12 +220,6 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <returns></returns>
         internal byte Pop() => GetMappedMemory(this.R.Sp++);
-
-        /// <summary>
-        /// Pops a 16-bit value from the stack.
-        /// </summary>
-        /// <returns></returns>
-        internal GbUInt16 Pop16() => new GbUInt16(this.Pop(), this.Pop());
 
         /// <summary>
         /// Pushes the specified <paramref name="value"/> onto the stack.
@@ -302,12 +290,6 @@ namespace JAGBE.GB.Computation
         }
 
         /// <summary>
-        /// Gets the value of the interrupt enable register.
-        /// </summary>
-        /// <returns>The value of the interrupt enable register.</returns>
-        private byte GetInterruptEnableRegister() => this.IER;
-
-        /// <summary>
         /// Gets the value of the <paramref name="number"/>'th IO Register.
         /// </summary>
         /// <param name="number">The number.</param>
@@ -330,7 +312,7 @@ namespace JAGBE.GB.Computation
                     return GetJoypad();
 
                 case 0x04:
-                    return GetTimerDiv();
+                    return this.Div.HighByte;
 
                 case 0x05:
                     return GetTimerCounter();
@@ -398,12 +380,6 @@ namespace JAGBE.GB.Computation
             UnimplementedRead("Timer_Ctr");
             return 0xFF;
         }
-
-        /// <summary>
-        /// Gets the timer div.
-        /// </summary>
-        /// <returns></returns>
-        private byte GetTimerDiv() => this.Div.HighByte;
 
         /// <summary>
         /// Gets the timer modulo.
