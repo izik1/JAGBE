@@ -30,37 +30,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
         public static bool Res(Opcode code, GbMemory memory, int step) => Operate(code, memory, step, (m, val, dest) => val.Res(dest));
 
-        public static bool Rl(Opcode code, GbMemory memory, int step)
-        {
-            bool carryIn;
-
-            switch (step)
+        public static bool Rl(Opcode code, GbMemory memory, int step) =>
+            Operate(code, memory, step, (mem, val, dest) =>
             {
-                case 0:
-                    if (code.Src == 6)
-                    {
-                        return false;
-                    }
-                    carryIn = memory.R.F.GetBit(RFlags.CF);
-                    byte b = memory.R.GetR8(code.Src);
-                    memory.R.SetR8(code.Src, (byte)((b << 1) | (carryIn ? 1 : 0)));
-                    memory.R.F = (b.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, memory.R.GetR8(code.Src) == 0);
-                    return true;
-
-                case 1:
-                    code.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    carryIn = memory.R.F.GetBit(RFlags.CF);
-                    memory.SetMappedMemoryHl((byte)((code.Data1 << 1) | (carryIn ? 1 : 0)));
-                    memory.R.F = (code.Data1.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, memory.GetMappedMemoryHl() == 0);
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
+                bool carryIn = memory.R.F.GetBit(RFlags.CF);
+                byte retVal = (byte)((val << 1) | (carryIn ? 1 : 0));
+                memory.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                return retVal;
+            });
 
         public static bool Rlc(Opcode code, GbMemory memory, int step)
         {
