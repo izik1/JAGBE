@@ -44,34 +44,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool LdD8(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                op.Data1 = mem.LdI8();
-                if (op.Dest == 6)
-                {
-                    return false;
-                }
-
-                mem.R.SetR8(op.Dest, op.Data1);
-                return true;
-            }
-
-            if (step == 2)
-            {
-                mem.SetMappedMemory(mem.R.Hl, op.Data1);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
         public static bool LdA16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -103,6 +75,56 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 {
                     mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1), mem.R.A);
                 }
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool LdD16(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                mem.R.SetR16(op.Dest, new GbUInt16(mem.R.GetR16(op.Dest, false).HighByte, mem.LdI8()), false);
+                return false;
+            }
+
+            if (step == 2)
+            {
+                mem.R.SetR16(op.Dest, new GbUInt16(mem.LdI8(), mem.R.GetR16(op.Dest, false).LowByte), false);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool LdD8(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                op.Data1 = mem.LdI8();
+                if (op.Dest == 6)
+                {
+                    return false;
+                }
+
+                mem.R.SetR8(op.Dest, op.Data1);
+                return true;
+            }
+
+            if (step == 2)
+            {
+                mem.SetMappedMemory(mem.R.Hl, op.Data1);
                 return true;
             }
 
@@ -177,50 +199,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool LdD16(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                mem.R.SetR16(op.Dest, new GbUInt16(mem.R.GetR16(op.Dest, false).HighByte, mem.LdI8()), false);
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.R.SetR16(op.Dest, new GbUInt16(mem.LdI8(), mem.R.GetR16(op.Dest, false).LowByte), false);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
-        public static bool Push(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0 || step == 1)
-            {
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.Push(mem.R.GetR16(op.Dest, true).HighByte);
-                return false;
-            }
-
-            if (step == 3)
-            {
-                mem.Push(mem.R.GetR16(op.Dest, true).LowByte);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
         public static bool Pop(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -243,6 +221,28 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 2)
             {
                 mem.R.SetR16(op.Dest, mem.Pop(), true, true);
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool Push(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0 || step == 1)
+            {
+                return false;
+            }
+
+            if (step == 2)
+            {
+                mem.Push(mem.R.GetR16(op.Dest, true).HighByte);
+                return false;
+            }
+
+            if (step == 3)
+            {
+                mem.Push(mem.R.GetR16(op.Dest, true).LowByte);
                 return true;
             }
 
