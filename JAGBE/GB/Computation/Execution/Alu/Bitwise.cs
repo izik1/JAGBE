@@ -116,34 +116,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 return retVal;
             });
 
-        public static bool Swap(Opcode code, GbMemory memory, int step)
-        {
-            switch (step)
+        public static bool Swap(Opcode code, GbMemory memory, int step) =>
+            Operate(code, memory, step, (mem, val, dest) =>
             {
-                case 0:
-                    if (code.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    byte b = memory.R.GetR8(code.Src);
-                    memory.R.SetR8(code.Src, (byte)((b << 4) | (b >> 4)));
-                    memory.R.F = b == 0 ? RFlags.ZB : (byte)0;
-                    return true;
-
-                case 1:
-                    code.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    memory.SetMappedMemoryHl((byte)((code.Data1 << 4) | (code.Data1 >> 4)));
-                    memory.R.F = code.Data1 == 0 ? RFlags.ZB : (byte)0;
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
+                byte retVal = (byte)((val << 4) | (val >> 4));
+                memory.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
+                return retVal;
+            });
 
         private static bool Operate(Opcode op, GbMemory memory, int step, Op operation)
         {
