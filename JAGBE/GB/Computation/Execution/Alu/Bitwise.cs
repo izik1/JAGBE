@@ -28,31 +28,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Res(Opcode code, GbMemory memory, int step)
-        {
-            switch (step)
-            {
-                case 0:
-                    if (code.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    memory.R.SetR8(code.Src, memory.R.GetR8(code.Src).Res(code.Dest));
-                    return true;
-
-                case 1:
-                    code.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    memory.SetMappedMemoryHl(code.Data1.Res(code.Dest));
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
+        public static bool Res(Opcode code, GbMemory memory, int step) => Operate(code, memory, step, (m, val, dest) => val.Res(dest));
 
         public static bool Rl(Opcode code, GbMemory memory, int step)
         {
