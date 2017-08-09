@@ -47,43 +47,15 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 return retVal;
             });
 
-        public static bool Rr(Opcode code, GbMemory memory, int step)
-        {
-            bool carryIn;
-            switch (step)
+        public static bool Rr(Opcode code, GbMemory memory, int step) =>
+            Operate(code, memory, step, (mem, val, dest) =>
             {
-                case 0:
-                    if (code.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    carryIn = memory.R.F.GetBit(RFlags.CF);
-                    byte b = memory.R.GetR8(code.Src);
-                    memory.R.F = b.GetBit(0) ? RFlags.CB : (byte)0;
-                    b = (byte)((b >> 1) | (carryIn ? 0x80 : 0));
-                    memory.R.SetR8(code.Src, b);
-                    memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
-                    return true;
-
-                case 1:
-                    code.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    carryIn = memory.R.F.GetBit(RFlags.CF);
-                    memory.R.F = code.Data1.GetBit(0) ? RFlags.CB : (byte)0;
-                    code.Data1 = (byte)((code.Data1 >> 1) | (carryIn ? 0x80 : 0));
-                    memory.SetMappedMemoryHl(code.Data1);
-                    memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+                bool carryIn = memory.R.F.GetBit(RFlags.CF);
+                memory.R.F = val.GetBit(0) ? RFlags.CB : (byte)0;
+                byte retVal = (byte)((val >> 1) | (carryIn ? 0x80 : 0));
+                memory.R.F = memory.R.F.AssignBit(RFlags.ZF, retVal == 0);
+                return retVal;
+            });
 
         public static bool Rrc(Opcode code, GbMemory memory, int step)
         {
