@@ -81,6 +81,34 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool LdA16Sp(Opcode op, GbMemory mem, int step)
+        {
+            switch (step)
+            {
+                case 0:
+                    return false;
+
+                case 1:
+                    op.Data1 = mem.LdI8();
+                    return false;
+
+                case 2:
+                    op.Data2 = mem.LdI8();
+                    return false;
+
+                case 3:
+                    mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1), mem.R.Sp.LowByte);
+                    return false;
+
+                case 4:
+                    mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1) + 1, mem.R.Sp.HighByte);
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
+            }
+        }
+
         public static bool LdD16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)

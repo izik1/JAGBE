@@ -98,6 +98,8 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
 
+            ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
+
             ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
             {
                 bool b = mem.R.A.GetBit(7);
