@@ -66,7 +66,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         /// <summary>
-        /// Sets the src bit of the dest register to 1
+        /// Sets the dest bit of the src byte to true
         /// </summary>
         /// <remarks>Affected Flags: None.</remarks>
         /// <param name="code">The code.</param>
