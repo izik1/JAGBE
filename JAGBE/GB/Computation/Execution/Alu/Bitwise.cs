@@ -57,38 +57,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 return retVal;
             });
 
-        public static bool Rrc(Opcode code, GbMemory memory, int step)
-        {
-            switch (step)
+        public static bool Rrc(Opcode code, GbMemory memory, int step) =>
+            Operate(code, memory, step, (mem, val, dest) =>
             {
-                case 0:
-                    if (code.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    byte b = memory.R.GetR8(code.Src);
-
-                    memory.R.F = b.GetBit(0) ? RFlags.CF : (byte)0;
-
-                    memory.R.SetR8(code.Src, (byte)((b >> 1) | (b.GetBit(0) ? 1 : 0)));
-                    memory.R.F = memory.R.F.AssignBit(RFlags.ZF, b == 0);
-                    return true;
-
-                case 1:
-                    code.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    memory.R.F = code.Data1.GetBit(0) ? RFlags.CF : (byte)0;
-                    memory.SetMappedMemoryHl((byte)((code.Data1 >> 1) | (code.Data1.GetBit(0) ? 1 : 0)));
-                    memory.R.F = memory.R.F.AssignBit(RFlags.ZF, code.Data1 == 0);
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
+                byte retVal = (byte)((val >> 1) | (val.GetBit(0) ? 1 : 0));
+                memory.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                return retVal;
+            });
 
         /// <summary>
         /// Sets the src bit of the dest register to 1
