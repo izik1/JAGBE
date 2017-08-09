@@ -226,35 +226,31 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
         public static bool Dec8(Opcode op, GbMemory mem, int step)
         {
-            if (step == 0)
+            switch (step)
             {
-                if (op.Dest == 6)
-                {
+                case 0:
+                    if (op.Dest == 6)
+                    {
+                        return false;
+                    }
+
+                    byte b = mem.R.GetR8(op.Dest);
+                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 1).Set(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlagN(1));
+                    mem.R.SetR8(op.Dest, (byte)(b - 1));
+                    return true;
+
+                case 1:
+                    op.Data1 = mem.GetMappedMemoryHl();
                     return false;
-                }
 
-                byte b = mem.R.GetR8(op.Dest);
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 1).Set(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlagN(1));
-                mem.R.SetR8(op.Dest, (byte)(b - 1));
-                return true;
+                case 2:
+                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 1).Set(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlagN(1));
+                    mem.SetMappedMemoryHl((byte)(op.Data1 - 1));
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
             }
-
-            if (step == 1)
-            {
-                op.Data1 = mem.GetMappedMemoryHl();
-
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 1).Set(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlagN(1));
-                mem.SetMappedMemoryHl((byte)(op.Data1 - 1));
-
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
         }
 
         public static bool Inc16(Opcode op, GbMemory mem, int step)
@@ -275,35 +271,31 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
         public static bool Inc8(Opcode op, GbMemory mem, int step)
         {
-            if (step == 0)
+            switch (step)
             {
-                if (op.Dest == 6)
-                {
+                case 0:
+                    if (op.Dest == 6)
+                    {
+                        return false;
+                    }
+
+                    byte b = mem.R.GetR8(op.Dest);
+                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 255).Res(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlag(1));
+                    mem.R.SetR8(op.Dest, (byte)(b + 1));
+                    return true;
+
+                case 1:
+                    op.Data1 = mem.GetMappedMemoryHl();
                     return false;
-                }
 
-                byte b = mem.R.GetR8(op.Dest);
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 255).Res(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlag(1));
-                mem.R.SetR8(op.Dest, (byte)(b + 1));
-                return true;
+                case 2:
+                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 255).Res(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlag(1));
+                    mem.SetMappedMemoryHl((byte)(op.Data1 + 1));
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
             }
-
-            if (step == 1)
-            {
-                op.Data1 = mem.GetMappedMemoryHl();
-
-                return false;
-            }
-
-            if (step == 2)
-            {
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 255).Res(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlag(1));
-                mem.SetMappedMemoryHl((byte)(op.Data1 + 1));
-
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
         }
 
         public static bool Or(Opcode op, GbMemory mem, int step)
