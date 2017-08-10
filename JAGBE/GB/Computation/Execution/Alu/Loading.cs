@@ -177,6 +177,31 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
+        public static bool LdHlSpR8(Opcode op, GbMemory mem, int step)
+        {
+            switch (step)
+            {
+                case 0:
+                    return false;
+
+                case 1:
+                    op.Data1 = mem.LdI8();
+                    return false;
+
+                case 2:
+                    sbyte s = (sbyte)op.Data1;
+                    int val = s + (int)mem.R.Sp;
+                    mem.R.F = (byte)(val > 0xFFFF || val < 0 ? RFlags.HCB : 0);
+                    mem.R.F = mem.R.F.AssignBit(RFlags.HB, s >= 0 ? ((ushort)s).GetHalfCarry(mem.R.Sp) : ((mem.R.Sp & 0xFFF) - s) < 0);
+                    mem.R.Sp = (ushort)val;
+
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
+            }
+        }
+
         public static bool LdR(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
