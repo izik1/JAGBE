@@ -300,31 +300,11 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
-        public static bool Or(Opcode op, GbMemory mem, int step)
+        public static bool Or(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
-            if (step == 0)
-            {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
-                byte r = (byte)(mem.R.A | mem.R.GetR8(op.Src));
-                mem.R.A = r;
-                mem.R.F = r == 0 ? RFlags.ZB : (byte)0;
-                return true;
-            }
-
-            if (step == 1)
-            {
-                byte r = (byte)(mem.R.A | (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
-                mem.R.A = r;
-                mem.R.F = r == 0 ? RFlags.ZB : (byte)0;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+            mem.R.A = (byte)(mem.R.A | val);
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
+        });
 
         public static bool Sub(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
