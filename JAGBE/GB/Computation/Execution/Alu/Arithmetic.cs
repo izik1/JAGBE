@@ -5,6 +5,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Arithmetic
     {
+        private delegate void Op8(GbMemory mem, byte valIn);
+
         public static bool Adc(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -352,8 +354,19 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Xor(Opcode op, GbMemory memory, int step)
+        public static bool Xor(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
+            mem.R.A ^= val;
+            mem.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
+        });
+
+        private static bool Operate8(Opcode op, GbMemory memory, int step, Op8 operation)
+        {
+            if (operation == null)
+            {
+                throw new ArgumentNullException(nameof(operation));
+            }
+
             if (step == 0)
             {
                 if (op.Src == 6 || op.Src == 8)
@@ -361,15 +374,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
                 }
 
-                memory.R.A ^= memory.R.GetR8(op.Src);
-                memory.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
+                operation(memory, memory.R.GetR8(op.Src));
                 return true;
             }
 
             if (step == 1)
             {
-                memory.R.A ^= op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8();
-                memory.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
+                operation(memory, op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8());
                 return true;
             }
 
