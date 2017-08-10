@@ -1,5 +1,4 @@
 ﻿using System;
-using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
@@ -7,40 +6,15 @@ namespace JAGBE.GB.Computation.Execution.Alu
     {
         private delegate void Op8(GbMemory mem, byte valIn);
 
-        public static bool Adc(Opcode op, GbMemory mem, int step)
+        public static bool Adc(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
-            if (step == 0)
-            {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
-                bool c = mem.R.F.GetBit(RFlags.CF);
-                byte b = (byte)(mem.R.GetR8(op.Src) + (c ? 1 : 0));
-                byte s = (byte)(mem.R.A + b);
-                mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
-                mem.R.A = s;
-
-                return true;
-            }
-
-            if (step == 1)
-            {
-                bool c = mem.R.F.GetBit(RFlags.CF);
-                byte b = (byte)((op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()) + (c ? 1 : 0));
-                byte s = (byte)(mem.R.A + b);
-
-                mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                    RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
-
-                mem.R.A = s;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+            bool c = mem.R.F.GetBit(RFlags.CF);
+            byte b = (byte)(val + (c ? 1 : 0));
+            byte s = (byte)(mem.R.A + b);
+            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
+            RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
+            mem.R.A = s;
+        });
 
         public static bool Add(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
             {
