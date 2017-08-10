@@ -33,9 +33,9 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Rl(Opcode code, GbMemory memory, int step) =>
             Operate(code, memory, step, (mem, val, dest) =>
             {
-                bool carryIn = memory.R.F.GetBit(RFlags.CF);
+                bool carryIn = mem.R.F.GetBit(RFlags.CF);
                 byte retVal = (byte)((val << 1) | (carryIn ? 1 : 0));
-                memory.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -43,17 +43,17 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val << 1);
-                memory.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
         public static bool Rr(Opcode code, GbMemory memory, int step) =>
             Operate(code, memory, step, (mem, val, dest) =>
             {
-                bool carryIn = memory.R.F.GetBit(RFlags.CF);
-                memory.R.F = val.GetBit(0) ? RFlags.CB : (byte)0;
+                bool carryIn = mem.R.F.GetBit(RFlags.CF);
+                mem.R.F = val.GetBit(0) ? RFlags.CB : (byte)0;
                 byte retVal = (byte)((val >> 1) | (carryIn ? 0x80 : 0));
-                memory.R.F = memory.R.F.AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -61,7 +61,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val >> 1) | (val.GetBit(0) ? 1 : 0));
-                memory.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -96,7 +96,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val << 1);
-                memory.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -104,7 +104,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val >> 1) | (val & (1 << 7)));
-                memory.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -112,7 +112,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val >> 1);
-                memory.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 
@@ -120,7 +120,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             Operate(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val << 4) | (val >> 4));
-                memory.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
+                mem.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
                 return retVal;
             });
 
