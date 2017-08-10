@@ -42,8 +42,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Add(Opcode op, GbMemory memory, int step) =>
-            Operate8(op, memory, step, (mem, val) =>
+        public static bool Add(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
             {
                 byte s = (byte)(mem.R.A + val);
                 mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHFlag(val)).AssignBit(RFlags.CF, s < mem.R.A);
