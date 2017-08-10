@@ -115,29 +115,11 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Cp(Opcode op, GbMemory mem, int step)
+        public static bool Cp(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
-            if (step == 0)
-            {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
-                byte r = (byte)(mem.R.A - mem.R.GetR8(op.Src));
-                mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, r == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.CF, r > mem.R.A);
-                return true;
-            }
-
-            if (step == 1)
-            {
-                byte r = (byte)(mem.R.A - (op.Src == 6 ? mem.GetMappedMemoryHl() : mem.LdI8()));
-                mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, r == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.CF, r > mem.R.A);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+            byte r = (byte)(mem.R.A - val);
+            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, r == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.CF, r > mem.R.A);
+        });
 
         /// <summary>
         /// Complements the A register of the given <paramref name="mem"/>
