@@ -220,6 +220,16 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
         });
 
+        public static bool Sbc(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        {
+            byte c = (byte)(mem.R.F.GetBit(RFlags.CB) ? 1 : 0);
+            byte b = (byte)(c + val);
+            byte res = (byte)(mem.R.A - b);
+            bool hc = (c == 1 && val == 255) || (mem.R.A.GetHFlagN(b));
+            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, res == 0).AssignBit(RFlags.HF, hc).AssignBit(RFlags.CF, mem.R.A - val - c < 0);
+            mem.R.A = res;
+        });
+
         public static bool Sub(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(memory.R.A - val);

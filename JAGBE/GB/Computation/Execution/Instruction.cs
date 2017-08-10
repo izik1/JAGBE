@@ -73,6 +73,7 @@ namespace JAGBE.GB.Computation.Execution
                 ops[(i * 1) + 0x80] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Add);
                 ops[(i * 1) + 0x88] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Adc);
                 ops[(i * 1) + 0x90] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Sub);
+                ops[(i * 1) + 0x98] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Sbc);
                 ops[(i * 1) + 0xA0] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.And);
                 ops[(i * 1) + 0xA8] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Xor);
                 ops[(i * 1) + 0xB0] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Or);
@@ -138,6 +139,8 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xD6] = new Opcode(7, 8, Alu.Arithmetic.Sub);
 
             ops[0xD9] = new Opcode(1, 0, Alu.Branching.Ret); //RetI
+
+            ops[0xDE] = new Opcode(7, 8, Alu.Arithmetic.Sbc);
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 
