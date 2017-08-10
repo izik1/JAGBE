@@ -326,33 +326,12 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Sub(Opcode op, GbMemory memory, int step)
+        public static bool Sub(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
-            if (step == 0)
-            {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
-                byte s = (byte)(memory.R.A - memory.R.GetR8(op.Src));
-                memory.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(
-                    RFlags.HF, memory.R.A.GetHFlagN(s)).AssignBit(RFlags.CF, s > memory.R.A);
-                memory.R.A = s;
-                return true;
-            }
-
-            if (step == 1)
-            {
-                byte s = (byte)(memory.R.A - (op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8()));
-                memory.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(
-                    RFlags.HF, memory.R.A.GetHFlagN(s)).AssignBit(RFlags.CF, s > memory.R.A);
-                memory.R.A = s;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+            byte s = (byte)(memory.R.A - val);
+            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val)).AssignBit(RFlags.CF, s > mem.R.A);
+            mem.R.A = s;
+        });
 
         public static bool Xor(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
         {
