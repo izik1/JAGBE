@@ -203,6 +203,7 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xF6] = new Opcode(7, 8, Alu.Arithmetic.Or);
 
             ops[0xF8] = new Opcode(0, 0, Alu.Loading.LdHlSpR8);
+            ops[0xF9] = new Opcode(0, 0, Alu.Loading.LdSpHl);
 
             ops[0xFA] = new Opcode(7, 0, Alu.Loading.LdA16);
             ops[0xFB] = new Opcode(0, 0, (op, mem, s) => // EI
