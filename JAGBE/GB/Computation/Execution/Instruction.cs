@@ -177,6 +177,22 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
 
+            ops[0xF2] = new Opcode(0, 0, (op, mem, step) =>
+            {
+                if (step == 0)
+                {
+                    return false;
+                }
+
+                if (step == 1)
+                {
+                    mem.R.A = mem.GetMappedMemory((ushort)(mem.R.C + 0xFF00));
+                    return true;
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(step));
+            });
+
             ops[0xF3] = new Opcode(0, 0, (op, mem, s) => // DI
             {
                 mem.IME = false;
