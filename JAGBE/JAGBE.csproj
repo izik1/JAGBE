@@ -86,7 +86,6 @@
     <Compile Include="GB\Computation\Execution\Opcode.cs" />
     <Compile Include="GB\Computation\RFlags.cs" />
     <Compile Include="GB\DataTypes\GBRegisters.cs" />
-    <Compile Include="GB\DataTypes\GbUInt32.cs" />
     <Compile Include="GB\Computation\Execution\OpcodeFunc.cs" />
     <Compile Include="GB\GameBoy.cs" />
     <Compile Include="GB\DataTypes\GbUInt16.cs" />
