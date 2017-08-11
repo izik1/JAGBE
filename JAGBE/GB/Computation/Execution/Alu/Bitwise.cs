@@ -33,8 +33,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Rl(Opcode code, GbMemory memory, int step) =>
             Operate(code, memory, step, (mem, val, dest) =>
             {
-                bool carryIn = mem.R.F.GetBit(RFlags.CF);
-                byte retVal = (byte)((val << 1) | (carryIn ? 1 : 0));
+                byte retVal = (byte)((val << 1) | (mem.R.F.GetBit(RFlags.CF) ? 1 : 0));
                 mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
@@ -50,10 +49,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Rr(Opcode code, GbMemory memory, int step) =>
             Operate(code, memory, step, (mem, val, dest) =>
             {
-                bool carryIn = mem.R.F.GetBit(RFlags.CF);
-                mem.R.F = val.GetBit(0) ? RFlags.CB : (byte)0;
-                byte retVal = (byte)((val >> 1) | (carryIn ? 0x80 : 0));
-                mem.R.F = mem.R.F.AssignBit(RFlags.ZF, retVal == 0);
+                byte retVal = (byte)((val >> 1) | (mem.R.F.GetBit(RFlags.CF) ? 0x80 : 0));
+                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
                 return retVal;
             });
 

@@ -133,7 +133,6 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
-
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
 
             ops[0xD6] = new Opcode(7, 8, Alu.Arithmetic.Sub);
@@ -144,7 +143,6 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 
-            // LD (C), A (FIXME)
             ops[0xE2] = new Opcode(0, 0, (op, mem, step) =>
             {
                 if (step == 0)
