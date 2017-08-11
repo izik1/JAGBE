@@ -2,7 +2,6 @@
 
 namespace JAGBE.GB.DataTypes
 {
-    //TODO: become struct.
     /// <summary>
     /// Keeps track of a GameBoy's registers
     /// </summary>
