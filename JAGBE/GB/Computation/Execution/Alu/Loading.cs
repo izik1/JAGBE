@@ -5,23 +5,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Loading
     {
-        public static bool LdSpHl(Opcode op, GbMemory memory, int step)
-        {
-            if (step == 0)
-            {
-                memory.R.Sp = memory.R.Hl;
-
-                return false;
-            }
-
-            if (step == 1)
-            {
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
-
         public static bool Ld8(Opcode op, GbMemory memory, int step)
         {
             if (step == 0)
@@ -252,6 +235,23 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 {
                     // Do nothing.
                 }
+                return true;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        public static bool LdSpHl(Opcode op, GbMemory memory, int step)
+        {
+            if (step == 0)
+            {
+                memory.R.Sp = memory.R.Hl;
+
+                return false;
+            }
+
+            if (step == 1)
+            {
                 return true;
             }
 
