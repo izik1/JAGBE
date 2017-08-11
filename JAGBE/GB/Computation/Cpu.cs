@@ -197,7 +197,7 @@ namespace JAGBE.GB.Computation
         {
             if (step == 0)
             {
-                return (this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(IoReg.IF) & 0xE0) == 0;
+                return (this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(0xFF0F) & 0xE0) == 0;
             }
 
             if (step == 1)
@@ -217,7 +217,7 @@ namespace JAGBE.GB.Computation
 
             if (step == 4)
             {
-                byte b = (byte)(this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(IoReg.IF) & 0xE0);
+                byte b = (byte)(this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(0xFF0F) & 0xE0);
                 for (int i = 0; i < 5; i++)
                 {
                     if (b.GetBit((byte)i))

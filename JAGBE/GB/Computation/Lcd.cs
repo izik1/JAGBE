@@ -44,7 +44,7 @@ namespace JAGBE.GB.Computation
                 {
                     if (mem.lcdMemory.cy == Cpu.DelayStep)
                     {
-                        mem.SetMappedMemory(IoReg.IF, (byte)(mem.GetMappedMemory(IoReg.IF) | 1));
+                        mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemory(0xFF0F) | 1));
                         mem.lcdMemory.IRC |= mem.lcdMemory.STAT.GetBit(6) && mem.lcdMemory.LYC == 144;
                     }
                     else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
@@ -103,7 +103,7 @@ namespace JAGBE.GB.Computation
                 if (!mem.lcdMemory.PIRC)
                 {
                     mem.lcdMemory.PIRC = true;
-                    mem.SetMappedMemory(IoReg.IF, (byte)(mem.GetMappedMemory(IoReg.IF) | 0x2));
+                    mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemory(0xFF0F) | 0x2));
                 }
             }
             else

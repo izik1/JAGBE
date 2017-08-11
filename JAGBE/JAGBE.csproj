@@ -80,7 +80,6 @@
     <Compile Include="GB\Computation\Lcd.cs" />
     <Compile Include="GB\Computation\GbMemory.cs" />
     <Compile Include="GB\Computation\Execution\Instruction.cs" />
-    <Compile Include="GB\Computation\IoReg.cs" />
     <Compile Include="GB\Computation\LcdMemory.cs" />
     <Compile Include="GB\Computation\MemoryRange.cs" />
     <Compile Include="GB\Computation\Execution\Opcode.cs" />
