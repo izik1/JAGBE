@@ -111,7 +111,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 1:
-
                     mem.R.SetR16(op.Dest, new GbUInt16(mem.R.GetR16(op.Dest, false).HighByte, mem.LdI8()), false);
                     return false;
 

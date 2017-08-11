@@ -99,6 +99,12 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
 
+            ops[0x07] = new Opcode(0, 0, (op, mem, step) =>
+            {
+                mem.R.F = mem.R.A.GetBit(7) ? RFlags.CB : (byte)0;
+                mem.R.A <<= 1;
+                return true;
+            });
             ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
 
             ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
@@ -107,9 +113,9 @@ namespace JAGBE.GB.Computation.Execution
                 mem.R.A <<= 1;
                 mem.R.A |= (byte)(mem.R.F.GetBit(RFlags.CF) ? 1 : 0);
                 mem.R.F = b ? RFlags.CB : (byte)0;
-
                 return true;
             });
+
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
 
             ops[0x1F] = new Opcode(0, 0, (op, mem, step) => // RRA
@@ -133,6 +139,7 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
+
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
 
             ops[0xD6] = new Opcode(7, 8, Alu.Arithmetic.Sub);
@@ -144,33 +151,33 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 
             ops[0xE2] = new Opcode(0, 0, (op, mem, step) =>
-            {
-                if (step == 0)
                 {
-                    return false;
-                }
+                    if (step == 0)
+                    {
+                        return false;
+                    }
 
-                if (step == 1)
-                {
-                    mem.SetMappedMemory((ushort)(0xFF00 + mem.R.C), mem.R.A);
-                    return true;
-                }
+                    if (step == 1)
+                    {
+                        mem.SetMappedMemory((ushort)(0xFF00 + mem.R.C), mem.R.A);
+                        return true;
+                    }
 
-                throw new ArgumentOutOfRangeException(nameof(step));
-            });
+                    throw new ArgumentOutOfRangeException(nameof(step));
+                });
 
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
 
             ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>
-              {
-                  if (step == 0)
                   {
-                      mem.R.Pc = mem.R.Hl;
-                      return true;
-                  }
+                      if (step == 0)
+                      {
+                          mem.R.Pc = mem.R.Hl;
+                          return true;
+                      }
 
-                  throw new ArgumentOutOfRangeException(nameof(step));
-              });
+                      throw new ArgumentOutOfRangeException(nameof(step));
+                  });
 
             ops[0xEA] = new Opcode(0, 7, Alu.Loading.LdA16);
 
@@ -179,20 +186,20 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
 
             ops[0xF2] = new Opcode(0, 0, (op, mem, step) =>
-            {
-                if (step == 0)
                 {
-                    return false;
-                }
+                    if (step == 0)
+                    {
+                        return false;
+                    }
 
-                if (step == 1)
-                {
-                    mem.R.A = mem.GetMappedMemory((ushort)(mem.R.C + 0xFF00));
-                    return true;
-                }
+                    if (step == 1)
+                    {
+                        mem.R.A = mem.GetMappedMemory((ushort)(mem.R.C + 0xFF00));
+                        return true;
+                    }
 
-                throw new ArgumentOutOfRangeException(nameof(step));
-            });
+                    throw new ArgumentOutOfRangeException(nameof(step));
+                });
 
             ops[0xF3] = new Opcode(0, 0, (op, mem, s) => // DI
             {
@@ -204,6 +211,7 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xF6] = new Opcode(7, 8, Alu.Arithmetic.Or);
 
             ops[0xF8] = new Opcode(0, 0, Alu.Loading.LdHlSpR8);
+
             ops[0xF9] = new Opcode(0, 0, Alu.Loading.LdSpHl);
 
             ops[0xFA] = new Opcode(7, 0, Alu.Loading.LdA16);
