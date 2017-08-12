@@ -332,8 +332,6 @@ namespace JAGBE.GB.Computation
             return (number > 0x7 && number < 0x0F) || number >= 0x50;
         }
 
-        private static void UnimplementedWrite(string identifier) => Console.WriteLine("Write to " + identifier + " unimplemented");
-
         /// <summary>
         /// Gets data from ERAM.
         /// </summary>
