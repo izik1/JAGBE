@@ -50,7 +50,32 @@ namespace JAGBE.GB.Computation
 
         internal bool NextIMEValue;
 
-        internal void IncDiv(GbUInt16 value) => this.Div += value;
+        private bool PrevTimerIn;
+        private bool ScheduleTimaInterupt;
+
+        internal void UpdateTimer(GbUInt16 value)
+        {
+            if (this.ScheduleTimaInterupt)
+            {
+                this.IF |= 4;
+                this.TimaV = this.TimaM;
+            }
+
+            this.Div += value;
+            bool divBit = (this.Tac.GetBit(0) && this.Div.HighByte.GetBit(1)) || this.Div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
+            bool b = this.Tac.GetBit(1) && divBit;
+            if (this.PrevTimerIn && !b)
+            {
+                bool bt = this.ScheduleTimaInterupt;
+                this.ScheduleTimaInterupt = this.TimaV == 0xFF;
+                if (!bt)
+                {
+                    this.TimaV++;
+                }
+            }
+
+            this.PrevTimerIn = b;
+        }
 
         /// <summary>
         /// The Object Atribute Memory.
@@ -105,6 +130,10 @@ namespace JAGBE.GB.Computation
         /// The MBC mode
         /// </summary>
         private MemoryBankController MBCMode;
+
+        private byte Tac;
+        private byte TimaM;
+        private byte TimaV;
 
         /// <summary>
         /// Gets the instance's registers.
@@ -312,13 +341,13 @@ namespace JAGBE.GB.Computation
                     return this.Div.HighByte;
 
                 case 0x05:
-                    return GetTimerCounter();
+                    return this.TimaV;
 
                 case 0x06:
-                    return GetTimerModulo();
+                    return this.TimaM;
 
                 case 0x07:
-                    return GetTimerControl();
+                    return (byte)(this.Tac | 0xFC);
 
                 case 0x0F:
                     return (byte)(this.IF | 0xE0);
@@ -420,19 +449,35 @@ namespace JAGBE.GB.Computation
             {
                 case 0x01:
                     Console.WriteLine("Attempt to write to SB (0xFF01) ignored as it is unimplemented.");
-                    break;
+                    return;
 
                 case 0x02:
                     Console.WriteLine("Attempt to write to SC (0xFF02) ignored as it is unimplemented.");
-                    break;
+                    return;
+
+                case 0x04:
+                    this.Div = 0;
+                    return;
+
+                case 0x05:
+                    this.TimaV = value;
+                    return;
+
+                case 0x06:
+                    this.TimaM = value;
+                    return;
+
+                case 0x07:
+                    this.Tac = (byte)(value & 3);
+                    return;
 
                 case 0x0F:
                     this.IF = (byte)(value & 0x1F);
-                    break;
+                    return;
 
                 case 0x50:
                     this.bootMode = false;
-                    break;
+                    return;
 
                 default:
                     Console.WriteLine("Failed write (IO Reg): " +
@@ -441,7 +486,7 @@ namespace JAGBE.GB.Computation
                         " (pc) " +
                         value.ToString("X2") +
                         " (value)");
-                    break;
+                    return;
             }
         }
 

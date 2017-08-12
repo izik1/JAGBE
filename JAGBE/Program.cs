@@ -19,7 +19,7 @@ namespace JAGBE
         private static void Main()
         {
             Stats.AttributeReflector.GetAllStubs();
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             using (Window w = new Window(1))
             {
                 w.Run(UPS, 59.97);
