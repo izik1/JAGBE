@@ -288,10 +288,7 @@ namespace JAGBE.GB.Computation
             }
             else if (pointer <= 0xBFFF)
             {
-                if (this.ERamEnabled)
-                {
-                    SetERam(pointer - 0xA000, value);
-                }
+                SetERam(pointer - 0xA000, value);
             }
             else if (pointer <= 0xDFFF)
             {
@@ -431,8 +428,13 @@ namespace JAGBE.GB.Computation
             return this.Rom[address + (bank * MemoryRange.ROMBANKSIZE)];
         }
 
-        [Stub]
-        private void SetERam(int address, byte value) => UnimplementedWrite("External ram");
+        private void SetERam(int address, byte value)
+        {
+            if (this.ERamEnabled)
+            {
+                this.ERam[address] = value;
+            }
+        }
 
         /// <summary>
         /// Sets the io registers.
