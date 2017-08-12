@@ -265,13 +265,61 @@ namespace JAGBE.GB.Computation
 
         internal void SetMappedMemory(ushort pointer, byte value)
         {
-            if (this.MBCMode == MemoryBankController.None)
+            if (pointer < 0x8000)
             {
-                SetMappedMemoryNoMbc(pointer, value);
+                if (this.MBCMode == MemoryBankController.None)
+                {
+                    // Add Ram enabler chip here.
+                }
+                else
+                {
+                    throw new InvalidOperationException("MBC mode is invalid or unimplemented");
+                }
             }
-            else
+
+            SetMappedMemoryCommon(pointer, value);
+        }
+
+        private void SetMappedMemoryCommon(ushort pointer, byte value)
+        {
+            if (pointer <= 0x9FFF)
             {
-                throw new InvalidOperationException("MBC mode is invalid or unimplemented");
+                this.VRam[pointer - 0x8000] = value;
+            }
+            else if (pointer <= 0xBFFF)
+            {
+                if (this.ERamEnabled)
+                {
+                    SetERam(pointer - 0xA000, value);
+                }
+            }
+            else if (pointer <= 0xDFFF)
+            {
+                this.WRam[pointer - 0xC000] = value;
+            }
+            else if (pointer <= 0xFDFF)
+            {
+                this.WRam[pointer - 0xE000] = value;
+            }
+            else if (pointer <= 0xFE9F)
+            {
+                this.Oam[pointer - 0xFE00] = value;
+            }
+            else if (pointer <= 0xFEFF)
+            {
+                // Just return, this is ignored on DMG.
+            }
+            else if (pointer <= 0xFF7F)
+            {
+                SetIoRegisters(pointer - 0xFF00, value);
+            }
+            else if (pointer <= 0xFFFE)
+            {
+                this.HRam[pointer - 0xFF80] = value;
+            }
+            else // 0xFFFF
+            {
+                this.IER = value;
             }
         }
 
@@ -452,60 +500,6 @@ namespace JAGBE.GB.Computation
                         value.ToString("X2") +
                         " (value)");
                     return;
-            }
-        }
-
-        /// <summary>
-        /// Sets the mapped memory If there is no MBC.
-        /// </summary>
-        /// <param name="pointer">The pointer.</param>
-        /// <param name="value">The value.</param>
-        private void SetMappedMemoryNoMbc(ushort pointer, byte value)
-        {
-            if (pointer < 0x8000)
-            {
-                // Put ram chip enabler here if needed.
-                return;
-            }
-
-            if (pointer <= 0x9FFF)
-            {
-                this.VRam[pointer - 0x8000] = value;
-            }
-            else if (pointer <= 0xBFFF)
-            {
-                if (this.ERamEnabled)
-                {
-                    SetERam(pointer - 0xA000, value);
-                }
-            }
-            else if (pointer <= 0xDFFF)
-            {
-                this.WRam[pointer - 0xC000] = value;
-            }
-            else if (pointer <= 0xFDFF)
-            {
-                this.WRam[pointer - 0xE000] = value;
-            }
-            else if (pointer <= 0xFE9F)
-            {
-                this.Oam[pointer - 0xFE00] = value;
-            }
-            else if (pointer <= 0xFEFF)
-            {
-                // Just return, this is ignored on DMG.
-            }
-            else if (pointer <= 0xFF7F)
-            {
-                SetIoRegisters(pointer - 0xFF00, value);
-            }
-            else if (pointer <= 0xFFFE)
-            {
-                this.HRam[pointer - 0xFF80] = value;
-            }
-            else // 0xFFFF
-            {
-                this.IER = value;
             }
         }
     }
