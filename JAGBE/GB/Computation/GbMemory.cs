@@ -99,12 +99,12 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The External Ram.
         /// </summary>
-        private readonly byte[] ERam = new byte[MemoryRange.ERAMBANKSIZE];
+        internal byte[] ERam;
 
         /// <summary>
         /// Should ERam be used?
         /// </summary>
-        private readonly bool ERamEnabled;
+        private bool ERamEnabled;
 
         /// <summary>
         /// The Interupt Enable Register
@@ -129,7 +129,9 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The MBC mode
         /// </summary>
-        private MemoryBankController MBCMode;
+        internal MemoryBankController MBCMode;
+
+        private bool MbcRamMode;
 
         private byte Tac;
         private byte TimaM;
@@ -198,7 +200,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xC000) // 0xA000-BFFF
             {
-                return GetERamMemory(this.MappedRamBank, (ushort)(address - 0xA000));
+                return GetERamMemory((ushort)(address - 0xA000));
             }
 
             if (address < 0xE000) // 0xC000-DFFF
@@ -210,7 +212,7 @@ namespace JAGBE.GB.Computation
             {
                 if (address < 0xF000)
                 {
-                    return GetERamMemory(this.MappedRamBank, (ushort)(address - 0xE000));
+                    return GetERamMemory((ushort)(address - 0xE000));
                 }
 
                 return this.WRam[address - 0xF000];
@@ -271,13 +273,27 @@ namespace JAGBE.GB.Computation
                 {
                     // Add Ram enabler chip here.
                 }
+                else if (this.MBCMode == MemoryBankController.MBC1)
+                {
+                    if (pointer < 0x2000)
+                    {
+                        this.ERamEnabled = (value & 0xF) == 0xA;
+                    }
+                    else if (pointer < 0x4000)
+                    {
+                        this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
+                            (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
+                    }
+                }
                 else
                 {
                     throw new InvalidOperationException("MBC mode is invalid or unimplemented");
                 }
             }
-
-            SetMappedMemoryCommon(pointer, value);
+            else
+            {
+                SetMappedMemoryCommon(pointer, value);
+            }
         }
 
         private void SetMappedMemoryCommon(ushort pointer, byte value)
@@ -335,13 +351,12 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// Gets data from ERAM.
         /// </summary>
-        /// <param name="bank">The bank of ERAM memory.</param>
         /// <param name="address">The address.</param>
         /// <returns>ERam</returns>
         /// <exception cref="InvalidOperationException">
         /// Thrown when <see cref="MBCMode"/> is invalid
         /// </exception>
-        private byte GetERamMemory(int bank, ushort address)
+        private byte GetERamMemory(ushort address)
         {
             if (!this.ERamEnabled)
             {
@@ -350,7 +365,7 @@ namespace JAGBE.GB.Computation
 
             if (this.MBCMode == MemoryBankController.None)
             {
-                return this.ERam[address + (bank * MemoryRange.ERAMBANKSIZE)];
+                return this.ERam[address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)];
             }
 
             throw new InvalidOperationException("Unsuported or unimplemented " + nameof(MemoryBankController));
@@ -430,7 +445,7 @@ namespace JAGBE.GB.Computation
         {
             if (this.ERamEnabled)
             {
-                this.ERam[address] = value;
+                this.ERam[address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)] = value;
             }
         }
 
