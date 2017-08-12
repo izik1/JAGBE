@@ -190,7 +190,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0x8000) // 0x4000-7FFF
             {
-                return GetRomMemory(this.MappedRomBank, (ushort)(address - 0x4000));
+                return GetRomMemory(GetRomBank(), (ushort)(address - 0x4000));
             }
 
             if (address < 0xA000) // 0x8000-9FFF
@@ -283,6 +283,14 @@ namespace JAGBE.GB.Computation
                     {
                         this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
                             (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
+                    }
+                    else if (pointer < 0x6000)
+                    {
+                        this.MappedRamBank = (byte)(value & 3);
+                    }
+                    else
+                    {
+                        this.MbcRamMode = ((value & 1) == 1);
                     }
                 }
                 else
@@ -420,8 +428,10 @@ namespace JAGBE.GB.Computation
         /// <returns></returns>
         [Stub] private byte GetJoypad() => 0xFF;
 
+        public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+
         /// <summary>
-        /// Gets <paramref name="address"/> from <paramref name="bank"/> of ROM.
+        /// Gets <paramref name="address"/> from ROM.
         /// </summary>
         /// <param name="bank">The ROM bank.</param>
         /// <param name="address">The address.</param>
