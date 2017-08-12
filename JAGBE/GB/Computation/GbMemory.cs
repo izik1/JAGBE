@@ -287,8 +287,6 @@ namespace JAGBE.GB.Computation
             return (number > 0x7 && number < 0x0F) || number >= 0x50;
         }
 
-        private static void UnimplementedRead(string identifer) => Console.WriteLine("Attempt to read " + identifer + " —Unimplemented");
-
         private static void UnimplementedWrite(string identifier) => Console.WriteLine("Write to " + identifier + " unimplemented");
 
         /// <summary>
@@ -383,39 +381,6 @@ namespace JAGBE.GB.Computation
             }
 
             return this.Rom[address + (bank * MemoryRange.ROMBANKSIZE)];
-        }
-
-        /// <summary>
-        /// Gets the timer control.
-        /// </summary>
-        /// <returns></returns>
-        [Stub]
-        private byte GetTimerControl()
-        {
-            UnimplementedRead("Timer_Crl");
-            return 0xFF;
-        }
-
-        /// <summary>
-        /// Gets the timer counter.
-        /// </summary>
-        /// <returns></returns>
-        [Stub]
-        private byte GetTimerCounter()
-        {
-            UnimplementedRead("Timer_Ctr");
-            return 0xFF;
-        }
-
-        /// <summary>
-        /// Gets the timer modulo.
-        /// </summary>
-        /// <returns></returns>
-        [Stub]
-        private byte GetTimerModulo()
-        {
-            UnimplementedRead("Timer_Mod");
-            return 0xFF;
         }
 
         [Stub]
