@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\StubAttribute.cs" />
+    <Compile Include="GB\Assembly\Disassembler.cs" />
     <Compile Include="GB\ByteExtensions.cs" />
     <Compile Include="GB\Computation\Cpu.cs" />
     <Compile Include="GB\Computation\CpuState.cs" />

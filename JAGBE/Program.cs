@@ -18,6 +18,7 @@ namespace JAGBE
         /// </summary>
         private static void Main()
         {
+            System.Console.Title = nameof(JAGBE);
             Stats.AttributeReflector.GetAllStubs();
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.AboveNormal;
             using (Window w = new Window(1))
