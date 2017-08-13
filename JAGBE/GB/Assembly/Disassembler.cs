@@ -10,126 +10,148 @@ namespace JAGBE.GB.Assembly
 {
     internal static class Disassembler
     {
-        private const string Regs = "BCDEHL_A"; // index 6 ( _ ) is unused.
+        private const string Reg8 = "BCDEHL_A";
 
-        public static string DisassembleInstruction(GbMemory memory)
+        private const string ARITH = "ADDADCSUBSBCANDXOROR CP ";
+
+        private const string CBOPS = "RLC RRC RL  RR  SLA SRA SWAPSRL ";
+
+        private static readonly string[] nmOpStrings =
+        {
+            // 0x00
+            "NOP", "LD BC,d16", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,d8", "RLCA",
+
+            // 0x08
+            "LD (a16),SP", "ADD HL,BC", "LD A,(BC)", "DEC BC", "INC C", "DEC C", "LD C,d8", "RRCA",
+
+            // 0x10
+            "STOP", "LD DE,d16", "LD (DE),A", "INC DE", "INC D", "DEC D", "LD D,d8", "RLA",
+
+            // 0x18
+            "JR r8", "ADD HL,DE", "LD A,(DE)", "DEC DE", "INC E", "DEC E", "LD E,d8", "RRA",
+
+            // 0x20
+            "JR NZ,r8", "LD HL,d16", "LD (HL+),A", "INC HL", "INC H", "DEC H", "LD H,d8", "DAA",
+
+            // 0x28
+            "JR Z,r8", "ADD HL,HL", "LD A,(HL+)", "DEC HL", "INC L", "DEC L", "LD L,d8", "CPL",
+
+            // 0x30
+            "JR NC,r8", "LD SP,d16", "LD (HL-),A", "INC SP", "INC (HL)", "DEC (HL)", "LD (HL),d8", "SCF",
+
+            // 0x38
+            "JR C,r8"    , "ADD HL,SP", "LD A,(HL-)", "DEC SP", "INC A"   , "DEC A"   , "LD A,d8"   , "CCF",
+
+            // 0x40
+            "LD", "", "" ,"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+
+            // 0x58
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",   "",
+
+            // 0x70
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "/LDZ",
+
+            // 0x80
+            "ARTHMETIC"  , "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+
+            // 0x90
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+
+            //0xA8
+            "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "/AR",
+
+            // 0xC0
+            "RET NZ", "POP BC", "JP NZ,a16", "JP a16", "CALL NZ,a16", "PUSH BC", "ADD A,d8", "RST 00h",
+
+            // 0xC8
+            "RET Z", "RET", "JP Z, a16", "<CB>", "CALL Z, a16", "CALL a16", "ADC A,d8", "RST 08h",
+
+            // 0xD0
+            "RET NC", "POP DE", "JP NC,a16", "UNUSED", "CALL NC,a16", "PUSH DE", "SUB A,d8", "RST 10H",
+
+            // 0xD8
+            "RET C", "RETI", "JP C,a16", "UNUSED", "CALL C,a16", "UNUSED", "SBC A,d8", "RST 18H",
+
+            // 0xE0
+            "LDH (a8),A", "POP HL", "LD (C),A", "UNUSED", "UNUSED", "PUSH HL", "AND A,d8", "RST 20H",
+
+            // 0xE8
+            "ADD SP,r8", "JP (HL)", "LD (a16),A", "UNUSED", "UNUSED", "UNUSED", "XOR A,d8", "RST 28H",
+
+            // 0xF0
+            "LDH A,(a8)", "POP AF", "LD A,(C)", "DI", "UNUSED", "PUSH AF", "OR A,d8", "RST 30H",
+
+            // 0xF8
+            "LD HL,SP+r8", "LD SP,HL", "LD A,(a16)", "EI", "UNUSED", "UNUSED", "CP A,d8", "RST 38H",
+        };
+
+        private static string GetR8(int r) => Reg8[r].ToString().Replace("_", "(HL)");
+
+        public static string DisassembleInstruction(GbMemory memory) => DisassembleInstructionInternal(memory);
+
+        private static string DisassembleInstructionInternal(GbMemory memory)
         {
             byte b = memory.GetMappedMemory(memory.R.Pc);
             if (b == 0xCB)
             {
-                return DisassenbleCb(memory);
+                return DisassembleInstructionCb(memory.GetMappedMemory(memory.R.Pc + 1));
             }
 
-            if (b == 0)
+            if (b == 0x76)
             {
-                return "NOP";
+                return "HALT";
             }
 
-            if (b == 7)
+            if (b >= 40 && b < 0x80)
             {
-                return "RCLA";
+                int dest = ((b >> 3) & 7);
+                int src = (b & 7);
+                return "LD " + GetR8(dest) + "," + GetR8(src);
             }
 
-            if (b == 0xF)
+            if (b >= 80 && b < 0xC0)
             {
-                return "RCRA";
+                return DisassembleInstructionArith(b);
             }
 
-            if (b == 0x17)
-            {
-                return "RLA";
-            }
-
-            if (b == 0x1F)
-            {
-                return "RRA";
-            }
-
-            byte dest = (byte)((b >> 3) & 7);
-            byte src = (byte)(b & 7);
-
-            string Arithmetic(string baseName) => baseName + " " +
-                (src == 6 ? "(" + memory.R.Hl.ToString("X4") + ")" : Regs[src].ToString());
-
-            switch (b & 0xF0)
-            {
-                case 0x40:
-                case 0x50:
-                case 0x60:
-                case 0x70:
-                    if (b == 0x76)
-                    {
-                        return "HALT";
-                    }
-                    return "LD " + (dest == 6 ? "(" + memory.R.Hl.ToString("X4") + "), " : Regs[dest].ToString() + ", ") +
-                        (src == 6 ? "(" + memory.R.Hl.ToString("X4") + ")" : Regs[src].ToString());
-
-                case 0x80:
-                    return Arithmetic(!b.GetBit(3) ? "ADD" : "ADC");
-
-                case 0x90:
-                    return Arithmetic(!b.GetBit(3) ? "SUB" : "SBC");
-
-                case 0xA0:
-                    return Arithmetic(!b.GetBit(3) ? "AND" : "XOR");
-
-                case 0xB0:
-                    return Arithmetic(!b.GetBit(3) ? "OR" : "CP");
-
-                default:
-                    return UnknownInstruction(b);
-            }
+            return nmOpStrings[b];
         }
 
-        private static string DisassembleCb(GbMemory memory)
+        private static string DisassembleInstructionArith(byte opcode)
         {
-            byte b = memory.GetMappedMemory(memory.R.Pc + 1);
-            byte src = (byte)(b & 7);
-            byte dest = (byte)((b >> 3) & 7);
-            string BrsString(string baseName) => baseName + " " + dest.ToString() +
-                        (src == 6 ? (", (" + memory.R.Hl.ToString("X4") + ")") : ", " + Regs[src].ToString());
-            string BitString(string baseName) => baseName + " " +
-                (src == 6 ? (", (" + memory.R.Hl.ToString("X4") + ")") : ", " + Regs[src].ToString());
-            switch (b & 0xF0)
+            int src = (opcode & 7);
+            int dest = ((opcode >> 3) & 7);
+
+            if (opcode < 0x80 || opcode > 0xBF)
             {
-                case 0x00:
-                    return BitString(!b.GetBit(3) ? "RLC" : "RRC");
-
-                case 0x10:
-                    return BitString(!b.GetBit(3) ? "RL" : "RR");
-
-                case 0x20:
-                    return BitString(!b.GetBit(3) ? "SLA" : "SRA");
-
-                case 0x30:
-                    return BitString(!b.GetBit(3) ? "SWAP" : "SRL");
-
-                case 0x40:
-                case 0x50:
-                case 0x60:
-                case 0x70:
-                    return BrsString("BIT");
-
-                case 0x80:
-                case 0x90:
-                case 0xA0:
-                case 0xB0:
-                    return BrsString("RES");
-
-                case 0xC0:
-                case 0xD0:
-                case 0xE0:
-                case 0xF0:
-                    return BrsString("SET");
-
-                default:
-                    return UnknownInstructionCb(b);
+                throw new InvalidOperationException();
             }
+
+            return ARITH.Substring(dest * 3, 3).TrimEnd(' ') + " A," + GetR8(src);
         }
 
-        private static string UnknownInstruction(byte instruction) => "Unknown Instruction {0x" + instruction.ToString("X2") + "}";
+        private static string DisassembleInstructionCb(byte cbCode)
+        {
+            int dest = ((cbCode >> 3) & 7);
+            int src = (cbCode & 7);
 
-        private static string UnknownInstructionCb(byte instruction) => "Unknown Instruction {0xCB" + instruction.ToString("X2") + "}";
+            if (cbCode < 0x40)
+            {
+                return CBOPS.Substring(dest * 4, 4).TrimEnd(' ') + GetR8(dest) + "," + GetR8(src);
+            }
+
+            if (cbCode < 0x80)
+            {
+                return "BIT " + dest.ToString() + "," + GetR8(src);
+            }
+
+            if (cbCode < 0xA0)
+            {
+                return "RES " + dest.ToString() + "," + GetR8(src);
+            }
+
+            return "SET " + dest.ToString() + "," + GetR8(src);
+        }
 
         internal static string DisassembleAllInstructions()
         {
