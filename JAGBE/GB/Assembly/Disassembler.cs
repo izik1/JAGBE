@@ -81,7 +81,7 @@ namespace JAGBE.GB.Assembly
             }
         }
 
-        private static string DisassenbleCb(GbMemory memory)
+        private static string DisassembleCb(GbMemory memory)
         {
             byte b = memory.GetMappedMemory(memory.R.Pc + 1);
             byte src = (byte)(b & 7);
