@@ -99,13 +99,20 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
 
-            ops[0x07] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0x07] = new Opcode(0, 0, (op, mem, step) => // RLCA
             {
                 mem.R.F = mem.R.A.GetBit(7) ? RFlags.CB : (byte)0;
                 mem.R.A <<= 1;
                 return true;
             });
             ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
+
+            ops[0x0F] = new Opcode(0, 0, (op, mem, step) => // RRCA
+            {
+                mem.R.F = mem.R.A.GetBit(0) ? RFlags.CB : (byte)0;
+                mem.R.A >>= 1;
+                return true;
+            });
 
             ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
             {
