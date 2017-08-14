@@ -1,6 +1,7 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
 using JAGBE.GB.Computation.Execution;
+using JAGBE.GB.Assembly;
 
 namespace JAGBE.GB.Computation
 {
@@ -123,6 +124,8 @@ namespace JAGBE.GB.Computation
                 }
             }
 
+            ushort prevPc = 0;
+
             while (this.delay < 0)
             {
                 if (this.memory.IME)
@@ -146,8 +149,9 @@ namespace JAGBE.GB.Computation
 
                 if (this.memory.Status == CpuState.ERROR)
                 {
-                    Console.WriteLine("(" + this.memory.GetMappedMemory(this.memory.R.Pc - 1).ToString("X2") +
-                        ") {" + (this.memory.R.Pc - 1).ToString("X4") + "} ERR");
+                    this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
+                    Console.WriteLine((prevPc).ToString("X4") + ": " + this.memory.GetMappedMemory(prevPc).ToString("X2") +
+                        " (" + Disassembler.DisassembleInstruction(this.memory) + ") ERR");
                     throw new InvalidOperationException();
                 }
 
@@ -177,9 +181,10 @@ namespace JAGBE.GB.Computation
 
                 if (this.WriteToConsole)
                 {
-                    Console.WriteLine(
-                        "(" + this.memory.GetMappedMemory(this.memory.R.Pc).ToString("X2") + ") {" + this.memory.R.Pc.ToString("X4") + "}");
+                    Console.WriteLine(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
                 }
+
+                prevPc = this.Pc;
 
                 Instruction inst = new Instruction(this.memory.LdI8());
 
