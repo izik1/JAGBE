@@ -102,7 +102,7 @@ namespace JAGBE.GB.Assembly
                 return "HALT";
             }
 
-            if (b >= 40 && b < 0x80)
+            if (b >= 0x40 && b < 0x80)
             {
                 int dest = ((b >> 3) & 7);
                 int src = (b & 7);
