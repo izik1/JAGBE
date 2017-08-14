@@ -168,6 +168,7 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
 
+            ops[0xE8] = new Opcode(0, 0, Alu.Arithmetic.AddSpR8);
             ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>
                   {
                       if (step == 0)

@@ -41,6 +41,27 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        public static bool AddSpR8(Opcode op, GbMemory memory, int step)
+        {
+            switch (step)
+            {
+                case 0:
+                case 2:
+                    return false;
+
+                case 1:
+                    op.Data1 = memory.LdI8();
+                    return false;
+
+                case 3:
+                    memory.R.Sp += (sbyte)op.Data1;
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
+            }
+        }
+
         public static bool And(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
             {
                 mem.R.A = (byte)(mem.R.A & val);
