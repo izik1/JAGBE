@@ -130,6 +130,18 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x2F] = new Opcode(0, 0, Alu.Arithmetic.Cpl);
 
+            ops[0x37] = new Opcode(0, 0, (op, mem, step) => // SCF
+            {
+                if (step == 0)
+                {
+                    mem.R.F &= RFlags.ZB;
+                    mem.R.F |= RFlags.CB;
+                    return true;
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(step));
+            });
+
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
 
             ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
