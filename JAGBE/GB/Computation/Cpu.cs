@@ -152,7 +152,7 @@ namespace JAGBE.GB.Computation
                     this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
                     Console.WriteLine((prevPc).ToString("X4") + ": " + this.memory.GetMappedMemory(prevPc).ToString("X2") +
                         " (" + Disassembler.DisassembleInstruction(this.memory) + ") ERR");
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException(); // ..Because an exception just gets thrown
                 }
 
                 if (this.memory.Status == CpuState.HUNG)

@@ -71,7 +71,7 @@ namespace JAGBE.GB.Computation
                 else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
                 {
                     mem.lcdMemory.LY++;
-                    mem.lcdMemory.cy = 0;
+                    mem.lcdMemory.cy = -Cpu.DelayStep;
                 }
                 else
                 {
@@ -90,7 +90,7 @@ namespace JAGBE.GB.Computation
                 else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
                 {
                     mem.lcdMemory.LY = 0;
-                    mem.lcdMemory.cy = -4;
+                    mem.lcdMemory.cy = -Cpu.DelayStep;
                 }
                 else
                 {
@@ -196,7 +196,7 @@ namespace JAGBE.GB.Computation
             else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
             {
                 mem.lcdMemory.LY++;
-                mem.lcdMemory.cy = 0;
+                mem.lcdMemory.cy = -Cpu.DelayStep;
             }
             else
             {

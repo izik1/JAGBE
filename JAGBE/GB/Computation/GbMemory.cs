@@ -44,7 +44,9 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal bool IME;
 
-        private GbUInt16 Div = 0;
+        private GbUInt16 div = 0;
+
+        public GbUInt16 Div => this.div;
 
         internal LcdMemory lcdMemory = new LcdMemory();
 
@@ -61,8 +63,8 @@ namespace JAGBE.GB.Computation
                 this.TimaV = this.TimaM;
             }
 
-            this.Div += value;
-            bool divBit = (this.Tac.GetBit(0) && this.Div.HighByte.GetBit(1)) || this.Div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
+            this.div += value;
+            bool divBit = (this.Tac.GetBit(0) && this.div.HighByte.GetBit(1)) || this.div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
             bool b = this.Tac.GetBit(1) && divBit;
             if (this.PrevTimerIn && !b)
             {
@@ -402,7 +404,7 @@ namespace JAGBE.GB.Computation
                     return GetJoypad();
 
                 case 0x04:
-                    return this.Div.HighByte;
+                    return this.div.HighByte;
 
                 case 0x05:
                     return this.TimaV;
@@ -494,7 +496,7 @@ namespace JAGBE.GB.Computation
                     return;
 
                 case 0x04:
-                    this.Div = 0;
+                    this.div = 0;
                     return;
 
                 case 0x05:
