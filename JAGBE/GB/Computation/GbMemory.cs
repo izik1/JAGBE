@@ -29,6 +29,8 @@ namespace JAGBE.GB.Computation
         /// </summary>
         public byte[] Rom;
 
+        private byte Joypad;
+
         /// <summary>
         /// The boot rom
         /// </summary>
@@ -401,7 +403,7 @@ namespace JAGBE.GB.Computation
             switch (number)
             {
                 case 0x00:
-                    return GetJoypad();
+                    return (byte)(this.Joypad | 0xC0);
 
                 case 0x04:
                     return this.div.HighByte;
@@ -487,6 +489,10 @@ namespace JAGBE.GB.Computation
 
             switch (pointer)
             {
+                case 0x00:
+                    this.Joypad = (byte)((value & 0x30) | (value & 0xF));
+                    return;
+
                 case 0x01:
                     Console.WriteLine("Attempt to write to SB (0xFF01) ignored as it is unimplemented.");
                     return;
