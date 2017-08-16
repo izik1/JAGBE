@@ -96,6 +96,7 @@ namespace JAGBE.GB.Computation
         private byte IF;
 
         private byte Joypad;
+        private byte keys = 0xFF;
 
         /// <summary>
         /// The mapped ram bank
@@ -108,6 +109,7 @@ namespace JAGBE.GB.Computation
         private int MappedRomBank = 1;
 
         private bool MbcRamMode;
+        private byte prevKeys = 0xFF;
 
         private bool PrevTimerIn;
         private bool ScheduleTimaInterupt;
@@ -139,6 +141,14 @@ namespace JAGBE.GB.Computation
         public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
 
         public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+
+        public void UpdateKeys()
+        {
+            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
+            {
+                this.IF |= 0x10;
+            }
+        }
 
         /// <summary>
         /// Dumps the currently mapped ram.
@@ -378,7 +388,7 @@ namespace JAGBE.GB.Computation
             switch (number)
             {
                 case 0x00:
-                    return (byte)(this.Joypad | 0xC0);
+                    return GetJoypad(this.keys);
 
                 case 0x04:
                     return this.div.HighByte;
@@ -401,6 +411,9 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        private byte GetJoypad(byte p1) =>
+            (byte)((!this.Joypad.GetBit(5) ? (p1 & 0xF) : !this.Joypad.GetBit(4) ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
+
         /// <summary>
         /// Gets <paramref name="address"/> from ROM.
         /// </summary>
@@ -422,7 +435,11 @@ namespace JAGBE.GB.Computation
             return this.Rom[address + (bank * MemoryRange.ROMBANKSIZE)];
         }
 
-        [Stub] private void OnInput(object sender, InputEventArgs e) => throw new NotImplementedException();
+        private void OnInput(object sender, InputEventArgs e)
+        {
+            this.prevKeys = this.keys;
+            this.keys = e.value;
+        }
 
         private void SetERam(int address, byte value)
         {
@@ -459,7 +476,7 @@ namespace JAGBE.GB.Computation
             switch (pointer)
             {
                 case 0x00:
-                    this.Joypad = (byte)((value & 0x30) | (value & 0xF));
+                    this.Joypad = (byte)(value & 0x30);
                     return;
 
                 case 0x01:
