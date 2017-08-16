@@ -29,12 +29,15 @@ namespace JAGBE.GB.Computation
         /// </summary>
         public byte[] Rom;
 
-        private byte Joypad;
-
         /// <summary>
         /// The boot rom
         /// </summary>
         internal readonly byte[] BootRom = new byte[0x100];
+
+        /// <summary>
+        /// The External Ram.
+        /// </summary>
+        internal byte[] ERam;
 
         /// <summary>
         /// The High Ram (stack)
@@ -46,40 +49,14 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal bool IME;
 
-        private GbUInt16 div = 0;
-
-        public GbUInt16 Div => this.div;
-
         internal LcdMemory lcdMemory = new LcdMemory();
 
+        /// <summary>
+        /// The MBC mode
+        /// </summary>
+        internal MemoryBankController MBCMode;
+
         internal bool NextIMEValue;
-
-        private bool PrevTimerIn;
-        private bool ScheduleTimaInterupt;
-
-        internal void UpdateTimer(GbUInt16 value)
-        {
-            if (this.ScheduleTimaInterupt)
-            {
-                this.IF |= 4;
-                this.TimaV = this.TimaM;
-            }
-
-            this.div += value;
-            bool divBit = (this.Tac.GetBit(0) && this.div.HighByte.GetBit(1)) || this.div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
-            bool b = this.Tac.GetBit(1) && divBit;
-            if (this.PrevTimerIn && !b)
-            {
-                bool bt = this.ScheduleTimaInterupt;
-                this.ScheduleTimaInterupt = this.TimaV == 0xFF;
-                if (!bt)
-                {
-                    this.TimaV++;
-                }
-            }
-
-            this.PrevTimerIn = b;
-        }
 
         /// <summary>
         /// The Object Atribute Memory.
@@ -100,10 +77,7 @@ namespace JAGBE.GB.Computation
 
         private bool bootMode = true;
 
-        /// <summary>
-        /// The External Ram.
-        /// </summary>
-        internal byte[] ERam;
+        private GbUInt16 div = 0;
 
         /// <summary>
         /// Should ERam be used?
@@ -120,6 +94,8 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private byte IF;
 
+        private byte Joypad;
+
         /// <summary>
         /// The mapped ram bank
         /// </summary>
@@ -130,16 +106,16 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private int MappedRomBank = 1;
 
-        /// <summary>
-        /// The MBC mode
-        /// </summary>
-        internal MemoryBankController MBCMode;
-
         private bool MbcRamMode;
+
+        private bool PrevTimerIn;
+        private bool ScheduleTimaInterupt;
 
         private byte Tac;
         private byte TimaM;
         private byte TimaV;
+
+        public GbUInt16 Div => this.div;
 
         /// <summary>
         /// Gets the instance's registers.
@@ -148,6 +124,8 @@ namespace JAGBE.GB.Computation
         internal GbRegisters R { get; } = new GbRegisters();
 
         public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
+
+        public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
         /// <summary>
         /// Dumps the currently mapped ram.
@@ -308,47 +286,31 @@ namespace JAGBE.GB.Computation
             }
         }
 
-        private void SetMappedMemoryCommon(ushort pointer, byte value)
-        {
-            if (pointer <= 0x9FFF)
-            {
-                this.VRam[pointer - 0x8000] = value;
-            }
-            else if (pointer <= 0xBFFF)
-            {
-                SetERam(pointer - 0xA000, value);
-            }
-            else if (pointer <= 0xDFFF)
-            {
-                this.WRam[pointer - 0xC000] = value;
-            }
-            else if (pointer <= 0xFDFF)
-            {
-                this.WRam[pointer - 0xE000] = value;
-            }
-            else if (pointer <= 0xFE9F)
-            {
-                this.Oam[pointer - 0xFE00] = value;
-            }
-            else if (pointer <= 0xFEFF)
-            {
-                // Just return, this is ignored on DMG.
-            }
-            else if (pointer <= 0xFF7F)
-            {
-                SetIoRegisters(pointer - 0xFF00, value);
-            }
-            else if (pointer <= 0xFFFE)
-            {
-                this.HRam[pointer - 0xFF80] = value;
-            }
-            else // 0xFFFF
-            {
-                this.IER = value;
-            }
-        }
-
         internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
+
+        internal void UpdateTimer(GbUInt16 value)
+        {
+            if (this.ScheduleTimaInterupt)
+            {
+                this.IF |= 4;
+                this.TimaV = this.TimaM;
+            }
+
+            this.div += value;
+            bool divBit = (this.Tac.GetBit(0) && this.div.HighByte.GetBit(1)) || this.div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
+            bool b = this.Tac.GetBit(1) && divBit;
+            if (this.PrevTimerIn && !b)
+            {
+                bool bt = this.ScheduleTimaInterupt;
+                this.ScheduleTimaInterupt = this.TimaV == 0xFF;
+                if (!bt)
+                {
+                    this.TimaV++;
+                }
+            }
+
+            this.PrevTimerIn = b;
+        }
 
         private static bool IsUnusedIoRegister(byte number)
         {
@@ -431,8 +393,6 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <returns></returns>
         [Stub] private byte GetJoypad() => 0xFF;
-
-        public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
         /// <summary>
         /// Gets <paramref name="address"/> from ROM.
@@ -533,6 +493,46 @@ namespace JAGBE.GB.Computation
                         value.ToString("X2") +
                         " (value)");
                     return;
+            }
+        }
+
+        private void SetMappedMemoryCommon(ushort pointer, byte value)
+        {
+            if (pointer <= 0x9FFF)
+            {
+                this.VRam[pointer - 0x8000] = value;
+            }
+            else if (pointer <= 0xBFFF)
+            {
+                SetERam(pointer - 0xA000, value);
+            }
+            else if (pointer <= 0xDFFF)
+            {
+                this.WRam[pointer - 0xC000] = value;
+            }
+            else if (pointer <= 0xFDFF)
+            {
+                this.WRam[pointer - 0xE000] = value;
+            }
+            else if (pointer <= 0xFE9F)
+            {
+                this.Oam[pointer - 0xFE00] = value;
+            }
+            else if (pointer <= 0xFEFF)
+            {
+                // Just return, this is ignored on DMG.
+            }
+            else if (pointer <= 0xFF7F)
+            {
+                SetIoRegisters(pointer - 0xFF00, value);
+            }
+            else if (pointer <= 0xFFFE)
+            {
+                this.HRam[pointer - 0xFF80] = value;
+            }
+            else // 0xFFFF
+            {
+                this.IER = value;
             }
         }
     }
