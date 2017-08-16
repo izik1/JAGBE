@@ -26,10 +26,7 @@ namespace JAGBE.GB.Computation
         /// This re-dumps the memory each time it's called.
         /// </summary>
         /// <value>The ram dump.</value>
-        internal byte[] RamDump
-        {
-            get => memory.DumpRam();
-        }
+        internal byte[] RamDump => this.memory.DumpRam();
 
         private GbMemory memory;
 
