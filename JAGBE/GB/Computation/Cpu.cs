@@ -47,18 +47,15 @@ namespace JAGBE.GB.Computation
 
         public void Reset(byte[] rom, byte[] bootRom)
         {
-            byte ramSize = rom[0x149];
-            if (ramSize == 2)
-            {
-                ramSize *= 4;
-            }
-            else if (ramSize > 2)
+            byte ramBanks = rom[0x149];
+            if (ramBanks > 2)
             {
                 throw new InvalidOperationException();
             }
-            else
+
+            if (ramBanks == 2)
             {
-                // Do nothing here!
+                ramBanks *= 4;
             }
 
             byte mbcMode = rom[0x147];
@@ -69,8 +66,8 @@ namespace JAGBE.GB.Computation
 
             this.memory = new GbMemory
             {
-                Rom = new byte[(1024 * 32) << rom[0x148]], // set the rom size to what the cartrage says.
-                ERam = new byte[MemoryRange.ERAMBANKSIZE * ramSize],
+                Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // set the rom size to what the cartrage says.
+                ERam = new byte[MemoryRange.ERAMBANKSIZE * ramBanks],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             }; // Override the memory.
 
