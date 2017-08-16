@@ -3,13 +3,18 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using JAGBE.GB;
+using JAGBE.GB.Input;
 using System.IO;
 
 namespace JAGBE.UI
 {
-    internal sealed class Window : GameWindow
+    internal sealed class Window : GameWindow, IInputHandler
     {
         private readonly GameBoy gameBoy;
+
+        private readonly GameboyKeys keys;
+
+        public event EventHandler<InputEventArgs> OnInput;
 
         public Window() : this(160, 144)
         {
@@ -23,6 +28,7 @@ namespace JAGBE.UI
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
 
         {
+            this.keys = new GameboyKeys();
             string romPath;
             string bootRomPath;
             if (File.Exists("config.cfg"))
