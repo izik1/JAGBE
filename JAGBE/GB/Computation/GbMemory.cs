@@ -2,6 +2,7 @@
 using System.Text;
 using JAGBE.GB.DataTypes;
 using JAGBE.Attributes;
+using JAGBE.GB.Input;
 
 namespace JAGBE.GB.Computation
 {
@@ -114,6 +115,18 @@ namespace JAGBE.GB.Computation
         private byte Tac;
         private byte TimaM;
         private byte TimaV;
+
+        internal GbMemory(IInputHandler inputHandler) // Null is valid
+        {
+            if (inputHandler != null)
+            {
+                inputHandler.OnInput += this.OnInput;
+            }
+        }
+
+        internal GbMemory() : this(null)
+        {
+        }
 
         public GbUInt16 Div => this.div;
 
@@ -389,12 +402,6 @@ namespace JAGBE.GB.Computation
         }
 
         /// <summary>
-        /// Gets A value representing the state of the Joypad.
-        /// </summary>
-        /// <returns></returns>
-        [Stub] private byte GetJoypad() => 0xFF;
-
-        /// <summary>
         /// Gets <paramref name="address"/> from ROM.
         /// </summary>
         /// <param name="bank">The ROM bank.</param>
@@ -414,6 +421,8 @@ namespace JAGBE.GB.Computation
 
             return this.Rom[address + (bank * MemoryRange.ROMBANKSIZE)];
         }
+
+        [Stub] private void OnInput(object sender, InputEventArgs e) => throw new NotImplementedException();
 
         private void SetERam(int address, byte value)
         {

@@ -7,12 +7,8 @@ namespace JAGBE.GB
     {
         internal Cpu cpu;
 
-        internal GameBoy(string romPath, string BootromPath) =>
-            this.cpu = new Cpu(File.ReadAllBytes(BootromPath), File.ReadAllBytes(romPath));
-
-        private GameBoy()
-        {
-        }
+        internal GameBoy(string romPath, string BootromPath, Input.IInputHandler inputHandler) =>
+            this.cpu = new Cpu(File.ReadAllBytes(BootromPath), File.ReadAllBytes(romPath), inputHandler);
 
         internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.WriteToConsole ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
     }

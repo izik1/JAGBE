@@ -52,7 +52,7 @@ namespace JAGBE.UI
                 Console.WriteLine("Enter path to boot rom");
                 bootRomPath = Console.ReadLine();
             }
-            this.gameBoy = new GameBoy(romPath, bootRomPath);
+            this.gameBoy = new GameBoy(romPath, bootRomPath, this);
         }
 
         protected override void OnFocusedChanged(EventArgs e)

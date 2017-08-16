@@ -2,6 +2,7 @@
 using JAGBE.GB.DataTypes;
 using JAGBE.GB.Computation.Execution;
 using JAGBE.GB.Assembly;
+using JAGBE.GB.Input;
 
 namespace JAGBE.GB.Computation
 {
@@ -30,7 +31,7 @@ namespace JAGBE.GB.Computation
 
         private GbMemory memory;
 
-        public Cpu(byte[] bootRom, byte[] rom) => Reset(rom, bootRom);
+        public Cpu(byte[] bootRom, byte[] rom, IInputHandler inputHandler) => Reset(rom, bootRom, inputHandler);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Cpu"/> class.
@@ -45,7 +46,7 @@ namespace JAGBE.GB.Computation
 
         public bool WriteToConsole { get; set; }
 
-        public void Reset(byte[] rom, byte[] bootRom)
+        public void Reset(byte[] rom, byte[] bootRom, IInputHandler inputHandler)
         {
             byte ramBanks = rom[0x149];
             if (ramBanks > 2)
@@ -64,7 +65,7 @@ namespace JAGBE.GB.Computation
                 throw new InvalidOperationException();
             }
 
-            this.memory = new GbMemory
+            this.memory = new GbMemory(inputHandler)
             {
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // set the rom size to what the cartrage says.
                 ERam = new byte[MemoryRange.ERAMBANKSIZE * ramBanks],

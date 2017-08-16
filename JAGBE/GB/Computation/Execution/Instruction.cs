@@ -278,7 +278,7 @@ namespace JAGBE.GB.Computation.Execution
             int c = 0;
             for (int i = 0; i < 0x100; i++)
             {
-                GbMemory m = new GbMemory();
+                GbMemory m = new GbMemory(null);
                 ops[i].Invoke(m, 0);
                 if (m.Status == CpuState.ERROR)
                 {
