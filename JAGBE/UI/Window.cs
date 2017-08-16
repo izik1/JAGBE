@@ -14,8 +14,6 @@ namespace JAGBE.UI
 
         private readonly GameboyKeys keys;
 
-        public event EventHandler<InputEventArgs> OnInput;
-
         public Window() : this(160, 144)
         {
         }
@@ -55,6 +53,8 @@ namespace JAGBE.UI
             this.gameBoy = new GameBoy(romPath, bootRomPath, this);
         }
 
+        public event EventHandler<InputEventArgs> OnInput;
+
         protected override void OnFocusedChanged(EventArgs e)
         {
             // Left intentionally empty
@@ -69,23 +69,6 @@ namespace JAGBE.UI
             GL.DepthFunc(DepthFunction.Lequal);
 
             GL.Enable(EnableCap.Texture2D);
-        }
-
-        protected override void OnUpdateFrame(FrameEventArgs e)
-        {
-            if (this.gameBoy.cpu.WriteToConsole)
-            {
-                if (Console.KeyAvailable)
-                {
-                    Console.ReadKey(true);
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            this.gameBoy.Update((int)this.TargetUpdateFrequency);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -106,6 +89,23 @@ namespace JAGBE.UI
             GL.End();
             GL.DeleteTexture(tex.Id);
             this.SwapBuffers();
+        }
+
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            if (this.gameBoy.cpu.WriteToConsole)
+            {
+                if (Console.KeyAvailable)
+                {
+                    Console.ReadKey(true);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            this.gameBoy.Update((int)this.TargetUpdateFrequency);
         }
     }
 }
