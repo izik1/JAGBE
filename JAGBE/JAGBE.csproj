@@ -91,7 +91,6 @@
     <Compile Include="GB\GameBoy.cs" />
     <Compile Include="GB\DataTypes\GbUInt16.cs" />
     <Compile Include="GB\DataTypes\MemoryBankController.cs" />
-    <Compile Include="GB\Input\GameboyKeys.cs" />
     <Compile Include="GB\UShortExtensions.cs" />
     <Compile Include="GB\Input\IInputHandler.cs" />
     <Compile Include="GB\Input\InputEventArgs.cs" />

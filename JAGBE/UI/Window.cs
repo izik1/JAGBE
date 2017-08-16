@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using JAGBE.GB;
 using JAGBE.GB.Input;
 using System.IO;
+using OpenTK.Input;
 
 namespace JAGBE.UI
 {
@@ -12,7 +13,7 @@ namespace JAGBE.UI
     {
         private readonly GameBoy gameBoy;
 
-        private readonly GameboyKeys keys;
+        private byte keys = 0xFF;
 
         public Window() : this(160, 144)
         {
@@ -26,7 +27,6 @@ namespace JAGBE.UI
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
 
         {
-            this.keys = new GameboyKeys();
             string romPath;
             string bootRomPath;
             if (File.Exists("config.cfg"))
@@ -51,6 +51,7 @@ namespace JAGBE.UI
                 bootRomPath = Console.ReadLine();
             }
             this.gameBoy = new GameBoy(romPath, bootRomPath, this);
+            this.Keyboard.KeyRepeat = false;
         }
 
         public event EventHandler<InputEventArgs> OnInput;
@@ -58,6 +59,119 @@ namespace JAGBE.UI
         protected override void OnFocusedChanged(EventArgs e)
         {
             // Left intentionally empty
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            if (e.IsRepeat)
+            {
+                return;
+            }
+
+            switch (e.Key)
+            {
+                case Key.A:
+                    this.keys = this.keys.Res(0);
+                    break;
+
+                case Key.S:
+                    this.keys = this.keys.Res(1);
+                    break;
+
+                case Key.Space:
+                    this.keys = this.keys.Res(2);
+                    break;
+
+                case Key.Enter:
+                    this.keys = this.keys.Res(3);
+                    break;
+
+                case Key.Up:
+                    this.keys = this.keys.Res(4);
+                    break;
+
+                case Key.Right:
+                    this.keys = this.keys.Res(5);
+                    break;
+
+                case Key.Down:
+                    this.keys = this.keys.Res(6);
+                    break;
+
+                case Key.Left:
+                    this.keys = this.keys.Res(7);
+                    break;
+
+                default:
+                    return;
+            }
+
+            // Try catch hack because OpenTK catches all exceptions that come from this function...
+            // so there wouldn't be a way to tell that it was thrown if this wasn't here. Re-throw
+            // the exception anyway in case that changes.
+            try
+            {
+                OnInput?.Invoke(this, new InputEventArgs(this.keys));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+        }
+
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.A:
+                    this.keys = this.keys.Set(0);
+                    break;
+
+                case Key.S:
+                    this.keys = this.keys.Set(1);
+                    break;
+
+                case Key.Space:
+                    this.keys = this.keys.Set(2);
+                    break;
+
+                case Key.Enter:
+                    this.keys = this.keys.Set(3);
+                    break;
+
+                case Key.Up:
+                    this.keys = this.keys.Set(4);
+                    break;
+
+                case Key.Right:
+                    this.keys = this.keys.Set(5);
+                    break;
+
+                case Key.Down:
+                    this.keys = this.keys.Set(6);
+                    break;
+
+                case Key.Left:
+                    this.keys = this.keys.Set(7);
+                    break;
+
+                default:
+                    return;
+            }
+
+            // Try catch hack because OpenTK catches all exceptions that come from this function...
+            // so there wouldn't be a way to tell that it was thrown if this wasn't here. Re-throw
+            // the exception anyway in case that changes.
+            try
+            {
+                OnInput?.Invoke(this, new InputEventArgs(this.keys));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         protected override void OnLoad(EventArgs e)
