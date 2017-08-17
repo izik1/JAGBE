@@ -1,11 +1,10 @@
 ﻿using System;
+using static JAGBE.GB.Computation.Execution.Alu.Ops;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Bitwise
     {
-        private delegate byte Op(GbMemory mem, byte valIn, byte dest);
-
         public static bool Bit(Opcode code, GbMemory memory, int step)
         {
             if (step == 0)
@@ -28,10 +27,10 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Res(Opcode code, GbMemory memory, int step) => Operate(code, memory, step, (m, val, dest) => val.Res(dest));
+        public static bool Res(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (m, val, dest) => val.Res(dest));
 
         public static bool Rl(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val << 1) | (mem.R.F.GetBit(RFlags.CF) ? 1 : 0));
                 mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -39,7 +38,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Rlc(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val << 1);
                 mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -47,7 +46,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Rr(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val >> 1) | (mem.R.F.GetBit(RFlags.CF) ? 0x80 : 0));
                 mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -55,7 +54,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Rrc(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val >> 1) | (val.GetBit(0) ? 1 : 0));
                 mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -73,7 +72,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <see langword="true"/> if the operation is complete, <see langword="false"/> otherwise
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
-        public static bool Set(Opcode code, GbMemory memory, int step) => Operate(code, memory, step, (mem, val, dest) => val.Set(dest));
+        public static bool Set(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) => val.Set(dest));
 
         /// <summary>
         /// Shift left, bit 7 gets shifted into Carry.
@@ -90,7 +89,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Sla(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val << 1);
                 mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -98,7 +97,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Sra(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val >> 1) | (val & (1 << 7)));
                 mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -106,7 +105,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Srl(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)(val >> 1);
                 mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
@@ -114,42 +113,11 @@ namespace JAGBE.GB.Computation.Execution.Alu
             });
 
         public static bool Swap(Opcode code, GbMemory memory, int step) =>
-            Operate(code, memory, step, (mem, val, dest) =>
+            BitOpFunc(code, memory, step, (mem, val, dest) =>
             {
                 byte retVal = (byte)((val << 4) | (val >> 4));
                 mem.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
                 return retVal;
             });
-
-        private static bool Operate(Opcode op, GbMemory memory, int step, Op operation)
-        {
-            if (operation == null)
-            {
-                throw new ArgumentNullException(nameof(operation));
-            }
-
-            switch (step)
-            {
-                case 0:
-                    if (op.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    memory.R.SetR8(op.Src, operation(memory, memory.R.GetR8(op.Src), op.Dest));
-                    return true;
-
-                case 1:
-                    op.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    memory.SetMappedMemoryHl(operation(memory, op.Data1, op.Dest));
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
     }
 }

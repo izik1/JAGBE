@@ -79,6 +79,7 @@
     <Compile Include="GB\Computation\Execution\Alu\Bitwise.cs" />
     <Compile Include="GB\Computation\Execution\Alu\Branching.cs" />
     <Compile Include="GB\Computation\Execution\Alu\Loading.cs" />
+    <Compile Include="GB\Computation\Execution\Alu\Ops.cs" />
     <Compile Include="GB\Computation\Lcd.cs" />
     <Compile Include="GB\Computation\GbMemory.cs" />
     <Compile Include="GB\Computation\Execution\Instruction.cs" />

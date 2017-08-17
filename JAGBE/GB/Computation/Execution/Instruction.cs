@@ -67,8 +67,8 @@ namespace JAGBE.GB.Computation.Execution
 
             for (int i = 0; i < 8; i++)
             {
-                ops[(i * 8) + 0x04] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc8);
-                ops[(i * 8) + 0x05] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec8);
+                ops[(i * 8) + 0x04] = new Opcode((byte)i, (byte)i, Alu.Arithmetic.Inc8);
+                ops[(i * 8) + 0x05] = new Opcode((byte)i, (byte)i, Alu.Arithmetic.Dec8);
                 ops[(i * 8) + 0x06] = new Opcode((byte)i, 0, Alu.Loading.LdD8);
                 ops[(i * 1) + 0x80] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Add);
                 ops[(i * 1) + 0x88] = new Opcode(7, (byte)(i & 7), Alu.Arithmetic.Adc);
@@ -135,7 +135,7 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x27] = new Opcode(0, 0, Alu.Arithmetic.Daa);
 
-            ops[0x2F] = new Opcode(0, 0, Alu.Arithmetic.Cpl);
+            ops[0x2F] = new Opcode(7, 7, Alu.Arithmetic.Cpl);
 
             ops[0x37] = new Opcode(0, 0, (op, mem, step) => // SCF
             {

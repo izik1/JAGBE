@@ -215,12 +215,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xFE00) // 0xE000-FDFF
             {
-                if (address < 0xF000)
-                {
-                    return GetERamMemory((ushort)(address - 0xE000));
-                }
-
-                return this.WRam[address - 0xF000];
+                return address < 0xF000 ? GetERamMemory((ushort)(address - 0xE000)) : this.WRam[address - 0xF000];
             }
 
             if (address < 0xFEA0) // 0xFE00-FE9F

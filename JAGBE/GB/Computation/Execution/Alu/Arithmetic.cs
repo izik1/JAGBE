@@ -1,12 +1,11 @@
 ﻿using System;
+using static JAGBE.GB.Computation.Execution.Alu.Ops;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Arithmetic
     {
-        private delegate void Op8(GbMemory mem, byte valIn);
-
-        public static bool Adc(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             bool c = mem.R.F.GetBit(RFlags.CF);
             byte b = (byte)(val + (c ? 1 : 0));
@@ -16,12 +15,12 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.A = s;
         });
 
-        public static bool Add(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
-            {
-                byte s = (byte)(mem.R.A + val);
-                mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHFlag(val)).AssignBit(RFlags.CF, s < mem.R.A);
-                mem.R.A = s;
-            });
+        public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        {
+            byte s = (byte)(mem.R.A + val);
+            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHFlag(val)).AssignBit(RFlags.CF, s < mem.R.A);
+            mem.R.A = s;
+        });
 
         public static bool AddHl(Opcode op, GbMemory mem, int step)
         {
@@ -33,7 +32,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 1)
             {
                 ushort val = mem.R.GetR16(op.Src, false);
-                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHalfCarry(mem.R.Hl)).AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
+                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHalfCarry(mem.R.Hl)).AssignBit(
+                    RFlags.CF, val + mem.R.Hl < mem.R.Hl);
                 mem.R.Hl += val;
                 return true;
             }
@@ -62,38 +62,32 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
-        public static bool And(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
             {
                 mem.R.A = (byte)(mem.R.A & val);
                 mem.R.F = (byte)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
             });
 
-        public static bool Cp(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte r = (byte)(mem.R.A - val);
             mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, r == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.CF, r > mem.R.A);
         });
 
         /// <summary>
-        /// Complements the A register of the given <paramref name="mem"/>
+        /// Complements the A register of the given <paramref name="memory"/>
         /// </summary>
         /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
         /// <param name="op">The op.</param>
-        /// <param name="mem">The memory.</param>
+        /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
-        public static bool Cpl(Opcode op, GbMemory mem, int step)
+        public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            if (step == 0)
-            {
-                mem.R.A = (byte)(~mem.R.A);
-                mem.R.F |= RFlags.NHB;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
+            mem.R.A = (byte)(~val);
+            mem.R.F |= RFlags.NHB;
+        });
 
         public static bool Daa(Opcode op, GbMemory mem, int step)
         {
@@ -235,13 +229,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
-        public static bool Or(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A = (byte)(mem.R.A | val);
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
         });
 
-        public static bool Sbc(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte c = (byte)(mem.R.F.GetBit(RFlags.CB) ? 1 : 0);
             byte b = (byte)(c + val);
@@ -251,44 +245,17 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.A = res;
         });
 
-        public static bool Sub(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(memory.R.A - val);
             mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val)).AssignBit(RFlags.CF, s > mem.R.A);
             mem.R.A = s;
         });
 
-        public static bool Xor(Opcode op, GbMemory memory, int step) => Operate8(op, memory, step, (mem, val) =>
+        public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A ^= val;
             mem.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
         });
-
-        private static bool Operate8(Opcode op, GbMemory memory, int step, Op8 operation)
-        {
-            if (operation == null)
-            {
-                throw new ArgumentNullException(nameof(operation));
-            }
-
-            if (step == 0)
-            {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
-                operation(memory, memory.R.GetR8(op.Src));
-                return true;
-            }
-
-            if (step == 1)
-            {
-                operation(memory, op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8());
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
-        }
     }
 }

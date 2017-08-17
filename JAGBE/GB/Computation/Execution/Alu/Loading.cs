@@ -245,7 +245,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 0)
             {
                 memory.R.Sp = memory.R.Hl;
-
                 return false;
             }
 
