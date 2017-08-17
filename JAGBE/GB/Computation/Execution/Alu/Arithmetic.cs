@@ -155,34 +155,11 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
-        public static bool Dec8(Opcode op, GbMemory mem, int step)
+        public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
-            switch (step)
-            {
-                case 0:
-                    if (op.Dest == 6)
-                    {
-                        return false;
-                    }
-
-                    byte b = mem.R.GetR8(op.Dest);
-                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, b == 1).Set(RFlags.NF).AssignBit(RFlags.HF, b.GetHFlagN(1));
-                    mem.R.SetR8(op.Dest, (byte)(b - 1));
-                    return true;
-
-                case 1:
-                    op.Data1 = mem.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    mem.R.F = mem.R.F.AssignBit(RFlags.ZF, op.Data1 == 1).Set(RFlags.NF).AssignBit(RFlags.HF, op.Data1.GetHFlagN(1));
-                    mem.SetMappedMemoryHl((byte)(op.Data1 - 1));
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
-        }
+            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).Set(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlagN(1));
+            return (byte)(val - 1);
+        });
 
         public static bool Inc16(Opcode op, GbMemory mem, int step)
         {
