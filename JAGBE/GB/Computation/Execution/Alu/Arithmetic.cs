@@ -192,9 +192,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte c = (byte)(mem.R.F.GetBit(RFlags.CB) ? 1 : 0);
-            byte b = (byte)(c + val);
-            byte res = (byte)(mem.R.A - b);
-            bool hc = (c == 1 && val == 255) || (mem.R.A.GetHFlagN(b));
+            byte res = (byte)(mem.R.A - (c + val));
+            bool hc = (c + val == 256) || (mem.R.A.GetHFlagN((byte)(c + val)));
             mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, res == 0).AssignBit(RFlags.HF, hc).AssignBit(RFlags.CF, mem.R.A - val - c < 0);
             mem.R.A = res;
         });
