@@ -23,6 +23,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.A = s;
         });
 
+        /// <summary>
+        /// Adds src to a.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 H C</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
@@ -70,12 +78,28 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
+        /// <summary>
+        /// Ands A and src and stores the result into A.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 1 0</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
-            {
-                mem.R.A = (byte)(mem.R.A & val);
-                mem.R.F = (byte)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
-            });
+        {
+            mem.R.A = (byte)(mem.R.A & val);
+            mem.R.F = (byte)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
+        });
 
+        /// <summary>
+        /// Subracts src from a and discards the result.
+        /// </summary>
+        /// <remarks>Affected flags: Z 1 H -</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte r = (byte)(mem.R.A - val);
@@ -147,6 +171,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Decrements src.
+        /// </summary>
+        /// <remarks>Affected flags: - - - -</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="mem">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Dec16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -163,12 +195,28 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Decrements src.
+        /// </summary>
+        /// <remarks>Affected flags: Z 1 H -</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).Set(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlagN(1));
             return (byte)(val - 1);
         });
 
+        /// <summary>
+        /// Increments src.
+        /// </summary>
+        /// <remarks>Affected flags: - - - -</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="mem">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Inc16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -185,12 +233,28 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Increments src.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 H -</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Inc8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlag(1));
             return (byte)(val + 1);
         });
 
+        /// <summary>
+        /// Ors A and src.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 0 0</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A = (byte)(mem.R.A | val);
@@ -214,6 +278,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.A = res;
         });
 
+        /// <summary>
+        /// Subtracts src from a.
+        /// </summary>
+        /// <remarks>Affected flags: Z 1 H C</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(memory.R.A - val);
@@ -221,6 +293,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.A = s;
         });
 
+        /// <summary>
+        /// Xors A and src.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 0 0</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A ^= val;
