@@ -20,26 +20,12 @@ namespace JAGBE.GB.Assembly
         {
             // 0x00
             "NOP", "LD BC,d16", "LD (BC),A", "INC BC", "INC B", "DEC B", "LD B,d8", "RLCA",
-
-            // 0x08
             "LD (a16),SP", "ADD HL,BC", "LD A,(BC)", "DEC BC", "INC C", "DEC C", "LD C,d8", "RRCA",
-
-            // 0x10
             "STOP", "LD DE,d16", "LD (DE),A", "INC DE", "INC D", "DEC D", "LD D,d8", "RLA",
-
-            // 0x18
             "JR r8", "ADD HL,DE", "LD A,(DE)", "DEC DE", "INC E", "DEC E", "LD E,d8", "RRA",
-
-            // 0x20
             "JR NZ,r8", "LD HL,d16", "LD (HL+),A", "INC HL", "INC H", "DEC H", "LD H,d8", "DAA",
-
-            // 0x28
             "JR Z,r8", "ADD HL,HL", "LD A,(HL+)", "DEC HL", "INC L", "DEC L", "LD L,d8", "CPL",
-
-            // 0x30
             "JR NC,r8", "LD SP,d16", "LD (HL-),A", "INC SP", "INC (HL)", "DEC (HL)", "LD (HL),d8", "SCF",
-
-            // 0x38
             "JR C,r8"    , "ADD HL,SP", "LD A,(HL-)", "DEC SP", "INC A"   , "DEC A"   , "LD A,d8"   , "CCF",
 
             // 0x40
@@ -50,8 +36,6 @@ namespace JAGBE.GB.Assembly
 
             // 0x70
             "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "/LDZ",
-
-            // 0x80
             "ARTHMETIC"  , "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 
             // 0x90
@@ -62,26 +46,12 @@ namespace JAGBE.GB.Assembly
 
             // 0xC0
             "RET NZ", "POP BC", "JP NZ,a16", "JP a16", "CALL NZ,a16", "PUSH BC", "ADD A,d8", "RST 00h",
-
-            // 0xC8
             "RET Z", "RET", "JP Z, a16", "<CB>", "CALL Z, a16", "CALL a16", "ADC A,d8", "RST 08h",
-
-            // 0xD0
             "RET NC", "POP DE", "JP NC,a16", "UNUSED", "CALL NC,a16", "PUSH DE", "SUB A,d8", "RST 10H",
-
-            // 0xD8
             "RET C", "RETI", "JP C,a16", "UNUSED", "CALL C,a16", "UNUSED", "SBC A,d8", "RST 18H",
-
-            // 0xE0
             "LDH (a8),A", "POP HL", "LD (C),A", "UNUSED", "UNUSED", "PUSH HL", "AND A,d8", "RST 20H",
-
-            // 0xE8
             "ADD SP,r8", "JP (HL)", "LD (a16),A", "UNUSED", "UNUSED", "UNUSED", "XOR A,d8", "RST 28H",
-
-            // 0xF0
             "LDH A,(a8)", "POP AF", "LD A,(C)", "DI", "UNUSED", "PUSH AF", "OR A,d8", "RST 30H",
-
-            // 0xF8
             "LD HL,SP+r8", "LD SP,HL", "LD A,(a16)", "EI", "UNUSED", "UNUSED", "CP A,d8", "RST 38H",
         };
 
