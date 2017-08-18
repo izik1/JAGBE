@@ -5,6 +5,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Arithmetic
     {
+        /// <summary>
+        /// Adds src and the carry flag to a.
+        /// </summary>
+        /// <remarks>Affected flags: Z 0 H C</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             bool c = mem.R.F.GetBit(RFlags.CF);
@@ -189,6 +197,14 @@ namespace JAGBE.GB.Computation.Execution.Alu
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
         });
 
+        /// <summary>
+        /// Subtracts src and the carry flag from A
+        /// </summary>
+        /// <remarks>Affected flags: Z 1 H C</remarks>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns></returns>
         public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte c = (byte)(mem.R.F.GetBit(RFlags.CB) ? 1 : 0);
