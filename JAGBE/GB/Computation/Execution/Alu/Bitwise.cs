@@ -29,37 +29,33 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
         public static bool Res(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (m, val, dest) => val.Res(dest));
 
-        public static bool Rl(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)((val << 1) | (mem.R.F.GetBit(RFlags.CF) ? 1 : 0));
-                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Rl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)((val << 1) | (mem.R.F.GetBit(RFlags.CF) ? 1 : 0));
+            mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Rlc(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)(val << 1);
-                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Rlc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)(val << 1);
+            mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Rr(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)((val >> 1) | (mem.R.F.GetBit(RFlags.CF) ? 0x80 : 0));
-                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Rr(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)((val >> 1) | (mem.R.F.GetBit(RFlags.CF) ? 0x80 : 0));
+            mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Rrc(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)((val >> 1) | (val.GetBit(0) ? 1 : 0));
-                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Rrc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)((val >> 1) | (val.GetBit(0) ? 1 : 0));
+            mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
         /// <summary>
         /// Sets the dest bit of the src byte to true
@@ -88,36 +84,32 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// The state of the operation <see langword="true"/> if complete, <see langword="false"/> otherwise
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
-        public static bool Sla(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)(val << 1);
-                mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Sla(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)(val << 1);
+            mem.R.F = (val.GetBit(7) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Sra(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)((val >> 1) | (val & (1 << 7)));
-                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Sra(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)((val >> 1) | (val & (1 << 7)));
+            mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Srl(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)(val >> 1);
-                mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
-                return retVal;
-            });
+        public static bool Srl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)(val >> 1);
+            mem.R.F = (val.GetBit(0) ? RFlags.CB : (byte)0).AssignBit(RFlags.ZF, retVal == 0);
+            return retVal;
+        });
 
-        public static bool Swap(Opcode code, GbMemory memory, int step) =>
-            BitOpFunc(code, memory, step, (mem, val, dest) =>
-            {
-                byte retVal = (byte)((val << 4) | (val >> 4));
-                mem.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
-                return retVal;
-            });
+        public static bool Swap(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
+        {
+            byte retVal = (byte)((val << 4) | (val >> 4));
+            mem.R.F = retVal == 0 ? RFlags.ZB : (byte)0;
+            return retVal;
+        });
     }
 }
