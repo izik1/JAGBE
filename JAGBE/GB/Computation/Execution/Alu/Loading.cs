@@ -11,12 +11,12 @@ namespace JAGBE.GB.Computation.Execution.Alu
             {
                 if (op.Src == 6 || op.Dest == 6)
                 {
-                    return false;
-                }
+                    if (op.Src == op.Dest) // By math logic, these are both 6 if this is true.
+                    {
+                        throw new InvalidOperationException("Opcode with dest = 6 and src = 6 is invalid for this instruction.");
+                    }
 
-                if (op.Src == 6 && op.Dest == 6)
-                {
-                    throw new InvalidOperationException("Opcode with dest = 6 and src = 6 is invalid for this instruction.");
+                    return false;
                 }
 
                 memory.R.SetR8(op.Dest, memory.R.GetR8(op.Src));
