@@ -21,7 +21,7 @@ namespace JAGBE.GB.Assembly
             "JR NZ,r8", "LD HL,d16", "LD (HL+),A", "INC HL", "INC H", "DEC H", "LD H,d8", "DAA",
             "JR Z,r8", "ADD HL,HL", "LD A,(HL+)", "DEC HL", "INC L", "DEC L", "LD L,d8", "CPL",
             "JR NC,r8", "LD SP,d16", "LD (HL-),A", "INC SP", "INC (HL)", "DEC (HL)", "LD (HL),d8", "SCF",
-            "JR C,r8"    , "ADD HL,SP", "LD A,(HL-)", "DEC SP", "INC A"   , "DEC A"   , "LD A,d8"   , "CCF",
+            "JR C,r8" , "ADD HL,SP", "LD A,(HL-)", "DEC SP", "INC A"   , "DEC A"   , "LD A,d8"   , "CCF",
 
             // 0x40
             "", "", "" ,"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -49,26 +49,26 @@ namespace JAGBE.GB.Assembly
         private static string DisassembleInstructionInternal(GbMemory memory)
         {
             byte b = memory.GetMappedMemory(memory.R.Pc);
+            if (b >= 0x40 && b < 0xC0)
+            {
+                if (b < 0x80)
+                {
+                    if (b == 0x76)
+                    {
+                        return "HALT";
+                    }
+
+                    int dest = ((b >> 3) & 7);
+                    int src = (b & 7);
+                    return "LD " + GetR8(dest) + "," + GetR8(src);
+                }
+
+                return DisassembleInstructionArith(b);
+            }
+
             if (b == 0xCB)
             {
                 return DisassembleInstructionCb(memory.GetMappedMemory(memory.R.Pc + 1));
-            }
-
-            if (b == 0x76)
-            {
-                return "HALT";
-            }
-
-            if (b >= 0x40 && b < 0x80)
-            {
-                int dest = ((b >> 3) & 7);
-                int src = (b & 7);
-                return "LD " + GetR8(dest) + "," + GetR8(src);
-            }
-
-            if (b >= 80 && b < 0xC0)
-            {
-                return DisassembleInstructionArith(b);
             }
 
             return nmOpStrings[b];
