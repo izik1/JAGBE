@@ -193,7 +193,6 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     mem.R.F = (byte)(val > 0xFFFF || val < 0 ? RFlags.HCB : 0);
                     mem.R.F = mem.R.F.AssignBit(RFlags.HB, s >= 0 ? ((ushort)s).GetHalfCarry(mem.R.Sp) : ((mem.R.Sp & 0xFFF) - s) < 0);
                     mem.R.Sp = (ushort)val;
-
                     return true;
 
                 default:
@@ -201,7 +200,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
-        public static bool LdR(Opcode op, GbMemory mem, int step)
+        public static bool LdR16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
             {

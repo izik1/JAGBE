@@ -84,10 +84,10 @@ namespace JAGBE.GB.Computation.Execution
             for (int i = 0; i < 4; i++)
             {
                 ops[(i * 0x10) + 0x01] = new Opcode((byte)i, 0, Alu.Loading.LdD16);
-                ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 8, Alu.Loading.LdR);
+                ops[(i * 0x10) + 0x02] = new Opcode((byte)i, 8, Alu.Loading.LdR16);
                 ops[(i * 0x10) + 0x03] = new Opcode((byte)i, 0, Alu.Arithmetic.Inc16);
                 ops[(i * 0x10) + 0x09] = new Opcode(2, (byte)i, Alu.Arithmetic.AddHl);
-                ops[(i * 0x10) + 0x0A] = new Opcode(8, (byte)i, Alu.Loading.LdR);
+                ops[(i * 0x10) + 0x0A] = new Opcode(8, (byte)i, Alu.Loading.LdR16);
                 ops[(i * 0x10) + 0x0B] = new Opcode((byte)i, 0, Alu.Arithmetic.Dec16);
                 ops[(i * 0x08) + 0x20] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.Jr8);
                 ops[(i * 0x08) + 0xC0] = new Opcode((byte)(i & 1), (byte)((i / 2) + 1), Alu.Branching.RetC);
