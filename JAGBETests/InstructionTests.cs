@@ -116,10 +116,16 @@ namespace JAGBETests
         {
             GbMemory memory = ConfigureMemory(1);
             InitNmTest(memory, 0x2F, 0);
-            memory.R.A = 0xAA;
-            ArithmeticTest(memory, 0x55, RFlags.NHB);
-            memory.R.F = RFlags.ZCB;
-            ArithmeticTest(memory, 0xAA, RFlags.ZNHCB);
+            for (int i = 0; i < 256; i++)
+            {
+                for (int j = 0; j < 16; j++)
+                {
+                    memory.R.A = (byte)i;
+                    memory.R.F = (byte)(j << 4);
+                    ArithmeticTest(memory, (byte)(255 - i), (byte)(memory.R.F | RFlags.NHB));
+                    ArithmeticTest(memory, (byte)i, (byte)(memory.R.F | RFlags.NHB));
+                }
+            }
         }
 
         [TestMethod]
