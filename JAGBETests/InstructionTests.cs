@@ -8,6 +8,9 @@ namespace JAGBETests
     [TestClass]
     public class InstructionTests
     {
+        /// <summary>
+        /// Checks that the ADC instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckAdc()
@@ -23,6 +26,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 3, 0);
         }
 
+        /// <summary>
+        /// Checks that the ADD instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckAdd()
@@ -38,6 +44,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 2, 0);
         }
 
+        /// <summary>
+        /// Checks that the AND instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckAnd()
@@ -55,6 +64,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 0, RFlags.ZHB);
         }
 
+        /// <summary>
+        /// Checks that the BIT instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckBit()
@@ -93,6 +105,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that the CP instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckCp()
@@ -110,6 +125,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 0, RFlags.NHCB);
         }
 
+        /// <summary>
+        /// Checks that the CPL instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckCpl()
@@ -128,6 +146,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that the Dec8 instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckDec8()
@@ -141,6 +162,9 @@ namespace JAGBETests
             HlTest(memory, 255, RFlags.NHB);
         }
 
+        /// <summary>
+        /// Checks that the Inc8 instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckInc8()
@@ -154,6 +178,9 @@ namespace JAGBETests
             HlTest(memory, 1, 0);
         }
 
+        /// <summary>
+        /// Checks that the JpA16 instructions gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Branching")]
         public void CheckJpA16()
@@ -179,6 +206,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that the OR instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckOr()
@@ -196,6 +226,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 1, 0);
         }
 
+        /// <summary>
+        /// Checks that the RL instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckRl()
@@ -212,6 +245,9 @@ namespace JAGBETests
             HlTest(memory, 1, 0);
         }
 
+        /// <summary>
+        /// Checks that the RLC instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckRlc()
@@ -225,6 +261,9 @@ namespace JAGBETests
             HlTest(memory, 0, RFlags.ZCB);
         }
 
+        /// <summary>
+        /// Checks that the RR instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckRr()
@@ -240,6 +279,9 @@ namespace JAGBETests
             HlTest(memory, 0x80, 0);
         }
 
+        /// <summary>
+        /// Checks that the SET instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckSet()
@@ -267,6 +309,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that the SLA instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckSla()
@@ -280,6 +325,9 @@ namespace JAGBETests
             HlTest(memory, 0, RFlags.ZCB);
         }
 
+        /// <summary>
+        /// Checks that the SUB instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckSub()
@@ -295,6 +343,9 @@ namespace JAGBETests
             ArithmeticTest(memory, 254, RFlags.NHCB);
         }
 
+        /// <summary>
+        /// Checks that the XOR instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Arithmetic")]
         public void CheckXor()
