@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using JAGBE.GB.Computation;
-using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Assembly
 {
@@ -121,31 +117,6 @@ namespace JAGBE.GB.Assembly
             }
 
             return "SET " + dest.ToString() + "," + GetR8(src);
-        }
-
-        internal static string DisassembleAllInstructions()
-        {
-            GbMemory m = new GbMemory
-            {
-                Rom = new byte[3]
-            };
-            StringBuilder builder = new StringBuilder(256 * 256 * 10);
-            m.SetMappedMemory(0xFF50, 1); // disable boot rom.
-            for (int i = 0; i < 256; i++)
-            {
-                for (int j = 0; j < 256; j++)
-                {
-                    m.Rom[0] = (byte)i;
-                    m.Rom[1] = (byte)j;
-                    builder.AppendLine(DisassembleInstruction(m));
-                    if (i != 0xCB)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return builder.ToString();
         }
     }
 }
