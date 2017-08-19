@@ -37,6 +37,13 @@
         /// <returns></returns>
         internal static bool GetHFlagN(this byte a, byte b) => (a & 0xF) - (b & 0xF) < 0;
 
+        /// <summary>
+        /// Assigns bit number <paramref name="bit"/> of <paramref name="a"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="a">a.</param>
+        /// <param name="bit">The bit.</param>
+        /// <param name="value">The value to set.</param>
+        /// <returns></returns>
         internal static byte AssignBit(this byte a, byte bit, bool value) => (byte)(value ? a | (1 << bit) : a & ~(1 << bit));
 
         /// <summary>
@@ -45,7 +52,8 @@
         /// <param name="b">The byte.</param>
         /// <param name="bit">The bit number.</param>
         /// <returns>
-        /// <see langword="true"/> if ((b &lt;&lt; bit) &amp; 0x1) == 1 otherwise, <see langword="false"/>
+        /// <see langword="true"/> if the given <paramref name="bit"/> of <paramref name="b"/> is set
+        /// otherwise, <see langword="false"/>
         /// </returns>
         internal static bool GetBit(this byte b, byte bit) => ((b >> bit) & 0x1) == 1;
 
