@@ -186,70 +186,9 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        internal byte GetMappedMemory(ushort address)
-        {
-            if (this.lcdMemory.DMA < Cpu.DelayStep * 162)
-            {
-                if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
-                {
-                    return this.HRam[address - 0xFF80];
-                }
+        internal byte GetMappedMemory(ushort address) => GetMappedMemory(address, false);
 
-                return 0xFF;
-            }
-
-            if (address < 0x4000) // 0x0000-3FFF
-            {
-                return GetRomMemory(0, address);
-            }
-
-            if (address < 0x8000) // 0x4000-7FFF
-            {
-                return GetRomMemory(GetRomBank(), (ushort)(address - 0x4000));
-            }
-
-            if (address < 0xA000) // 0x8000-9FFF
-            {
-                return this.VRam[address - 0x8000];
-            }
-
-            if (address < 0xC000) // 0xA000-BFFF
-            {
-                return GetERamMemory((ushort)(address - 0xA000));
-            }
-
-            if (address < 0xE000) // 0xC000-DFFF
-            {
-                return this.WRam[address - 0xC000];
-            }
-
-            if (address < 0xFE00) // 0xE000-FDFF
-            {
-                return address < 0xF000 ? GetERamMemory((ushort)(address - 0xE000)) : this.WRam[address - 0xF000];
-            }
-
-            if (address < 0xFEA0) // 0xFE00-FE9F
-            {
-                return this.Oam[address - 0xFE00];
-            }
-
-            if (address < 0xFF00) // 0xFEA0-FEFF
-            {
-                return 0x00;
-            }
-
-            if (address < 0xFF80) // 0xFF00-FF7F
-            {
-                return GetIoReg((byte)(address - 0xFF00));
-            }
-
-            if (address < 0xFFFF) // 0xFF80-FFFE
-            {
-                return this.HRam[address - 0xFF80];
-            }
-
-            return this.IER; // 0xFFFF
-        }
+        internal byte GetMappedMemoryDma(ushort address) => GetMappedMemory(address, true);
 
         internal byte LdI8() => GetMappedMemory(this.R.Pc++);
 
@@ -418,6 +357,77 @@ namespace JAGBE.GB.Computation
 
         private byte GetJoypad(byte p1) =>
             (byte)((!this.Joypad.GetBit(5) ? (p1 & 0xF) : !this.Joypad.GetBit(4) ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
+
+        /// <summary>
+        /// Gets the mapped memory.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="ignoreDmaBlock">if set to <c>true</c> ignore dma write restriction.</param>
+        /// <returns></returns>
+        private byte GetMappedMemory(ushort address, bool ignoreDmaBlock)
+        {
+            if (!ignoreDmaBlock && this.lcdMemory.DMA < Cpu.DelayStep * 162)
+            {
+                if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
+                {
+                    return this.HRam[address - 0xFF80];
+                }
+
+                return 0xFF;
+            }
+
+            if (address < 0x4000) // 0x0000-3FFF
+            {
+                return GetRomMemory(0, address);
+            }
+
+            if (address < 0x8000) // 0x4000-7FFF
+            {
+                return GetRomMemory(GetRomBank(), (ushort)(address - 0x4000));
+            }
+
+            if (address < 0xA000) // 0x8000-9FFF
+            {
+                return this.VRam[address - 0x8000];
+            }
+
+            if (address < 0xC000) // 0xA000-BFFF
+            {
+                return GetERamMemory((ushort)(address - 0xA000));
+            }
+
+            if (address < 0xE000) // 0xC000-DFFF
+            {
+                return this.WRam[address - 0xC000];
+            }
+
+            if (address < 0xFE00) // 0xE000-FDFF
+            {
+                return address < 0xF000 ? GetERamMemory((ushort)(address - 0xE000)) : this.WRam[address - 0xF000];
+            }
+
+            if (address < 0xFEA0) // 0xFE00-FE9F
+            {
+                return this.Oam[address - 0xFE00];
+            }
+
+            if (address < 0xFF00) // 0xFEA0-FEFF
+            {
+                return 0x00;
+            }
+
+            if (address < 0xFF80) // 0xFF00-FF7F
+            {
+                return GetIoReg((byte)(address - 0xFF00));
+            }
+
+            if (address < 0xFFFF) // 0xFF80-FFFE
+            {
+                return this.HRam[address - 0xFF80];
+            }
+
+            return this.IER; // 0xFFFF
+        }
 
         /// <summary>
         /// Gets <paramref name="address"/> from ROM.

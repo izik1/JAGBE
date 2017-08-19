@@ -113,7 +113,7 @@ namespace JAGBE.GB.Computation
                             this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
                         }
 
-                        lcdMem.DMAValue = this.memory.GetMappedMemory(this.memory.lcdMemory.DMAAddress);
+                        lcdMem.DMAValue = this.memory.GetMappedMemoryDma(this.memory.lcdMemory.DMAAddress);
                         lcdMem.DMAAddress++;
                     }
 

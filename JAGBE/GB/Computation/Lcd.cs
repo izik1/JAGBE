@@ -44,7 +44,7 @@ namespace JAGBE.GB.Computation
                 {
                     if (mem.lcdMemory.cy == Cpu.DelayStep)
                     {
-                        mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemory(0xFF0F) | 1));
+                        mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemoryDma(0xFF0F) | 1));
                         mem.lcdMemory.IRC |= mem.lcdMemory.STAT.GetBit(6) && mem.lcdMemory.LYC == 144;
                     }
                     else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
@@ -127,8 +127,8 @@ namespace JAGBE.GB.Computation
 
         private static int GetPixelIndex(GbMemory mem, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
         {
-            int i = (mem.GetMappedMemory((ushort)((tileNumber * 16) + baseTileAddress + (y * 2))).GetBit((byte)(7 - x)) ? 1 : 0);
-            return i + (mem.GetMappedMemory((ushort)((tileNumber * 16) + baseTileAddress + (y * 2) + 1)).GetBit((byte)(7 - x)) ? 2 : 0);
+            int i = (mem.VRam[(ushort)((tileNumber * 16) + baseTileAddress + (y * 2))].GetBit((byte)(7 - x)) ? 1 : 0);
+            return i + (mem.VRam[(ushort)((tileNumber * 16) + baseTileAddress + (y * 2) + 1)].GetBit((byte)(7 - x)) ? 2 : 0);
         }
 
         private static void RenderLine(GbMemory mem)
@@ -216,14 +216,14 @@ namespace JAGBE.GB.Computation
 
         private static void ScanLine(GbMemory mem)
         {
-            ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x9C00 : 0x9800); // Base offset
+            ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((mem.lcdMemory.SCY + mem.lcdMemory.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(mem.lcdMemory.SCX >> 3);
             byte y = (byte)((mem.lcdMemory.LY + mem.lcdMemory.SCY) & 7);
             byte x = (byte)(mem.lcdMemory.SCX & 7);
 
-            ushort tileOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(4) ? 0x8000 : 0x8800);
-            ushort tile = mem.GetMappedMemory((ushort)(lineOffset + mapOffset));
+            ushort tileOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(4) ? 0 : 0x800);
+            ushort tile = mem.VRam[(ushort)(lineOffset + mapOffset)];
             if (!mem.lcdMemory.Lcdc.GetBit(4) && tile < 128)
             {
                 tile += 256;
@@ -241,7 +241,7 @@ namespace JAGBE.GB.Computation
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = mem.GetMappedMemory((ushort)(lineOffset + mapOffset));
+                    tile = mem.VRam[(ushort)(lineOffset + mapOffset)];
                     if (!mem.lcdMemory.Lcdc.GetBit(4) && tile < 128)
                     {
                         tile += 256;
@@ -276,7 +276,7 @@ namespace JAGBE.GB.Computation
                     for (int x = 0; x < 8; x++)
                     {
                         byte tileX = (flags.GetBit(5) ? (byte)(7 - x) : (byte)x);
-                        int index = GetPixelIndex(mem, tileY, tileX, 0x9800, tile);
+                        int index = GetPixelIndex(mem, tileY, tileX, 0x1800, tile);
                         if (spriteX + x < Width && index != 0 &&
                             (flags.GetBit(7) || mem.lcdMemory.displayMemory[displayOffset + x] == COLORS[0]))
                         {
@@ -292,13 +292,13 @@ namespace JAGBE.GB.Computation
 
         private static void ScanLineWindow(GbMemory mem)
         {
-            ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x9C00 : 0x9800); // Base offset
+            ushort mapOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(3) ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((mem.lcdMemory.WY + mem.lcdMemory.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(mem.lcdMemory.WX >> 3);
             byte y = (byte)((mem.lcdMemory.WY + mem.lcdMemory.WY) & 7);
             byte x = (byte)(mem.lcdMemory.WX & 7);
 
-            ushort tileOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(4) ? 0x8000 : 0x8800);
+            ushort tileOffset = (ushort)(mem.lcdMemory.Lcdc.GetBit(4) ? 0 : 0x800);
             ushort tile = mem.GetMappedMemory((ushort)(lineOffset + mapOffset));
             if (!mem.lcdMemory.Lcdc.GetBit(4) && tile < 128)
             {
