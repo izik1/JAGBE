@@ -4,14 +4,12 @@ namespace JAGBE.GB.Computation
 {
     internal sealed class LcdMemory
     {
-        public const int Height = 144;
-        public const int Width = 160;
         public byte BgPallet;
         public int DMA = Cpu.DelayStep * 162;
         public ushort DMAAddress;
         public byte DMAValue;
         internal int cy;
-        internal int[] displayMemory = new int[Width * Height];
+        internal int[] displayMemory = new int[Lcd.Width * Lcd.Height];
         internal bool ForceNullRender;
         internal bool IRC;
         internal byte LY;
