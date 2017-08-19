@@ -25,8 +25,7 @@ namespace JAGBE.GB.Computation
         internal byte STAT;
         internal byte WX;
         internal byte WY;
-
-        public byte Lcdc { get; set; }
+        internal byte Lcdc;
 
         internal byte GetRegister(byte number)
         {
@@ -49,6 +48,9 @@ namespace JAGBE.GB.Computation
 
                 case 0x45:
                     return this.LYC;
+
+                case 0x46:
+                    return ((DataTypes.GbUInt16)(this.DMAAddress)).HighByte;
 
                 case 0x47:
                     return this.BgPallet;

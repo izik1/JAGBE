@@ -138,7 +138,7 @@ namespace JAGBE.GB.Computation
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
 
-        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl);
+        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
 
         public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
