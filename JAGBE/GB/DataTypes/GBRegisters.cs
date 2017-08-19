@@ -199,61 +199,7 @@ namespace JAGBE.GB.DataTypes
                     break;
 
                 default:
-                    throw new ArgumentException(nameof(index));
-            }
-        }
-
-        public void SetR16(int index, byte value, bool highByte, bool useAf)
-        {
-            switch (index)
-            {
-                case 0:
-                    if (highByte)
-                    {
-                        this.B = value;
-                    }
-                    else
-                    {
-                        this.C = value;
-                    }
-                    break;
-
-                case 1:
-                    if (highByte)
-                    {
-                        this.D = value;
-                    }
-                    else
-                    {
-                        this.E = value;
-                    }
-                    break;
-
-                case 2:
-                    if (highByte)
-                    {
-                        this.H = value;
-                    }
-                    else
-                    {
-                        this.L = value;
-                    }
-                    break;
-
-                case 3:
-                    if (useAf)
-                    {
-                        this.Af = highByte ? new GbUInt16(value, this.Af.LowByte) : new GbUInt16(this.Af.HighByte, value);
-                    }
-                    else
-                    {
-                        this.Sp = highByte ? new GbUInt16(value, this.Sp.LowByte) : new GbUInt16(this.Sp.HighByte, value);
-                    }
-
-                    break;
-
-                default:
-                    throw new ArgumentException(nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 

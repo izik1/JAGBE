@@ -268,15 +268,27 @@ namespace JAGBE.GB.Computation.Execution.Alu
                 if (op.Dest == 3)
                 {
                     b &= 0xF0;
+                    mem.R.F = b;
+                }
+                else
+                {
+                    mem.R.SetR8((op.Dest * 2) + 1, b);
                 }
 
-                mem.R.SetR16(op.Dest, b, false, true);
                 return false;
             }
 
             if (step == 2)
             {
-                mem.R.SetR16(op.Dest, mem.Pop(), true, true);
+                if (op.Dest == 3)
+                {
+                    mem.R.A = mem.Pop();
+                }
+                else
+                {
+                    mem.R.SetR8(op.Dest * 2, mem.Pop());
+                }
+
                 return true;
             }
 
