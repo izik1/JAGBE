@@ -122,7 +122,6 @@ namespace JAGBE.GB.Computation.Execution
                 mem.R.F = b ? RFlags.CB : (byte)0;
                 return true;
             });
-
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
 
             ops[0x1F] = new Opcode(0, 0, (op, mem, step) => // RRA
@@ -170,7 +169,6 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xCB] = new Opcode(0, 0, CbPrefix);
 
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
-
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
 
             ops[0xD6] = new Opcode(7, 8, Alu.Arithmetic.Sub);
@@ -182,35 +180,34 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
 
             ops[0xE2] = new Opcode(0, 0, (op, mem, step) =>
+            {
+                if (step == 0)
                 {
-                    if (step == 0)
-                    {
-                        return false;
-                    }
+                    return false;
+                }
 
-                    if (step == 1)
-                    {
-                        mem.SetMappedMemory((ushort)(0xFF00 + mem.R.C), mem.R.A);
-                        return true;
-                    }
+                if (step == 1)
+                {
+                    mem.SetMappedMemory((ushort)(0xFF00 + mem.R.C), mem.R.A);
+                    return true;
+                }
 
-                    throw new ArgumentOutOfRangeException(nameof(step));
-                });
+                throw new ArgumentOutOfRangeException(nameof(step));
+            });
 
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
 
             ops[0xE8] = new Opcode(0, 0, Alu.Arithmetic.AddSpR8);
             ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>
-                  {
-                      if (step == 0)
-                      {
-                          mem.R.Pc = mem.R.Hl;
-                          return true;
-                      }
+            {
+                if (step == 0)
+                {
+                    mem.R.Pc = mem.R.Hl;
+                    return true;
+                }
 
-                      throw new ArgumentOutOfRangeException(nameof(step));
-                  });
-
+                throw new ArgumentOutOfRangeException(nameof(step));
+            });
             ops[0xEA] = new Opcode(0, 7, Alu.Loading.LdA16);
 
             ops[0xEE] = new Opcode(7, 8, Alu.Arithmetic.Xor);
@@ -243,9 +240,7 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xF6] = new Opcode(7, 8, Alu.Arithmetic.Or);
 
             ops[0xF8] = new Opcode(0, 0, Alu.Loading.LdHlSpR8);
-
             ops[0xF9] = new Opcode(0, 0, Alu.Loading.LdSpHl);
-
             ops[0xFA] = new Opcode(7, 0, Alu.Loading.LdA16);
             ops[0xFB] = new Opcode(0, 0, (op, mem, s) => // EI
             {

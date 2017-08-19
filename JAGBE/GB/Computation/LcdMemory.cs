@@ -99,7 +99,6 @@ namespace JAGBE.GB.Computation
 
                 case 0x6:
                     this.DMAAddress = (ushort)(value << 8);
-
                     this.DMA = 0;
                     break;
 
