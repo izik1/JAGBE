@@ -153,7 +153,7 @@ namespace JAGBE.GB.Computation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        internal bool SetRegisters(int pointer, byte value)
+        internal bool SetRegister(int pointer, byte value)
         {
             switch (pointer)
             {

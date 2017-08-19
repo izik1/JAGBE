@@ -588,7 +588,7 @@ namespace JAGBE.GB.Computation
         {
             if ((pointer & 0xF0) == 0x40)
             {
-                if (!this.lcdMemory.SetRegisters(pointer - 0x40, value))
+                if (!this.lcdMemory.SetRegister(pointer - 0x40, value))
                 {
                     Console.WriteLine(
                         "Failed write (LCD Rg): " +
