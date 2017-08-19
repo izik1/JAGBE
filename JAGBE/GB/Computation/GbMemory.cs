@@ -7,6 +7,7 @@ using JAGBE.GB.Input;
 namespace JAGBE.GB.Computation
 {
     /// <summary>
+    /// A class for keeping track of the Memory state of the Game Boy.
     /// </summary>
     /// <remarks>
     /// * General Memory Map <br/>
@@ -50,6 +51,9 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal bool IME;
 
+        /// <summary>
+        /// The LCD memory
+        /// </summary>
         internal LcdMemory lcdMemory = new LcdMemory();
 
         /// <summary>
@@ -57,6 +61,9 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal MemoryBankController MBCMode;
 
+        /// <summary>
+        /// The next IME value
+        /// </summary>
         internal bool NextIMEValue;
 
         /// <summary>
@@ -64,6 +71,9 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal readonly byte[] Oam = new byte[MemoryRange.OAMSIZE];
 
+        /// <summary>
+        /// The status of the cpu
+        /// </summary>
         internal CpuState Status;
 
         /// <summary>
@@ -76,9 +86,15 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal readonly byte[] WRam = new byte[MemoryRange.WRAMBANKSIZE * 8];
 
+        /// <summary>
+        /// Should low (0h-100h) writes be redirected to the boot rom?
+        /// </summary>
         private bool bootMode = true;
 
-        private GbUInt16 div = 0;
+        /// <summary>
+        /// The system timer.
+        /// </summary>
+        private GbUInt16 sysTimer = 0;
 
         /// <summary>
         /// Should ERam be used?
@@ -95,7 +111,14 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal byte IF;
 
+        /// <summary>
+        /// The joypad
+        /// </summary>
         private byte Joypad;
+
+        /// <summary>
+        /// The keys of the joypad
+        /// </summary>
         private byte keys = 0xFF;
 
         /// <summary>
@@ -108,16 +131,45 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private int MappedRomBank = 1;
 
+        /// <summary>
+        /// Is ram enabled in MBC?
+        /// </summary>
         private bool MbcRamMode;
+
+        /// <summary>
+        /// The previous state of <see cref="keys"/>
+        /// </summary>
         private byte prevKeys = 0xFF;
 
+        /// <summary>
+        /// The previous state of timer input
+        /// </summary>
         private bool PrevTimerIn;
+
+        /// <summary>
+        /// Is a TIMA Interupt scheduled?
+        /// </summary>
         private bool ScheduleTimaInterupt;
 
+        /// <summary>
+        /// The tac register
+        /// </summary>
         private byte Tac;
+
+        /// <summary>
+        /// The TIMA Modulo Register
+        /// </summary>
         private byte TimaM;
+
+        /// <summary>
+        /// The TIMA Value Register.
+        /// </summary>
         private byte TimaV;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GbMemory"/> class with the given <paramref name="inputHandler"/>.
+        /// </summary>
+        /// <param name="inputHandler">The input handler.</param>
         internal GbMemory(IInputHandler inputHandler) // Null is valid
         {
             if (inputHandler != null)
@@ -126,11 +178,18 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GbMemory"/> class.
+        /// </summary>
         internal GbMemory() : this(null)
         {
         }
 
-        public GbUInt16 Div => this.div;
+        /// <summary>
+        /// Gets the system timer.
+        /// </summary>
+        /// <value>The system timer.</value>
+        public GbUInt16 SysTimer => this.sysTimer;
 
         /// <summary>
         /// Gets the instance's registers.
@@ -138,10 +197,21 @@ namespace JAGBE.GB.Computation
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
 
+        /// <summary>
+        /// Gets value of memory at HL.
+        /// </summary>
+        /// <returns></returns>
         public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
 
+        /// <summary>
+        /// Gets active rom bank.
+        /// </summary>
+        /// <returns></returns>
         public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
+        /// <summary>
+        /// Updates the key state.
+        /// </summary>
         public void UpdateKeys()
         {
             if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
@@ -182,14 +252,23 @@ namespace JAGBE.GB.Computation
         }
 
         /// <summary>
-        /// Gets the memory at the address.
+        /// Gets the memory at <paramref name="address"/>.
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
         internal byte GetMappedMemory(ushort address) => GetMappedMemory(address, false);
 
+        /// <summary>
+        /// Gets the memory at <paramref name="address"/> - for use in DMAs.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <returns></returns>
         internal byte GetMappedMemoryDma(ushort address) => GetMappedMemory(address, true);
 
+        /// <summary>
+        /// Loads a 8-bit value and increments the pc.
+        /// </summary>
+        /// <returns></returns>
         internal byte LdI8() => GetMappedMemory(this.R.Pc++);
 
         /// <summary>
@@ -214,6 +293,12 @@ namespace JAGBE.GB.Computation
             this.Push(value.HighByte);
         }
 
+        /// <summary>
+        /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
         internal void SetMappedMemory(ushort pointer, byte value)
         {
             if (pointer < 0x8000)
@@ -253,9 +338,17 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        /// <summary>
+        /// Sets the memory at HL to value.
+        /// </summary>
+        /// <param name="value">The value.</param>
         internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
 
-        internal void UpdateTimer(GbUInt16 value)
+        /// <summary>
+        /// Updates the timer.
+        /// </summary>
+        /// <param name="cycles">The value.</param>
+        internal void UpdateTimer(GbUInt16 cycles)
         {
             if (this.ScheduleTimaInterupt)
             {
@@ -263,8 +356,8 @@ namespace JAGBE.GB.Computation
                 this.TimaV = this.TimaM;
             }
 
-            this.div += value;
-            bool divBit = (this.Tac.GetBit(0) && this.div.HighByte.GetBit(1)) || this.div.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
+            this.sysTimer += cycles;
+            bool divBit = (this.Tac.GetBit(0) && this.sysTimer.HighByte.GetBit(1)) || this.sysTimer.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
             bool b = this.Tac.GetBit(1) && divBit;
             if (this.PrevTimerIn && !b)
             {
@@ -279,6 +372,13 @@ namespace JAGBE.GB.Computation
             this.PrevTimerIn = b;
         }
 
+        /// <summary>
+        /// Determines whether <paramref name="number"/> is an unused register number.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="number"/> is an unused register number; otherwise, <c>false</c>.
+        /// </returns>
         private static bool IsUnusedIoRegister(byte number)
         {
             if ((number != 0 && number < 0x4) || number == 0x15 || number == 0x1F)
@@ -335,7 +435,7 @@ namespace JAGBE.GB.Computation
                     return GetJoypad(this.keys);
 
                 case 0x04:
-                    return this.div.HighByte;
+                    return this.sysTimer.HighByte;
 
                 case 0x05:
                     return this.TimaV;
@@ -355,6 +455,11 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        /// <summary>
+        /// Gets value of the joypad.
+        /// </summary>
+        /// <param name="p1">The p1.</param>
+        /// <returns></returns>
         private byte GetJoypad(byte p1) =>
             (byte)((!this.Joypad.GetBit(5) ? (p1 & 0xF) : !this.Joypad.GetBit(4) ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
@@ -450,12 +555,22 @@ namespace JAGBE.GB.Computation
             return this.Rom[address + (bank * MemoryRange.ROMBANKSIZE)];
         }
 
+        /// <summary>
+        /// Called when input is recieved.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="InputEventArgs"/> instance containing the event data.</param>
         private void OnInput(object sender, InputEventArgs e)
         {
             this.prevKeys = this.keys;
             this.keys = e.value;
         }
 
+        /// <summary>
+        /// Sets <see cref="ERam"/> at <paramref name="address"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="value">The value.</param>
         private void SetERam(int address, byte value)
         {
             if (this.ERamEnabled)
@@ -503,7 +618,7 @@ namespace JAGBE.GB.Computation
                     return;
 
                 case 0x04:
-                    this.div = 0;
+                    this.sysTimer = 0;
                     return;
 
                 case 0x05:
@@ -537,6 +652,12 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        /// <summary>
+        /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <remarks>Common to all MBC modes</remarks>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="value">The value.</param>
         private void SetMappedMemoryCommon(ushort pointer, byte value)
         {
             if (pointer <= 0x9FFF)
