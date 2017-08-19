@@ -88,7 +88,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Interupt Enable Register
         /// </summary>
-        private byte IER;
+        internal byte IER;
 
         /// <summary>
         /// The Interupt Flags register
