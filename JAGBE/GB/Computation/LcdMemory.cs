@@ -5,26 +5,21 @@ namespace JAGBE.GB.Computation
     internal sealed class LcdMemory
     {
         public const int Height = 144;
-
         public const int Width = 160;
         public byte BgPallet;
         public int DMA = Cpu.DelayStep * 162;
         public ushort DMAAddress;
         public byte DMAValue;
         internal int cy;
-
         internal int[] displayMemory = new int[Width * Height];
         internal bool ForceNullRender;
-
         internal bool IRC;
         internal byte LY;
         internal byte LYC;
         internal byte ObjAttriMemOffset;
         internal byte objPallet0;
         internal byte objPallet1;
-
         internal bool PIRC;
-        internal readonly byte[] pObjAttriMem = new byte[0xA0];
         internal byte SCX;
         internal byte SCY;
         internal byte STAT;

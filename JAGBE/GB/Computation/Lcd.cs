@@ -104,7 +104,7 @@ namespace JAGBE.GB.Computation
                 if (!lcdMem.PIRC)
                 {
                     lcdMem.PIRC = true;
-                    mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemory(0xFF0F) | 0x2));
+                    mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemoryDma(0xFF0F) | 0x2));
                 }
             }
             else
@@ -148,13 +148,6 @@ namespace JAGBE.GB.Computation
                     {
                         lcdMem.IRC = true;
                     }
-                }
-
-                while (lcdMem.ObjAttriMemOffset < (lcdMem.cy / Cpu.DelayStep) * 2)// 2*sprite(4 bytes)
-                {
-                    lcdMem.pObjAttriMem[lcdMem.ObjAttriMemOffset] =
-                        mem.GetMappedMemory((ushort)(0xFE00 + lcdMem.ObjAttriMemOffset));
-                    lcdMem.ObjAttriMemOffset++;
                 }
             }
             else if (lcdMem.cy == Cpu.DelayStep * 11)
@@ -321,7 +314,7 @@ namespace JAGBE.GB.Computation
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = mem.GetMappedMemory((ushort)(lineOffset + mapOffset));
+                    tile = mem.VRam[(ushort)(lineOffset + mapOffset)];
                     if (!lcdMem.Lcdc.GetBit(4) && tile < 128)
                     {
                         tile += 256;
