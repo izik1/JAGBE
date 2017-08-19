@@ -33,7 +33,7 @@ namespace JAGBE.GB.Computation
 
             if (lcdMem.LY < 144)
             {
-                RenderLine(mem);
+                RenderLine(lcdMem, mem.VRam, mem.Oam);
             }
             else if (lcdMem.LY == 144)
             {
@@ -48,7 +48,7 @@ namespace JAGBE.GB.Computation
                         mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemoryDma(0xFF0F) | 1));
                         lcdMem.IRC |= lcdMem.STAT.GetBit(6) && lcdMem.LYC == 144;
                     }
-                    else if (mem.lcdMemory.cy == Cpu.DelayStep * 113)
+                    else if (lcdMem.cy == Cpu.DelayStep * 113)
                     {
                         lcdMem.LY++;
                         lcdMem.cy = -Cpu.DelayStep;
@@ -128,13 +128,12 @@ namespace JAGBE.GB.Computation
 
         private static int GetPixelIndex(byte[] VRam, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
         {
-            int i = (VRam[(ushort)((tileNumber * 16) + baseTileAddress + (y * 2))].GetBit((byte)(7 - x)) ? 1 : 0);
-            return i + (VRam[(ushort)((tileNumber * 16) + baseTileAddress + (y * 2) + 1)].GetBit((byte)(7 - x)) ? 2 : 0);
+            int i = (VRam[(tileNumber * 16) + baseTileAddress + (y * 2)].GetBit((byte)(7 - x)) ? 1 : 0);
+            return i + (VRam[(tileNumber * 16) + baseTileAddress + (y * 2) + 1].GetBit((byte)(7 - x)) ? 2 : 0);
         }
 
-        private static void RenderLine(GbMemory mem)
+        private static void RenderLine(LcdMemory lcdMem, byte[] VRam, byte[] Oam)
         {
-            LcdMemory lcdMem = mem.lcdMemory;
             if (lcdMem.cy == 0)
             {
                 lcdMem.STAT &= 0xFC;
@@ -168,17 +167,17 @@ namespace JAGBE.GB.Computation
                 {
                     if (lcdMem.Lcdc.GetBit(0))
                     {
-                        ScanLine(mem.lcdMemory, mem.VRam);
+                        ScanLine(lcdMem, VRam);
                     }
 
                     if (lcdMem.Lcdc.GetBit(5))
                     {
-                        ScanLineWindow(mem.lcdMemory, mem.VRam);
+                        ScanLineWindow(lcdMem, VRam);
                     }
 
                     if (lcdMem.Lcdc.GetBit(1))
                     {
-                        ScanLineSprite(mem.lcdMemory, mem.VRam, mem.Oam);
+                        ScanLineSprite(lcdMem, VRam, Oam);
                     }
                 }
 
