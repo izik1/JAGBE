@@ -1,18 +1,10 @@
 ﻿namespace JAGBE.GB
 {
     /// <summary>
-    /// Extensions for <see cref="byte"/>
+    /// Provides extensions for <see cref="byte"/>
     /// </summary>
     internal static class ByteExtensions
     {
-        /// <summary>
-        /// masks b with m.
-        /// </summary>
-        /// <param name="b">The first byte.</param>
-        /// <param name="m">The 2nd byte.</param>
-        /// <returns><c><paramref name="b"/> &amp; <paramref name="m"/></c></returns>
-        internal static byte Mask(this byte b, byte m) => (byte)(b & m);
-
         /// <summary>
         /// Determines if adding two bytes would produce a half carry
         /// </summary>
