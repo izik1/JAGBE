@@ -27,7 +27,7 @@
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CleanIntermediates>True</CleanIntermediates>
-    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Internals, Privates, PrivateFields, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
+    <VisibleItems>Attributes, Internals, Privates, PrivateFields, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>10</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
@@ -59,12 +59,22 @@
           <output includeNamespaces="false" namespacesFile="Namespaces" folder="{@OutputFolder}" boundedCapacity="100" />
         </component>
       </ComponentConfig>
-<ComponentConfig id="Code Block Component" enabled="True"><component id="Code Block Component"><!-- Base path for relative filenames in source attributes (optional) --><basePath value="{@HtmlEncProjectFolder}" /><!-- Base output paths for the files (required).  These should match the parent folder of the output path
-	 of the HTML files (see each of the SaveComponent instances in the configuration files). --><outputPaths>
+      <ComponentConfig id="Code Block Component" enabled="True">
+        <component id="Code Block Component">
+          <!-- Base path for relative filenames in source attributes (optional) -->
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <!-- Base output paths for the files (required).  These should match the parent folder of the output path
+	 of the HTML files (see each of the SaveComponent instances in the configuration files). -->
+          <outputPaths>
 	{@HelpFormatOutputPaths}
-</outputPaths><!-- Allow missing source files (Optional).  If omitted, it will generate errors if referenced source files
-	 are missing. --><allowMissingSource value="false" /><!-- Remove region markers from imported code blocks.  If omitted, region markers in imported code blocks
-	 are left alone. --><removeRegionMarkers value="false" /><!-- Code colorizer options (required).
+</outputPaths>
+          <!-- Allow missing source files (Optional).  If omitted, it will generate errors if referenced source files
+	 are missing. -->
+          <allowMissingSource value="false" />
+          <!-- Remove region markers from imported code blocks.  If omitted, region markers in imported code blocks
+	 are left alone. -->
+          <removeRegionMarkers value="false" />
+          <!-- Code colorizer options (required).
 	 Attributes:
 		Language syntax configuration file (required)
 		XSLT style sheet file (required)
@@ -76,7 +86,11 @@
 		Enable outlining (optional)
 		Keep XML comment "see" tags within the code (optional)
 		Tab size override (optional, 0 = Use syntax file setting)
-		Use language name as default title (optional) --><colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" /></component></ComponentConfig></ComponentConfigurations>
+		Use language name as default title (optional) -->
+          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" />
+        </component>
+      </ComponentConfig>
+    </ComponentConfigurations>
     <WarnOnMissingSourceContext>False</WarnOnMissingSourceContext>
     <PlugInConfigurations>
     </PlugInConfigurations>
