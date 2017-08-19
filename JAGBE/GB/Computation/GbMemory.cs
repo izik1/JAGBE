@@ -188,6 +188,16 @@ namespace JAGBE.GB.Computation
         /// <returns></returns>
         internal byte GetMappedMemory(ushort address)
         {
+            if (this.lcdMemory.DMA < Cpu.DelayStep * 162)
+            {
+                if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
+                {
+                    return this.HRam[address - 0xFF80];
+                }
+
+                return 0xFF;
+            }
+
             if (address < 0x4000) // 0x0000-3FFF
             {
                 return GetRomMemory(0, address);

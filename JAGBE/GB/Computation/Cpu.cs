@@ -103,20 +103,21 @@ namespace JAGBE.GB.Computation
             }
             void TickDMA()
             {
-                if (this.memory.lcdMemory.DMA < DelayStep * 162)
+                LcdMemory lcdMem = this.memory.lcdMemory;
+                if (lcdMem.DMA < DelayStep * 162)
                 {
-                    if (this.memory.lcdMemory.DMA != 0)
+                    if (lcdMem.DMA != 0)
                     {
-                        if (this.memory.lcdMemory.DMA > DelayStep)
+                        if (lcdMem.DMA > DelayStep)
                         {
-                            this.memory.Oam[(this.memory.lcdMemory.DMA / DelayStep) - 2] = this.memory.lcdMemory.DMAValue;
+                            this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
                         }
 
-                        this.memory.lcdMemory.DMAValue = this.memory.GetMappedMemory(this.memory.lcdMemory.DMAAddress);
-                        this.memory.lcdMemory.DMAAddress++;
+                        lcdMem.DMAValue = this.memory.GetMappedMemory(this.memory.lcdMemory.DMAAddress);
+                        lcdMem.DMAAddress++;
                     }
 
-                    this.memory.lcdMemory.DMA += DelayStep;
+                    lcdMem.DMA += DelayStep;
                 }
             }
 

@@ -8,7 +8,7 @@ namespace JAGBE.GB.Computation
 
         public const int Width = 160;
         public byte BgPallet;
-        public int DMA;
+        public int DMA = Cpu.DelayStep * 162;
         public ushort DMAAddress;
         public byte DMAValue;
         internal int cy;
@@ -101,7 +101,8 @@ namespace JAGBE.GB.Computation
                     break;
 
                 case 0x6:
-                    this.DMAAddress = (byte)(value << 8);
+                    this.DMAAddress = (ushort)(value << 8);
+
                     this.DMA = 0;
                     break;
 
