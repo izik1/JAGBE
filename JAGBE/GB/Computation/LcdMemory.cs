@@ -4,27 +4,103 @@ namespace JAGBE.GB.Computation
 {
     internal sealed class LcdMemory
     {
+        /// <summary>
+        /// The pallet of the background
+        /// </summary>
         public byte BgPallet;
+
+        /// <summary>
+        /// The DMA cycle number
+        /// </summary>
         public int DMA = Cpu.DelayStep * 162;
+
+        /// <summary>
+        /// The DMA address
+        /// </summary>
         public ushort DMAAddress;
+
+        /// <summary>
+        /// The DMA value
+        /// </summary>
         public byte DMAValue;
+
         internal int cy;
+
+        /// <summary>
+        /// The display memory
+        /// </summary>
         internal int[] displayMemory = new int[Lcd.Width * Lcd.Height];
+
+        /// <summary>
+        /// Should the LCD be forced to skip rendering
+        /// </summary>
         internal bool ForceNullRender;
+
+        /// <summary>
+        /// Is the LCD requesting an interupt
+        /// </summary>
         internal bool IRC;
+
+        /// <summary>
+        /// The Current scan line the lcd is drawing
+        /// </summary>
         internal byte LY;
+
+        /// <summary>
+        /// The number to use when comparing to <see cref="LY"/>
+        /// </summary>
         internal byte LYC;
-        internal byte ObjAttriMemOffset;
+
+        /// <summary>
+        /// The first object pallet
+        /// </summary>
         internal byte objPallet0;
+
+        /// <summary>
+        /// The second object pallet
+        /// </summary>
         internal byte objPallet1;
+
+        /// <summary>
+        /// The Previous state of <see cref="IRC"/>
+        /// </summary>
         internal bool PIRC;
+
+        /// <summary>
+        /// The Scroll X register
+        /// </summary>
         internal byte SCX;
+
+        /// <summary>
+        /// The Scroll Y register
+        /// </summary>
         internal byte SCY;
+
+        /// <summary>
+        /// The STAT register
+        /// </summary>
         internal byte STAT;
+
+        /// <summary>
+        /// The Window W register
+        /// </summary>
         internal byte WX;
+
+        /// <summary>
+        /// The Window Y register
+        /// </summary>
         internal byte WY;
+
+        /// <summary>
+        /// The LCDC register
+        /// </summary>
         internal byte Lcdc;
 
+        /// <summary>
+        /// Gets value of the given <paramref name="number"/>.
+        /// </summary>
+        /// <param name="number">The register number.</param>
+        /// <returns></returns>
         internal byte GetRegister(byte number)
         {
             switch (number)
@@ -71,6 +147,12 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        /// <summary>
+        /// Sets the register number <paramref name="pointer"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         internal bool SetRegisters(int pointer, byte value)
         {
             switch (pointer)
