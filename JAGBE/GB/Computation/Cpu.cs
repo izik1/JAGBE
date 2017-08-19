@@ -162,7 +162,7 @@ namespace JAGBE.GB.Computation
                 if (this.memory.Status == CpuState.HALT)
                 {
                     this.delay += DelayStep;
-                    if ((this.memory.GetMappedMemory(0xFF0F) & this.memory.GetMappedMemory(0xFFFF) & 0x1F) > 0)
+                    if ((this.memory.IF & this.memory.GetMappedMemory(0xFFFF) & 0x1F) > 0)
                     {
                         this.memory.Status = CpuState.OKAY;
                     }
@@ -222,7 +222,7 @@ namespace JAGBE.GB.Computation
         {
             if (step == 0)
             {
-                return (this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(0xFF0F) & 0x1F) == 0;
+                return (this.memory.GetMappedMemory(0xFFFF) & this.memory.IF & 0x1F) == 0;
             }
 
             if (step == 1)
@@ -244,13 +244,13 @@ namespace JAGBE.GB.Computation
 
             if (step == 4)
             {
-                byte b = (byte)(this.memory.GetMappedMemory(0xFFFF) & this.memory.GetMappedMemory(0xFF0F) & 0x1F);
+                byte b = (byte)(this.memory.GetMappedMemory(0xFFFF) & this.memory.IF & 0x1F);
                 for (int i = 0; i < 5; i++)
                 {
                     if (b.GetBit((byte)i))
                     {
                         this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
-                        this.memory.SetMappedMemory(0xFF0F, this.memory.GetMappedMemory(0xFF0F).Res((byte)i));
+                        this.memory.IF &= (byte)(~(1 << i));
                         this.memory.IME = false;
                         this.memory.NextIMEValue = false;
                         return true;

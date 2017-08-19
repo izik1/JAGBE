@@ -45,7 +45,7 @@ namespace JAGBE.GB.Computation
                 {
                     if (lcdMem.cy == Cpu.DelayStep)
                     {
-                        mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemoryDma(0xFF0F) | 1));
+                        mem.IF |= 1;
                         lcdMem.IRC |= lcdMem.STAT.GetBit(6) && lcdMem.LYC == 144;
                     }
                     else if (lcdMem.cy == Cpu.DelayStep * 113)
@@ -104,7 +104,7 @@ namespace JAGBE.GB.Computation
                 if (!lcdMem.PIRC)
                 {
                     lcdMem.PIRC = true;
-                    mem.SetMappedMemory(0xFF0F, (byte)(mem.GetMappedMemoryDma(0xFF0F) | 0x2));
+                    mem.IF |= 2;
                 }
             }
             else

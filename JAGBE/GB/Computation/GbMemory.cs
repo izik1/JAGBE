@@ -93,7 +93,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Interupt Flags register
         /// </summary>
-        private byte IF;
+        internal byte IF;
 
         private byte Joypad;
         private byte keys = 0xFF;
