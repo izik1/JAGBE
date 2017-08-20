@@ -3,14 +3,29 @@ using JAGBE.GB.Computation;
 
 namespace JAGBE.GB.Assembly
 {
+    /// <summary>
+    /// Provides methods for disassembling GameBoy instructions.
+    /// </summary>
     internal static class Disassembler
     {
+        /// <summary>
+        /// A string representation of registers.
+        /// </summary>
         private const string Reg8 = "BCDEHL_A";
 
+        /// <summary>
+        /// The arithmetic operations expressed as groups of 3 chars
+        /// </summary>
         private const string ARITH = "ADDADCSUBSBCANDXOROR CP ";
 
+        /// <summary>
+        /// The CB operations expressed as groups of 4 chars
+        /// </summary>
         private const string CBOPS = "RLC RRC RL  RR  SLA SRA SWAPSRL ";
 
+        /// <summary>
+        /// Strings for each and every opcode
+        /// </summary>
         private static readonly string[] nmOpStrings =
         {
             // 0x00
@@ -42,10 +57,25 @@ namespace JAGBE.GB.Assembly
             "LD HL,SP+r8", "LD SP,HL", "LD A,(a16)", "EI", "UNUSED", "UNUSED", "CP A,d8", "RST 38H",
         };
 
+        /// <summary>
+        /// Turns an integer representation of a register into a string representation
+        /// </summary>
+        /// <param name="r">The r.</param>
+        /// <returns><paramref name="r"/> as a string</returns>
         private static string GetR8(int r) => Reg8[r].ToString().Replace("_", "(HL)");
 
+        /// <summary>
+        /// Disassembles an instruction.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        /// <returns>A string representing the instruction at <paramref name="memory"/>.R.PC</returns>
         public static string DisassembleInstruction(GbMemory memory) => DisassembleInstructionInternal(memory);
 
+        /// <summary>
+        /// Disassembles an instruction.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        /// <returns>A string representing the instruction at <paramref name="memory"/>.R.PC</returns>
         private static string DisassembleInstructionInternal(GbMemory memory)
         {
             byte b = memory.GetMappedMemory(memory.R.Pc);
@@ -74,6 +104,14 @@ namespace JAGBE.GB.Assembly
             return nmOpStrings[b];
         }
 
+        /// <summary>
+        /// Disassembles an arithmetic instruction.
+        /// </summary>
+        /// <param name="opcode">The opcode.</param>
+        /// <returns><paramref name="opcode"/> as a disassembled instruction</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// thrown when opcode is out of the range 0x80-0xBF
+        /// </exception>
         private static string DisassembleInstructionArith(byte opcode)
         {
             int src = (opcode & 7);
@@ -81,12 +119,17 @@ namespace JAGBE.GB.Assembly
 
             if (opcode < 0x80 || opcode > 0xBF)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentOutOfRangeException(nameof(opcode));
             }
 
             return ARITH.Substring(dest * 3, 3).TrimEnd(' ') + " A," + GetR8(src);
         }
 
+        /// <summary>
+        /// Disassembles a arithmetic instruction.
+        /// </summary>
+        /// <param name="cbCode">The cb code.</param>
+        /// <returns><paramref name="cbCode"/> as a disassembled instruction</returns>
         private static string DisassembleInstructionCb(byte cbCode)
         {
             int dest = ((cbCode >> 3) & 7);
