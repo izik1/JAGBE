@@ -494,7 +494,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return (this.lcdMemory.Lcdc & 0x3) == 3 ? (byte)0xFF : this.VRam[address - 0x8000];
+                return (this.lcdMemory.STAT & 0x3) == 3 ? (byte)0xFF : this.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -514,7 +514,7 @@ namespace JAGBE.GB.Computation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return (this.lcdMemory.Lcdc & 0x2) == 2 ? (byte)0xFF : this.Oam[address - 0xFE00];
+                return (this.lcdMemory.STAT & 0x2) == 2 ? (byte)0xFF : this.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
