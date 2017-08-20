@@ -32,45 +32,12 @@ namespace JAGBE.UI
             return new Texture2D(id, width, height);
         }
 
-        public static Texture2D GenerateMonoChromeTexture(bool[] src, int width, int height, bool invertY)
-        {
-            using (DirectBitmap bitmap = new DirectBitmap(width, height))
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        if (src[(invertY ? height - y - 1 : y) * width + x])
-                        {
-                            bitmap.Bits[y * width + (width - x - 1)] = -1;
-                        }
-                    }
-                }
-                return GenerateTexture(bitmap.Bitmap, width, height);
-            }
-        }
-
         public static Texture2D GenerateRgbaTexture(int[] src, int width, int height)
         {
             using (DirectBitmap bitmap = new DirectBitmap(width, height))
             {
                 Buffer.BlockCopy(src, 0, bitmap.Bits, 0, width * height * 4);
                 return GenerateTexture(bitmap.Bitmap, width, height);
-            }
-        }
-
-        public static Texture2D GenerateMonoChromeTexture(Color[,] src, int width, int height)
-        {
-            using (Bitmap bitmap = new Bitmap(width, height))
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        bitmap.SetPixel(x, y, src[x, y]);
-                    }
-                }
-                return GenerateTexture(bitmap, width, height);
             }
         }
     }
