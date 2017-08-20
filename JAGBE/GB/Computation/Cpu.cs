@@ -6,6 +6,9 @@ using JAGBE.GB.Input;
 
 namespace JAGBE.GB.Computation
 {
+    /// <summary>
+    /// This class manages the GameBoy's cpu.
+    /// </summary>
     internal sealed class Cpu
     {
         /// <summary>
@@ -14,6 +17,9 @@ namespace JAGBE.GB.Computation
         /// <value>4194304</value>
         internal const int ClockSpeedHz = 4194304;
 
+        /// <summary>
+        /// The multiplier for the number of clocks an instruction takes.
+        /// </summary>
         internal const int DelayStep = 4;
 
         /// <summary>
@@ -21,6 +27,10 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private int delay;
 
+        /// <summary>
+        /// Gets the pc.
+        /// </summary>
+        /// <value>The pc.</value>
         internal GbUInt16 Pc => this.memory.R.Pc;
 
         /// <summary>
@@ -29,8 +39,17 @@ namespace JAGBE.GB.Computation
         /// <value>The ram dump.</value>
         internal byte[] RamDump => this.memory.DumpRam();
 
+        /// <summary>
+        /// The memory of this cpu
+        /// </summary>
         private GbMemory memory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cpu"/> class.
+        /// </summary>
+        /// <param name="bootRom">The boot rom.</param>
+        /// <param name="rom">The rom.</param>
+        /// <param name="inputHandler">The input handler.</param>
         public Cpu(byte[] bootRom, byte[] rom, IInputHandler inputHandler) => Reset(rom, bootRom, inputHandler);
 
         /// <summary>
@@ -42,10 +61,25 @@ namespace JAGBE.GB.Computation
         /// <param name="memory">The memory.</param>
         public Cpu(GbMemory memory) => this.memory = memory;
 
+        /// <summary>
+        /// Gets the display memory.
+        /// </summary>
+        /// <value>The display memory.</value>
         public int[] DisplayMemory => this.memory.lcdMemory.displayMemory;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether debug information is active.
+        /// </summary>
+        /// <value><see langword="true"/> if debug; otherwise, <see langword="false"/>.</value>
         public bool WriteToConsole { get; set; }
 
+        /// <summary>
+        /// Resets the memory of this instance.
+        /// </summary>
+        /// <param name="rom">The rom.</param>
+        /// <param name="bootRom">The boot rom.</param>
+        /// <param name="inputHandler">The input handler.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Reset(byte[] rom, byte[] bootRom, IInputHandler inputHandler)
         {
             byte ramBanks = rom[0x149];
@@ -85,6 +119,7 @@ namespace JAGBE.GB.Computation
         /// Runs <paramref name="cycles"/> number of clock ticks
         /// </summary>
         /// <param name="cycles">The number of clock ticks (NOT INSTRUCTIONS) to run</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Tick(int cycles)
         {
             this.delay -= cycles;
