@@ -155,7 +155,7 @@ namespace JAGBE.GB.DataTypes
         /// Gets the 16-bit register at <paramref name="index"/>
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="UseAf">if set to <c>true</c> returns AF instead of SP.</param>
+        /// <param name="UseAf">if set to <see langword="true"/> returns AF instead of SP.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
@@ -186,7 +186,7 @@ namespace JAGBE.GB.DataTypes
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="value">The value.</param>
-        /// <param name="UseAf">if set to <c>true</c> sets AF instead of SP.</param>
+        /// <param name="UseAf">if set to <see langword="true"/> sets AF instead of SP.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
         /// </exception>

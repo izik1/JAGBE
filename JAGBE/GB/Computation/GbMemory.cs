@@ -377,7 +377,8 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="number">The number.</param>
         /// <returns>
-        /// <c>true</c> if <paramref name="number"/> is an unused register number; otherwise, <c>false</c>.
+        /// <see langword="true"/> if <paramref name="number"/> is an unused register number;
+        /// otherwise, <see langword="false"/>.
         /// </returns>
         private static bool IsUnusedIoRegister(byte number)
         {
@@ -467,7 +468,7 @@ namespace JAGBE.GB.Computation
         /// Gets the mapped memory.
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <param name="ignoreDmaBlock">if set to <c>true</c> ignore dma write restriction.</param>
+        /// <param name="ignoreDmaBlock">if set to <see langword="true"/> ignore dma write restriction.</param>
         /// <returns></returns>
         private byte GetMappedMemory(ushort address, bool ignoreDmaBlock)
         {
