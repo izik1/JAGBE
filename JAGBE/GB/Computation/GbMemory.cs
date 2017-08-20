@@ -47,6 +47,16 @@ namespace JAGBE.GB.Computation
         internal readonly byte[] HRam = new byte[MemoryRange.HRAMSIZE];
 
         /// <summary>
+        /// The Interupt Enable Register
+        /// </summary>
+        internal byte IER;
+
+        /// <summary>
+        /// The Interupt Flags register
+        /// </summary>
+        internal byte IF;
+
+        /// <summary>
         /// The Interupt Master Enable register
         /// </summary>
         internal bool IME;
@@ -92,24 +102,9 @@ namespace JAGBE.GB.Computation
         private bool bootMode = true;
 
         /// <summary>
-        /// The system timer.
-        /// </summary>
-        private GbUInt16 sysTimer = 0;
-
-        /// <summary>
         /// Should ERam be used?
         /// </summary>
         private bool ERamEnabled;
-
-        /// <summary>
-        /// The Interupt Enable Register
-        /// </summary>
-        internal byte IER;
-
-        /// <summary>
-        /// The Interupt Flags register
-        /// </summary>
-        internal byte IF;
 
         /// <summary>
         /// The joypad
@@ -150,6 +145,11 @@ namespace JAGBE.GB.Computation
         /// Is a TIMA Interupt scheduled?
         /// </summary>
         private bool ScheduleTimaInterupt;
+
+        /// <summary>
+        /// The system timer.
+        /// </summary>
+        private GbUInt16 sysTimer = 0;
 
         /// <summary>
         /// The tac register
@@ -667,6 +667,7 @@ namespace JAGBE.GB.Computation
                 {
                     return;
                 }
+
                 this.VRam[pointer - 0x8000] = value;
             }
             else if (pointer <= 0xBFFF)
