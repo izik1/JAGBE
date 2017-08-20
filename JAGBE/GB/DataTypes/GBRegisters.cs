@@ -109,6 +109,15 @@ namespace JAGBE.GB.DataTypes
             set => Hl = new GbUInt16(Hl.HighByte, value);
         }
 
+        /// <summary>
+        /// Gets the 8-bit register at <paramref name="index"/>.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="index"/> == 6</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index"/> is less than zero or greater than seven
+        /// </exception>
         public byte GetR8(int index)
         {
             switch (index)
@@ -131,19 +140,26 @@ namespace JAGBE.GB.DataTypes
                 case 5:
                     return this.L;
 
+                case 6:
+                    throw new ArgumentException(nameof(index));
+
                 case 7:
                     return this.A;
 
                 default:
-                    throw new ArgumentException(nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
         /// <summary>
-        /// Gets the R16.
+        /// Gets the 16-bit register at <paramref name="index"/>
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="UseAf">if set to <c>true</c> returns AF instead of SP.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
+        /// </exception>
         public GbUInt16 GetR16(int index, bool UseAf)
         {
             switch (index)
@@ -161,16 +177,19 @@ namespace JAGBE.GB.DataTypes
                     return UseAf ? this.Af : this.Sp;
 
                 default:
-                    throw new ArgumentException(nameof(index));
+                    throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
         /// <summary>
-        /// Sets the R16.
+        /// Sets the 16-bit register at <paramref name="index"/>.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="UseAf">if set to <c>true</c> returns AF instead of SP.</param>
-        /// <param name="value"></param>
+        /// <param name="value">The value.</param>
+        /// <param name="UseAf">if set to <c>true</c> sets AF instead of SP.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
+        /// </exception>
         public void SetR16(int index, GbUInt16 value, bool UseAf)
         {
             switch (index)
@@ -203,6 +222,16 @@ namespace JAGBE.GB.DataTypes
             }
         }
 
+        /// <summary>
+        /// Sets the 8-bit register at <paramref name="index"/> to <paramref name="value"/>.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="index"/> == 6</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index"/> is less than zero or greater than seven
+        /// </exception>
         public void SetR8(int index, byte value)
         {
             switch (index)
