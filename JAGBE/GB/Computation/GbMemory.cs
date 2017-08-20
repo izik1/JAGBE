@@ -663,6 +663,10 @@ namespace JAGBE.GB.Computation
         {
             if (pointer <= 0x9FFF)
             {
+                if ((this.lcdMemory.STAT & 3) == 3)
+                {
+                    return;
+                }
                 this.VRam[pointer - 0x8000] = value;
             }
             else if (pointer <= 0xBFFF)
@@ -679,6 +683,11 @@ namespace JAGBE.GB.Computation
             }
             else if (pointer <= 0xFE9F)
             {
+                if ((this.lcdMemory.STAT & 2) == 2)
+                {
+                    return;
+                }
+
                 this.Oam[pointer - 0xFE00] = value;
             }
             else if (pointer <= 0xFEFF)
