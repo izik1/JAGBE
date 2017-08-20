@@ -1,4 +1,6 @@
-﻿namespace JAGBE.GB.Computation
+﻿using System;
+
+namespace JAGBE.GB.Computation
 {
     internal sealed class Apu
     {
@@ -26,6 +28,7 @@
                     return (byte)(this.NR52 | 0x70);
 
                 default:
+                    Console.WriteLine("Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
                     return 0xFF;
             }
         }
