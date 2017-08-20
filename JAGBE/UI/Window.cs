@@ -86,19 +86,19 @@ namespace JAGBE.UI
                     this.keys = this.keys.Res(3);
                     break;
 
-                case Key.Up:
+                case Key.Right:
                     this.keys = this.keys.Res(4);
                     break;
 
-                case Key.Right:
+                case Key.Left:
                     this.keys = this.keys.Res(5);
                     break;
 
-                case Key.Down:
+                case Key.Up:
                     this.keys = this.keys.Res(6);
                     break;
 
-                case Key.Left:
+                case Key.Down:
                     this.keys = this.keys.Res(7);
                     break;
 
@@ -140,19 +140,19 @@ namespace JAGBE.UI
                     this.keys = this.keys.Set(3);
                     break;
 
-                case Key.Up:
+                case Key.Right:
                     this.keys = this.keys.Set(4);
                     break;
 
-                case Key.Right:
+                case Key.Left:
                     this.keys = this.keys.Set(5);
                     break;
 
-                case Key.Down:
+                case Key.Up:
                     this.keys = this.keys.Set(6);
                     break;
 
-                case Key.Left:
+                case Key.Down:
                     this.keys = this.keys.Set(7);
                     break;
 
