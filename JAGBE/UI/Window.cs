@@ -15,6 +15,8 @@ namespace JAGBE.UI
 
         private byte keys = 0xFF;
 
+        private readonly Key[] keybinds = { Key.A, Key.S, Key.Space, Key.Enter, Key.Right, Key.Left, Key.Up, Key.Down };
+
         public Window() : this(160, 144)
         {
         }
@@ -68,43 +70,14 @@ namespace JAGBE.UI
                 return;
             }
 
-            switch (e.Key)
+            int i = Array.IndexOf(this.keybinds, e.Key);
+
+            if (i < 0)
             {
-                case Key.A:
-                    this.keys = this.keys.Res(0);
-                    break;
-
-                case Key.S:
-                    this.keys = this.keys.Res(1);
-                    break;
-
-                case Key.Space:
-                    this.keys = this.keys.Res(2);
-                    break;
-
-                case Key.Enter:
-                    this.keys = this.keys.Res(3);
-                    break;
-
-                case Key.Right:
-                    this.keys = this.keys.Res(4);
-                    break;
-
-                case Key.Left:
-                    this.keys = this.keys.Res(5);
-                    break;
-
-                case Key.Up:
-                    this.keys = this.keys.Res(6);
-                    break;
-
-                case Key.Down:
-                    this.keys = this.keys.Res(7);
-                    break;
-
-                default:
-                    return;
+                return;
             }
+
+            this.keys &= ((byte)(~(1 << i)));
 
             // Try catch hack because OpenTK catches all exceptions that come from this function...
             // so there wouldn't be a way to tell that it was thrown if this wasn't here. Re-throw
@@ -122,43 +95,13 @@ namespace JAGBE.UI
 
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
-            switch (e.Key)
+            int i = Array.IndexOf(this.keybinds, e.Key);
+            if (i < 0)
             {
-                case Key.A:
-                    this.keys = this.keys.Set(0);
-                    break;
-
-                case Key.S:
-                    this.keys = this.keys.Set(1);
-                    break;
-
-                case Key.Space:
-                    this.keys = this.keys.Set(2);
-                    break;
-
-                case Key.Enter:
-                    this.keys = this.keys.Set(3);
-                    break;
-
-                case Key.Right:
-                    this.keys = this.keys.Set(4);
-                    break;
-
-                case Key.Left:
-                    this.keys = this.keys.Set(5);
-                    break;
-
-                case Key.Up:
-                    this.keys = this.keys.Set(6);
-                    break;
-
-                case Key.Down:
-                    this.keys = this.keys.Set(7);
-                    break;
-
-                default:
-                    return;
+                return;
             }
+
+            this.keys |= ((byte)(1 << i));
 
             // Try catch hack because OpenTK catches all exceptions that come from this function...
             // so there wouldn't be a way to tell that it was thrown if this wasn't here. Re-throw
