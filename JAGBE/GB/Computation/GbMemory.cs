@@ -96,6 +96,8 @@ namespace JAGBE.GB.Computation
         /// </summary>
         internal readonly byte[] WRam = new byte[MemoryRange.WRAMBANKSIZE * 8];
 
+        private readonly Apu apu = new Apu();
+
         /// <summary>
         /// Should low (0h-100h) writes be redirected to the boot rom?
         /// </summary>
@@ -430,6 +432,11 @@ namespace JAGBE.GB.Computation
                 return this.lcdMemory.GetRegister(number);
             }
 
+            if (number >= 0x10 && number <= 0x26)
+            {
+                return this.apu.GetRegister(number);
+            }
+
             switch (number)
             {
                 case 0x00:
@@ -601,6 +608,20 @@ namespace JAGBE.GB.Computation
                         " (value)");
                 }
 
+                return;
+            }
+
+            if (pointer >= 0x10 && pointer <= 0x26)
+            {
+                if (!this.apu.SetRegister((byte)pointer, value))
+                {
+                    Console.WriteLine("Failed write (APU Rg): " +
+                        pointer.ToString("X2") +
+                        " (ptr) " +
+                        this.R.Pc.ToString("X4") +
+                        " (pc) " + value.ToString("X2") +
+                        " (value)");
+                }
                 return;
             }
 
