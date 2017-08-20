@@ -5,6 +5,10 @@ using System;
 
 namespace JAGBE.UI
 {
+    /// <summary>
+    /// Creates fast access to individual bytes in a bitmap by GC pinning them
+    /// </summary>
+    /// <seealso cref="IDisposable"/>
     internal sealed class DirectBitmap : IDisposable
     {
         /// <summary>
