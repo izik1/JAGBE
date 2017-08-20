@@ -41,13 +41,13 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
-      <NamespaceSummaryItem name="JAGBE" isDocumented="True">The base project namespace</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="JAGBE.Attributes" isDocumented="True">The home of all global attributes for the project.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="JAGBE.GB" isDocumented="True">A collection of classes related the GameBoy's hardware emulation.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="JAGBE.GB.DataTypes" isDocumented="True">Data types that the GameBoy hardware emulation uses.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="JAGBE.Stats" isDocumented="True">Provides statistics for various Attribute usage statistics.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="JAGBE.UI" isDocumented="True">The home of the UI for the emulator.</NamespaceSummaryItem>
-    </NamespaceSummaries>
+<NamespaceSummaryItem name="JAGBE" isDocumented="True">The base project namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.Attributes" isDocumented="True">The home of all global attributes for the project.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.GB" isDocumented="True">A collection of classes related the GameBoy's hardware emulation.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.GB.DataTypes" isDocumented="True">Data types that the GameBoy hardware emulation uses.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.Stats" isDocumented="True">Provides statistics for various Attribute usage statistics.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.UI" isDocumented="True">The home of the UI for the emulator.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="JAGBE.GB.Input" isDocumented="True">A collection of classes and interfaces to assist with generic input handling</NamespaceSummaryItem></NamespaceSummaries>
     <ComponentConfigurations>
       <ComponentConfig id="IntelliSense Component" enabled="True">
         <component id="IntelliSense Component">
