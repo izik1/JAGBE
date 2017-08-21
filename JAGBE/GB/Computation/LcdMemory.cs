@@ -142,8 +142,7 @@ namespace JAGBE.GB.Computation
                     return this.WX;
 
                 default:
-                    Console.WriteLine("Possible bad Read from LCD 0x" + number.ToString("X2") + " (reg number)");
-                    return 0xFF;
+                    return 0xFF; // No need to log, all registers are implemented.
             }
         }
 
