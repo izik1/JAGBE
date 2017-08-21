@@ -333,7 +333,7 @@ namespace JAGBE.GB.Computation
         /// </returns>
         private static bool IsUnusedIoRegister(byte number)
         {
-            if (number < 0x4 || number == 0x15 || number == 0x1F)
+            if (number == 3 || number == 0x15 || number == 0x1F)
             {
                 return true;
             }
@@ -376,27 +376,37 @@ namespace JAGBE.GB.Computation
                 return GetJoypad(this.keys);
             }
 
-            if (IsUnusedIoRegister(number))
+            if (number < 3)
             {
+                Console.WriteLine("Serial Read unimplemented");
                 return 0xFF;
             }
 
-            if ((number & 0xF0) == 0x40)
-            {
-                return this.lcdMemory.GetRegister(number);
-            }
-
-            if (number >= 4 && number <= 7)
+            if (number < 0xF)
             {
                 return this.timer.GetRegister(number);
             }
 
-            if (number >= 0x10 && number <= 0x26)
+            if (number == 0xF)
+            {
+                return this.IF;
+            }
+
+            if (number <= 0x3F)
             {
                 return this.apu.GetRegister(number);
             }
 
-            Console.WriteLine("Possible bad Read from IO 0x" + number.ToString("X2") + " (reg)");
+            if (number < 0x50)
+            {
+                return this.lcdMemory.GetRegister(number);
+            }
+
+            if (!IsUnusedIoRegister(number))
+            {
+                Console.WriteLine("Possible bad Read from IO 0x" + number.ToString("X2") + " (reg)");
+            }
+
             return 0xFF;
         }
 

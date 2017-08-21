@@ -7,6 +7,7 @@ namespace JAGBE.GB.Computation
         private byte NR50;
         private byte NR51;
         private byte NR52;
+        private readonly byte[] WavePattern = new byte[16];
 
         internal void Clear()
         {
@@ -16,6 +17,11 @@ namespace JAGBE.GB.Computation
 
         internal byte GetRegister(byte num)
         {
+            if (num < 0x10 || num > 0x3F)
+            {
+                return 0xFF;
+            }
+
             switch (num)
             {
                 case 0x24:
@@ -35,6 +41,17 @@ namespace JAGBE.GB.Computation
 
         internal bool SetRegister(byte num, byte value)
         {
+            if (num < 0x10 || num > 0x3F)
+            {
+                return false;
+            }
+
+            if (num >= 0x30)
+            {
+                this.WavePattern[num - 0x30] = value;
+                return true;
+            }
+
             switch (num)
             {
                 case 0x24:
