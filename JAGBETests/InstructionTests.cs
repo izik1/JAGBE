@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using JAGBE.GB.Computation;
 using JAGBE.GB.Computation.Execution;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBETests
 
@@ -197,7 +198,7 @@ namespace JAGBETests
                 {
                     RunInst(memory);
 
-                    Assert.AreEqual((ushort)(((i & 1) == 0) ^ r == 1 ? 0xC : 3), memory.R.Pc.Value);
+                    Assert.AreEqual(new GbUInt16((ushort)(((i & 1) == 0) ^ r == 1 ? 0xC : 3)), memory.R.Pc);
                     memory.R.Pc = 0;
                     memory.Rom[0] += 8;
                 }
@@ -368,10 +369,10 @@ namespace JAGBETests
             mem.R.Pc = 0;
         }
 
-        private static void BranchTest(GbMemory mem, ushort expectedAddress)
+        private static void BranchTest(GbMemory mem, GbUInt16 expectedAddress)
         {
             RunInst(mem);
-            Assert.AreEqual(expectedAddress, mem.R.Pc.Value);
+            Assert.AreEqual(expectedAddress, mem.R.Pc);
             mem.R.Pc = 0;
         }
 

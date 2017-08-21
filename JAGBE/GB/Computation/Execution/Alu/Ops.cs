@@ -5,7 +5,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Ops
     {
-        internal delegate byte BitOp(GbMemory mem, GbUInt8 valIn, GbUInt8 dest);
+        internal delegate GbUInt8 BitOp(GbMemory mem, GbUInt8 valIn, GbUInt8 dest);
 
         internal delegate void ArithOp8(GbMemory mem, GbUInt8 valIn);
 

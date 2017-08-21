@@ -38,22 +38,22 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The External Ram.
         /// </summary>
-        internal byte[] ERam;
+        internal GbUInt8[] ERam;
 
         /// <summary>
         /// The High Ram (stack)
         /// </summary>
-        internal readonly byte[] HRam = new byte[MemoryRange.HRAMSIZE];
+        internal readonly GbUInt8[] HRam = new GbUInt8[MemoryRange.HRAMSIZE];
 
         /// <summary>
         /// The Interupt Enable Register
         /// </summary>
-        internal byte IER;
+        internal GbUInt8 IER;
 
         /// <summary>
         /// The Interupt Flags register
         /// </summary>
-        internal byte IF;
+        internal GbUInt8 IF;
 
         /// <summary>
         /// The Interupt Master Enable register
@@ -78,7 +78,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Object Atribute Memory.
         /// </summary>
-        internal readonly byte[] Oam = new byte[MemoryRange.OAMSIZE];
+        internal readonly GbUInt8[] Oam = new GbUInt8[MemoryRange.OAMSIZE];
 
         /// <summary>
         /// The status of the cpu
@@ -88,12 +88,12 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Video Ram.
         /// </summary>
-        internal readonly byte[] VRam = new byte[MemoryRange.VRAMBANKSIZE * 2];
+        internal readonly GbUInt8[] VRam = new GbUInt8[MemoryRange.VRAMBANKSIZE * 2];
 
         /// <summary>
         /// The Work Ram.
         /// </summary>
-        internal readonly byte[] WRam = new byte[MemoryRange.WRAMBANKSIZE * 8];
+        internal readonly GbUInt8[] WRam = new GbUInt8[MemoryRange.WRAMBANKSIZE * 8];
 
         private readonly Apu apu = new Apu();
 
@@ -110,7 +110,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The joypad
         /// </summary>
-        private byte Joypad;
+        private GbUInt8 Joypad;
 
         /// <summary>
         /// The keys of the joypad
@@ -174,7 +174,7 @@ namespace JAGBE.GB.Computation
         /// Gets value of memory at HL.
         /// </summary>
         /// <returns></returns>
-        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
+        public GbUInt8 GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
 
         /// <summary>
         /// Gets active rom bank.
@@ -208,7 +208,7 @@ namespace JAGBE.GB.Computation
             byte[] b = new byte[0x10000];
             for (int i = 0; i < 0x10000; i++)
             {
-                b[i] = GetMappedMemory((ushort)i);
+                b[i] = (byte)GetMappedMemory((ushort)i);
             }
 
             return b;
@@ -235,42 +235,32 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        internal byte GetMappedMemory(ushort address) => GetMappedMemory(address, false);
+        internal GbUInt8 GetMappedMemory(ushort address) => GetMappedMemory(address, false);
 
         /// <summary>
         /// Gets the memory at <paramref name="address"/> - for use in DMAs.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns></returns>
-        internal byte GetMappedMemoryDma(ushort address) => GetMappedMemory(address, true);
+        internal GbUInt8 GetMappedMemoryDma(ushort address) => GetMappedMemory(address, true);
 
         /// <summary>
         /// Loads a 8-bit value and increments the pc.
         /// </summary>
         /// <returns></returns>
-        internal byte LdI8() => GetMappedMemory(this.R.Pc++);
+        internal GbUInt8 LdI8() => GetMappedMemory(this.R.Pc++);
 
         /// <summary>
         /// Pops a 8-bit value from the stack.
         /// </summary>
         /// <returns></returns>
-        internal byte Pop() => GetMappedMemory(this.R.Sp++);
+        internal GbUInt8 Pop() => GetMappedMemory(this.R.Sp++);
 
         /// <summary>
         /// Pushes the specified <paramref name="value"/> onto the stack.
         /// </summary>
         /// <param name="value">The value.</param>
-        internal void Push(byte value) => SetMappedMemory(--this.R.Sp, value);
-
-        /// <summary>
-        /// Pushes the specified <paramref name="value"/> onto the stack.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        internal void Push(GbUInt16 value)
-        {
-            this.Push(value.LowByte);
-            this.Push(value.HighByte);
-        }
+        internal void Push(GbUInt8 value) => SetMappedMemory(--this.R.Sp, value);
 
         /// <summary>
         /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
@@ -278,7 +268,7 @@ namespace JAGBE.GB.Computation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
-        internal void SetMappedMemory(ushort pointer, byte value)
+        internal void SetMappedMemory(ushort pointer, GbUInt8 value)
         {
             if (pointer < 0x8000)
             {
@@ -321,7 +311,7 @@ namespace JAGBE.GB.Computation
         /// Sets the memory at HL to value.
         /// </summary>
         /// <param name="value">The value.</param>
-        internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
+        internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
 
         /// <summary>
         /// Determines whether <paramref name="number"/> is an unused register number.
@@ -349,7 +339,7 @@ namespace JAGBE.GB.Computation
         /// <exception cref="InvalidOperationException">
         /// Thrown when <see cref="MBCMode"/> is invalid
         /// </exception>
-        private byte GetERamMemory(ushort address)
+        private GbUInt8 GetERamMemory(ushort address)
         {
             if (!this.ERamEnabled)
             {
@@ -369,7 +359,7 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="number">The number.</param>
         /// <returns>The value of the <paramref name="number"/>'th IO Register.</returns>
-        private byte GetIoReg(byte number)
+        private GbUInt8 GetIoReg(byte number)
         {
             if (number == 0x00)
             {
@@ -424,7 +414,7 @@ namespace JAGBE.GB.Computation
         /// <param name="address">The address.</param>
         /// <param name="ignoreDmaBlock">if set to <see langword="true"/> ignore dma write restriction.</param>
         /// <returns></returns>
-        private byte GetMappedMemory(ushort address, bool ignoreDmaBlock)
+        private GbUInt8 GetMappedMemory(ushort address, bool ignoreDmaBlock)
         {
             if (!ignoreDmaBlock && this.lcdMemory.DMA < Cpu.DelayStep * 162)
             {
@@ -526,7 +516,7 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="value">The value.</param>
-        private void SetERam(int address, byte value)
+        private void SetERam(int address, GbUInt8 value)
         {
             if (this.ERamEnabled)
             {
@@ -539,11 +529,11 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetIoRegisters(int pointer, byte value)
+        private void SetIoRegisters(int pointer, GbUInt8 value)
         {
             if (pointer == 0)
             {
-                this.Joypad = (byte)(value & 0x30);
+                this.Joypad = (value & 0x30);
                 return;
             }
 
@@ -597,7 +587,7 @@ namespace JAGBE.GB.Computation
         /// <remarks>Common to all MBC modes</remarks>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetMappedMemoryCommon(ushort pointer, byte value)
+        private void SetMappedMemoryCommon(ushort pointer, GbUInt8 value)
         {
             if (pointer <= 0x9FFF)
             {

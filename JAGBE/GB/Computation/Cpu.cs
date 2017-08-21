@@ -102,7 +102,7 @@ namespace JAGBE.GB.Computation
             this.memory = new GbMemory(inputHandler)
             {
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // set the rom size to what the cartrage says.
-                ERam = new byte[MemoryRange.ERAMBANKSIZE * ramBanks],
+                ERam = new GbUInt8[MemoryRange.ERAMBANKSIZE * ramBanks],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             }; // Override the memory.
 

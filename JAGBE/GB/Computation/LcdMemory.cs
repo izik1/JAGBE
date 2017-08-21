@@ -1,4 +1,5 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation
 {
@@ -7,7 +8,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The pallet of the background
         /// </summary>
-        public byte BgPallet;
+        public GbUInt8 BgPallet;
 
         /// <summary>
         /// The DMA cycle number
@@ -22,7 +23,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The DMA value
         /// </summary>
-        public byte DMAValue;
+        public GbUInt8 DMAValue;
 
         internal int cy;
 
@@ -44,22 +45,22 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Current scan line the lcd is drawing
         /// </summary>
-        internal byte LY;
+        internal GbUInt8 LY;
 
         /// <summary>
         /// The number to use when comparing to <see cref="LY"/>
         /// </summary>
-        internal byte LYC;
+        internal GbUInt8 LYC;
 
         /// <summary>
         /// The first object pallet
         /// </summary>
-        internal byte objPallet0;
+        internal GbUInt8 objPallet0;
 
         /// <summary>
         /// The second object pallet
         /// </summary>
-        internal byte objPallet1;
+        internal GbUInt8 objPallet1;
 
         /// <summary>
         /// The Previous state of <see cref="IRC"/>
@@ -69,39 +70,39 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The Scroll X register
         /// </summary>
-        internal byte SCX;
+        internal GbUInt8 SCX;
 
         /// <summary>
         /// The Scroll Y register
         /// </summary>
-        internal byte SCY;
+        internal GbUInt8 SCY;
 
         /// <summary>
         /// The STAT register
         /// </summary>
-        internal byte STAT;
+        internal GbUInt8 STAT;
 
         /// <summary>
         /// The Window W register
         /// </summary>
-        internal byte WX;
+        internal GbUInt8 WX;
 
         /// <summary>
         /// The Window Y register
         /// </summary>
-        internal byte WY;
+        internal GbUInt8 WY;
 
         /// <summary>
         /// The LCDC register
         /// </summary>
-        internal byte Lcdc;
+        internal GbUInt8 Lcdc;
 
         /// <summary>
         /// Gets value of the given <paramref name="number"/>.
         /// </summary>
         /// <param name="number">The register number.</param>
         /// <returns></returns>
-        internal byte GetRegister(byte number)
+        internal GbUInt8 GetRegister(byte number)
         {
             switch (number)
             {
@@ -124,7 +125,7 @@ namespace JAGBE.GB.Computation
                     return this.LYC;
 
                 case 0x46:
-                    return ((DataTypes.GbUInt16)(this.DMAAddress)).HighByte;
+                    return ((GbUInt16)(this.DMAAddress)).HighByte;
 
                 case 0x47:
                     return this.BgPallet;
@@ -152,7 +153,7 @@ namespace JAGBE.GB.Computation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        internal void SetRegister(int pointer, byte value)
+        internal void SetRegister(int pointer, GbUInt8 value)
         {
             switch (pointer)
             {

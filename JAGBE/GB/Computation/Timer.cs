@@ -22,17 +22,17 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The tac register
         /// </summary>
-        private byte Tac;
+        private GbUInt8 Tac;
 
         /// <summary>
         /// The TIMA Modulo Register
         /// </summary>
-        private byte TimaM;
+        private GbUInt8 TimaM;
 
         /// <summary>
         /// The TIMA Value Register.
         /// </summary>
-        private byte TimaV;
+        private GbUInt8 TimaV;
 
         /// <summary>
         /// Gets the system timer.
@@ -40,7 +40,7 @@ namespace JAGBE.GB.Computation
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.sysTimer;
 
-        internal byte GetRegister(byte number)
+        internal GbUInt8 GetRegister(byte number)
         {
             if (number < 4 || number > 7)
             {
@@ -63,7 +63,7 @@ namespace JAGBE.GB.Computation
             }
         }
 
-        internal void SetRegister(byte pointer, byte value)
+        internal void SetRegister(byte pointer, GbUInt8 value)
         {
             if (pointer < 4 || pointer > 7)
             {
@@ -85,7 +85,7 @@ namespace JAGBE.GB.Computation
                     break;
 
                 default:
-                    this.Tac = (byte)(value & 3);
+                    this.Tac = (value & 3);
                     break;
             }
         }

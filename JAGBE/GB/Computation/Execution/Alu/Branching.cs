@@ -78,7 +78,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 2:
-                    mem.R.Pc += (sbyte)mem.LdI8();
+                    mem.R.Pc += (sbyte)(byte)mem.LdI8();
                     mem.R.Pc++;
                     return true;
 
@@ -177,7 +177,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <param name="src">The source.</param>
         /// <param name="f">The flags.</param>
         /// <returns></returns>
-        private static bool GetConditionalJumpState(byte dest, byte src, byte f) =>
+        private static bool GetConditionalJumpState(GbUInt8 dest, GbUInt8 src, GbUInt8 f) =>
             f.GetBit(src == 1 ? RFlags.ZF : RFlags.CF) ^ (dest != 0);
     }
 }

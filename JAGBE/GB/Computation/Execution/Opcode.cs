@@ -1,13 +1,14 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution
 {
     internal sealed class Opcode
     {
-        internal byte Data1;
-        internal byte Data2;
-        internal readonly byte Dest;
-        internal readonly byte Src;
+        internal GbUInt8 Data1;
+        internal GbUInt8 Data2;
+        internal readonly GbUInt8 Dest;
+        internal readonly GbUInt8 Src;
 
         private readonly OpcodeFunc function;
 

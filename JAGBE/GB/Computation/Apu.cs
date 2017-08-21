@@ -1,13 +1,14 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation
 {
     internal sealed class Apu
     {
-        private byte NR50;
-        private byte NR51;
-        private byte NR52;
-        private readonly byte[] WavePattern = new byte[16];
+        private GbUInt8 NR50;
+        private GbUInt8 NR51;
+        private GbUInt8 NR52;
+        private readonly GbUInt8[] WavePattern = new GbUInt8[16];
 
         internal void Clear()
         {
@@ -15,7 +16,7 @@ namespace JAGBE.GB.Computation
             this.NR51 = 0;
         }
 
-        internal byte GetRegister(byte num)
+        internal GbUInt8 GetRegister(GbUInt8 num)
         {
             if (num < 0x10 || num > 0x3F)
             {
@@ -39,7 +40,7 @@ namespace JAGBE.GB.Computation
             }
         }
 
-        internal bool SetRegister(byte num, byte value)
+        internal bool SetRegister(byte num, GbUInt8 value)
         {
             if (num < 0x10 || num > 0x3F)
             {

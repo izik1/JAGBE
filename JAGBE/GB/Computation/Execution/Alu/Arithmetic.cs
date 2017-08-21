@@ -17,8 +17,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             bool c = mem.R.F.GetBit(RFlags.CF);
-            byte b = (GbUInt8)(val + (c ? 1 : 0));
-            byte s = (GbUInt8)(mem.R.A + b);
+            GbUInt8 b = (GbUInt8)(val + (c ? 1 : 0));
+            GbUInt8 s = (GbUInt8)(mem.R.A + b);
             mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
             RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
             mem.R.A = s;
@@ -71,7 +71,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 3:
-                    memory.R.Sp += (sbyte)op.Data1;
+                    memory.R.Sp += (sbyte)(byte)op.Data1;
                     return true;
 
                 default:

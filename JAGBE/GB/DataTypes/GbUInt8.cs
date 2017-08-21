@@ -10,15 +10,6 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt8 : IEquatable<GbUInt8>, IFormattable
     {
         /// <summary>
-        /// Sets the specified bit.
-        /// </summary>
-        /// <param name="bit">The bit.</param>
-        /// <returns>
-        /// a byte where bit <paramref name="bit"/> is set to 1 and everything else is the same.
-        /// </returns>
-        internal GbUInt8 Set(byte bit) => (byte)(this | (1 << bit));
-
-        /// <summary>
         /// Performs an explicit conversion from <see cref="ushort"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -33,11 +24,11 @@ namespace JAGBE.GB.DataTypes
         public static implicit operator ushort(GbUInt8 u8) => (byte)u8;
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="GbUInt8"/> to <see cref="byte"/>.
+        /// Performs an explicit conversion from <see cref="GbUInt8"/> to <see cref="byte"/>.
         /// </summary>
         /// <param name="u8">The u8.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator byte(GbUInt8 u8) => u8.value;
+        public static explicit operator byte(GbUInt8 u8) => u8.value;
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="byte"/> to <see cref="GbUInt8"/>.
@@ -105,6 +96,13 @@ namespace JAGBE.GB.DataTypes
         public static GbUInt8 operator &(GbUInt8 u8a, GbUInt8 u8b) => (GbUInt8)(u8a.value & u8b.value);
 
         /// <summary>
+        /// Implements the operator ++.
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GbUInt8 operator ++(GbUInt8 u8) => (GbUInt8)(u8.value + 1);
+
+        /// <summary>
         /// Implements the operator ==.
         /// </summary>
         /// <param name="u8a">The u8a.</param>
@@ -168,6 +166,15 @@ namespace JAGBE.GB.DataTypes
         public bool GetHFlag(GbUInt8 u8) => (((this & 0x0F) + (u8 & 0x0F)) & 0x10) == 0x10;
 
         /// <summary>
+        /// Sets the specified bit.
+        /// </summary>
+        /// <param name="bit">The bit.</param>
+        /// <returns>
+        /// a byte where bit <paramref name="bit"/> is set to 1 and everything else is the same.
+        /// </returns>
+        public GbUInt8 Set(GbUInt8 bit) => (byte)(this | (1 << bit));
+
+        /// <summary>
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>The fully qualified type name.</returns>
@@ -201,7 +208,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="bit">The bit.</param>
         /// <param name="val">if set to <see langword="true"/> sets the bit to true.</param>
         /// <returns>The result of the operation</returns>
-        internal byte AssignBit(GbUInt8 bit, bool val) => (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
+        internal GbUInt8 AssignBit(GbUInt8 bit, bool val) => (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
 
         /// <summary>
         /// Determines if subtracting <paramref name="u8"/> from this instance would produce a half borrow
@@ -221,6 +228,6 @@ namespace JAGBE.GB.DataTypes
         /// <returns>
         /// a byte where bit <paramref name="bit"/> is set to 0 and everything else is the same.
         /// </returns>
-        internal GbUInt8 Res(byte bit) => (GbUInt8)(this & ~(1 << bit));
+        internal GbUInt8 Res(GbUInt8 bit) => (GbUInt8)(this & ~(1 << bit));
     }
 }

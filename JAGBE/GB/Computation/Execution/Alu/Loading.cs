@@ -188,7 +188,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 2:
-                    sbyte s = (sbyte)op.Data1;
+                    sbyte s = (sbyte)(byte)op.Data1;
                     int val = s + (int)mem.R.Sp;
                     mem.R.F = (byte)(val > 0xFFFF || val < 0 ? RFlags.HCB : 0);
                     mem.R.F = mem.R.F.AssignBit(RFlags.HB, s >= 0 ? ((ushort)s).GetHalfCarry(mem.R.Sp) : ((mem.R.Sp & 0xFFF) - s) < 0);
@@ -264,7 +264,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                byte b = mem.Pop();
+                GbUInt8 b = mem.Pop();
                 if (op.Dest == 3)
                 {
                     b &= 0xF0;

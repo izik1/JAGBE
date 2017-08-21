@@ -1,4 +1,5 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution
 {
@@ -8,7 +9,7 @@ namespace JAGBE.GB.Computation.Execution
         private static readonly Opcode[] NmOps = GetNmOps();
         private byte opcode;
 
-        public Instruction(byte opcode) => this.opcode = opcode;
+        public Instruction(GbUInt8 opcode) => this.opcode = (byte)opcode;
 
         public bool Run(GbMemory memory, int step) => NmOps[this.opcode].Invoke(memory, step);
 

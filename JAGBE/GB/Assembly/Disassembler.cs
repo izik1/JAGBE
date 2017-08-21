@@ -1,5 +1,6 @@
 ﻿using System;
 using JAGBE.GB.Computation;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Assembly
 {
@@ -78,7 +79,7 @@ namespace JAGBE.GB.Assembly
         /// <returns>A string representing the instruction at <paramref name="memory"/>.R.PC</returns>
         private static string DisassembleInstructionInternal(GbMemory memory)
         {
-            byte b = memory.GetMappedMemory(memory.R.Pc);
+            GbUInt8 b = memory.GetMappedMemory(memory.R.Pc);
             if (b >= 0x40 && b < 0xC0)
             {
                 if (b < 0x80)
@@ -112,7 +113,7 @@ namespace JAGBE.GB.Assembly
         /// <exception cref="ArgumentOutOfRangeException">
         /// thrown when opcode is out of the range 0x80-0xBF
         /// </exception>
-        private static string DisassembleInstructionArith(byte opcode)
+        private static string DisassembleInstructionArith(GbUInt8 opcode)
         {
             int src = (opcode & 7);
             int dest = ((opcode >> 3) & 7);
@@ -130,7 +131,7 @@ namespace JAGBE.GB.Assembly
         /// </summary>
         /// <param name="cbCode">The cb code.</param>
         /// <returns><paramref name="cbCode"/> as a disassembled instruction</returns>
-        private static string DisassembleInstructionCb(byte cbCode)
+        private static string DisassembleInstructionCb(GbUInt8 cbCode)
         {
             int dest = ((cbCode >> 3) & 7);
             int src = (cbCode & 7);
