@@ -153,7 +153,7 @@ namespace JAGBE.GB.Computation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        internal bool SetRegister(int pointer, byte value)
+        internal void SetRegister(int pointer, byte value)
         {
             switch (pointer)
             {
@@ -203,10 +203,9 @@ namespace JAGBE.GB.Computation
                     break;
 
                 default:
-                    return false;
+                    Console.WriteLine("Invalid LCD write (" + pointer.ToString("X2") + ")");
+                    break;
             }
-
-            return true;
         }
     }
 }

@@ -531,75 +531,61 @@ namespace JAGBE.GB.Computation
         /// <param name="value">The value.</param>
         private void SetIoRegisters(int pointer, byte value)
         {
-            if ((pointer & 0xF0) == 0x40)
+            if (pointer == 0)
             {
-                if (!this.lcdMemory.SetRegister(pointer - 0x40, value))
-                {
-                    Console.WriteLine(
-                        "Failed write (LCD Rg): " +
-                        pointer.ToString("X2") +
-                        " (ptr) " +
-                        this.R.Pc.ToString("X4") +
-                        " (pc) " +
-                        value.ToString("X2") +
-                        " (value)");
-                }
+                this.Joypad = (byte)(value & 0x30);
+            }
 
+            if (pointer == 1)
+            {
+                Console.WriteLine("Attempt to write to SB (0xFF01) ignored as it is unimplemented.");
                 return;
             }
 
-            if (pointer >= 0x10 && pointer <= 0x26)
+            if (pointer == 2)
             {
-                if (!this.apu.SetRegister((byte)pointer, value))
-                {
-                    Console.WriteLine("Failed write (APU Rg): " +
-                        pointer.ToString("X2") +
-                        " (ptr) " +
-                        this.R.Pc.ToString("X4") +
-                        " (pc) " + value.ToString("X2") +
-                        " (value)");
-                }
-
+                Console.WriteLine("Attempt to write to SC (0xFF02) ignored as it is unimplemented.");
                 return;
             }
 
-            if (pointer >= 4 && pointer <= 7)
+            if (pointer < 0xF)
             {
                 // This one can be void because all registers are implemented.
                 this.timer.SetRegister((byte)pointer, value);
+                return;
             }
 
-            switch (pointer)
+            if (pointer == 0xF)
             {
-                case 0x00:
-                    this.Joypad = (byte)(value & 0x30);
-                    return;
-
-                case 0x01:
-                    Console.WriteLine("Attempt to write to SB (0xFF01) ignored as it is unimplemented.");
-                    return;
-
-                case 0x02:
-                    Console.WriteLine("Attempt to write to SC (0xFF02) ignored as it is unimplemented.");
-                    return;
-
-                case 0x0F:
-                    this.IF = (byte)(value & 0x1F);
-                    return;
-
-                case 0x50:
-                    this.bootMode = false;
-                    return;
-
-                default:
-                    Console.WriteLine("Failed write (IO Reg): " +
-                        pointer.ToString("X2") +
-                        " (ptr) " + this.R.Pc.ToString("X4") +
-                        " (pc) " +
-                        value.ToString("X2") +
-                        " (value)");
-                    return;
+                this.IF = (byte)(value & 0x1F);
+                return;
             }
+
+            if (pointer <= 0x3F)
+            {
+                if (!this.apu.SetRegister((byte)pointer, value))
+                {
+                    Console.WriteLine("Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
+                        this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
+                }
+
+                return;
+            }
+
+            if (pointer <= 0x4F)
+            {
+                this.lcdMemory.SetRegister(pointer - 0x40, value);
+                return;
+            }
+
+            if (pointer == 0x50)
+            {
+                this.bootMode = false;
+                return;
+            }
+
+            Console.WriteLine("Failed write (IO Reg): " + pointer.ToString("X2") + " (ptr) " +
+                this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
         }
 
         /// <summary>
