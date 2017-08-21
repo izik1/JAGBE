@@ -118,7 +118,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (byte)(~val);
+            mem.R.A = (byte)~val;
             mem.R.F |= RFlags.NHB;
         });
 
