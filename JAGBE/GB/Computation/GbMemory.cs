@@ -222,11 +222,11 @@ namespace JAGBE.GB.Computation
         {
             StringBuilder builder = new StringBuilder(37);
             builder.AppendLine("Dumping Registers");
-            builder.AppendLine(this.R.Af.Value.ToString("X4"));
-            builder.AppendLine(this.R.Bc.Value.ToString("X4"));
-            builder.AppendLine(this.R.De.Value.ToString("X4"));
-            builder.AppendLine(this.R.Hl.Value.ToString("X4"));
-            builder.Append(this.R.Sp.Value.ToString("X4"));
+            builder.AppendLine(this.R.Af.ToString("X4"));
+            builder.AppendLine(this.R.Bc.ToString("X4"));
+            builder.AppendLine(this.R.De.ToString("X4"));
+            builder.AppendLine(this.R.Hl.ToString("X4"));
+            builder.Append(this.R.Sp.ToString("X4"));
             return builder.ToString();
         }
 

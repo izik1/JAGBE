@@ -20,7 +20,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// The value of this instance
         /// </summary>
-        public readonly ushort Value;
+        private readonly ushort Value;
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
