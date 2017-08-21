@@ -10,7 +10,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// The high byte of this instance's value
         /// </summary>
-        public byte HighByte => (byte)((this.value & 0xFF00) >> 8);
+        public byte HighByte => (byte)(this.value >> 8);
 
         /// <summary>
         /// The low byte of this instance's value
