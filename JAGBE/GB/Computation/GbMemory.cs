@@ -534,6 +534,7 @@ namespace JAGBE.GB.Computation
             if (pointer == 0)
             {
                 this.Joypad = (byte)(value & 0x30);
+                return;
             }
 
             if (pointer == 1)
@@ -578,14 +579,7 @@ namespace JAGBE.GB.Computation
                 return;
             }
 
-            if (pointer == 0x50)
-            {
-                this.bootMode = false;
-                return;
-            }
-
-            Console.WriteLine("Failed write (IO Reg): " + pointer.ToString("X2") + " (ptr) " +
-                this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
+            this.bootMode &= (pointer != 0x50);
         }
 
         /// <summary>
