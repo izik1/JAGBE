@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using JAGBE.GB.DataTypes;
-using JAGBE.Attributes;
 using JAGBE.GB.Input;
 
 namespace JAGBE.GB.Computation
@@ -138,35 +137,7 @@ namespace JAGBE.GB.Computation
         /// </summary>
         private byte prevKeys = 0xFF;
 
-        /// <summary>
-        /// The previous state of timer input
-        /// </summary>
-        private bool PrevTimerIn;
-
-        /// <summary>
-        /// Is a TIMA Interupt scheduled?
-        /// </summary>
-        private bool ScheduleTimaInterupt;
-
-        /// <summary>
-        /// The system timer.
-        /// </summary>
-        private GbUInt16 sysTimer = 0;
-
-        /// <summary>
-        /// The tac register
-        /// </summary>
-        private byte Tac;
-
-        /// <summary>
-        /// The TIMA Modulo Register
-        /// </summary>
-        private byte TimaM;
-
-        /// <summary>
-        /// The TIMA Value Register.
-        /// </summary>
-        private byte TimaV;
+        private readonly Timer timer = new Timer();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbMemory"/> class with the given <paramref name="inputHandler"/>.
@@ -191,7 +162,7 @@ namespace JAGBE.GB.Computation
         /// Gets the system timer.
         /// </summary>
         /// <value>The system timer.</value>
-        public GbUInt16 SysTimer => this.sysTimer;
+        public GbUInt16 SysTimer => this.timer.SysTimer;
 
         /// <summary>
         /// Gets the instance's registers.
@@ -211,10 +182,16 @@ namespace JAGBE.GB.Computation
         /// <returns></returns>
         public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
+        public void Update()
+        {
+            this.timer.Update(this);
+            UpdateKeys();
+        }
+
         /// <summary>
         /// Updates the key state.
         /// </summary>
-        public void UpdateKeys()
+        private void UpdateKeys()
         {
             if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
             {
@@ -347,34 +324,6 @@ namespace JAGBE.GB.Computation
         internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
 
         /// <summary>
-        /// Updates the timer.
-        /// </summary>
-        /// <param name="cycles">The value.</param>
-        internal void UpdateTimer(GbUInt16 cycles)
-        {
-            if (this.ScheduleTimaInterupt)
-            {
-                this.IF |= 4;
-                this.TimaV = this.TimaM;
-            }
-
-            this.sysTimer += cycles;
-            bool divBit = (this.Tac.GetBit(0) && this.sysTimer.HighByte.GetBit(1)) || this.sysTimer.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
-            bool b = this.Tac.GetBit(1) && divBit;
-            if (this.PrevTimerIn && !b)
-            {
-                bool bt = this.ScheduleTimaInterupt;
-                this.ScheduleTimaInterupt = this.TimaV == 0xFF;
-                if (!bt)
-                {
-                    this.TimaV++;
-                }
-            }
-
-            this.PrevTimerIn = b;
-        }
-
-        /// <summary>
         /// Determines whether <paramref name="number"/> is an unused register number.
         /// </summary>
         /// <param name="number">The number.</param>
@@ -384,7 +333,7 @@ namespace JAGBE.GB.Computation
         /// </returns>
         private static bool IsUnusedIoRegister(byte number)
         {
-            if ((number != 0 && number < 0x4) || number == 0x15 || number == 0x1F)
+            if (number < 0x4 || number == 0x15 || number == 0x1F)
             {
                 return true;
             }
@@ -422,6 +371,11 @@ namespace JAGBE.GB.Computation
         /// <returns>The value of the <paramref name="number"/>'th IO Register.</returns>
         private byte GetIoReg(byte number)
         {
+            if (number == 0x00)
+            {
+                return GetJoypad(this.keys);
+            }
+
             if (IsUnusedIoRegister(number))
             {
                 return 0xFF;
@@ -432,35 +386,18 @@ namespace JAGBE.GB.Computation
                 return this.lcdMemory.GetRegister(number);
             }
 
+            if (number >= 4 && number <= 7)
+            {
+                return this.timer.GetRegister(number);
+            }
+
             if (number >= 0x10 && number <= 0x26)
             {
                 return this.apu.GetRegister(number);
             }
 
-            switch (number)
-            {
-                case 0x00:
-                    return GetJoypad(this.keys);
-
-                case 0x04:
-                    return this.sysTimer.HighByte;
-
-                case 0x05:
-                    return this.TimaV;
-
-                case 0x06:
-                    return this.TimaM;
-
-                case 0x07:
-                    return (byte)(this.Tac | 0xFC);
-
-                case 0x0F:
-                    return (byte)(this.IF | 0xE0);
-
-                default:
-                    Console.WriteLine("Possible bad Read from IO 0x" + number.ToString("X2") + " (reg)");
-                    return 0xFF;
-            }
+            Console.WriteLine("Possible bad Read from IO 0x" + number.ToString("X2") + " (reg)");
+            return 0xFF;
         }
 
         /// <summary>
@@ -622,7 +559,14 @@ namespace JAGBE.GB.Computation
                         " (pc) " + value.ToString("X2") +
                         " (value)");
                 }
+
                 return;
+            }
+
+            if (pointer >= 4 && pointer <= 7)
+            {
+                // This one can be void because all registers are implemented.
+                this.timer.SetRegister((byte)pointer, value);
             }
 
             switch (pointer)
@@ -637,22 +581,6 @@ namespace JAGBE.GB.Computation
 
                 case 0x02:
                     Console.WriteLine("Attempt to write to SC (0xFF02) ignored as it is unimplemented.");
-                    return;
-
-                case 0x04:
-                    this.sysTimer = 0;
-                    return;
-
-                case 0x05:
-                    this.TimaV = value;
-                    return;
-
-                case 0x06:
-                    this.TimaM = value;
-                    return;
-
-                case 0x07:
-                    this.Tac = (byte)(value & 3);
                     return;
 
                 case 0x0F:

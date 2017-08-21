@@ -88,6 +88,7 @@
     <Compile Include="GB\Computation\MemoryRange.cs" />
     <Compile Include="GB\Computation\Execution\Opcode.cs" />
     <Compile Include="GB\Computation\RFlags.cs" />
+    <Compile Include="GB\Computation\Timer.cs" />
     <Compile Include="GB\DataTypes\GBRegisters.cs" />
     <Compile Include="GB\Computation\Execution\OpcodeFunc.cs" />
     <Compile Include="GB\GameBoy.cs" />
