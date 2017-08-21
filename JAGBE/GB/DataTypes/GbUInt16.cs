@@ -8,19 +8,19 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt16 : IEquatable<GbUInt16>, IFormattable
     {
         /// <summary>
-        /// The high byte of <see cref="Value"/>
+        /// The high byte of <see cref="value"/>
         /// </summary>
-        public byte HighByte => (byte)((this.Value & 0xFF00) >> 8);
+        public byte HighByte => (byte)((this.value & 0xFF00) >> 8);
 
         /// <summary>
-        /// The low byte of <see cref="Value"/>
+        /// The low byte of <see cref="value"/>
         /// </summary>
-        public byte LowByte => (byte)(this.Value & 0xFF);
+        public byte LowByte => (byte)(this.value & 0xFF);
 
         /// <summary>
         /// The value of this instance
         /// </summary>
-        private readonly ushort Value;
+        private readonly ushort value;
 
         /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
@@ -40,20 +40,20 @@ namespace JAGBE.GB.DataTypes
         /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
-        public bool Equals(GbUInt16 other) => this.Value == other.Value;
+        public bool Equals(GbUInt16 other) => this.value == other.value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbUInt16"/> struct.
         /// </summary>
         /// <param name="value">The value of this instance.</param>
-        public GbUInt16(ushort value) => this.Value = value;
+        public GbUInt16(ushort value) => this.value = value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbUInt16"/> struct.
         /// </summary>
         /// <param name="highByte">The high byte of this instance.</param>
         /// <param name="lowByte">The low byte of this instance.</param>
-        public GbUInt16(byte highByte, byte lowByte) => this.Value = (ushort)((highByte << 8) | lowByte);
+        public GbUInt16(byte highByte, byte lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -62,7 +62,7 @@ namespace JAGBE.GB.DataTypes
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures
         /// like a hash table.
         /// </returns>
-        public override int GetHashCode() => this.Value.GetHashCode();
+        public override int GetHashCode() => this.value.GetHashCode();
 
         /// <summary>
         /// Implements the operator ==.
@@ -86,7 +86,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.Value + right.Value));
+        public static GbUInt16 operator +(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.value + right.value));
 
         /// <summary>
         /// Implements the operator +.
@@ -94,7 +94,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, sbyte right) => new GbUInt16((ushort)(left.Value + right));
+        public static GbUInt16 operator +(GbUInt16 left, sbyte right) => new GbUInt16((ushort)(left.value + right));
 
         /// <summary>
         /// Implements the operator +.
@@ -102,7 +102,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(sbyte left, GbUInt16 right) => new GbUInt16((ushort)(left + right.Value));
+        public static GbUInt16 operator +(sbyte left, GbUInt16 right) => new GbUInt16((ushort)(left + right.value));
 
         /// <summary>
         /// Implements the operator +.
@@ -110,7 +110,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, int right) => new GbUInt16((ushort)(left.Value + right));
+        public static GbUInt16 operator +(GbUInt16 left, int right) => new GbUInt16((ushort)(left.value + right));
 
         /// <summary>
         /// Implements the operator +.
@@ -118,14 +118,14 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(int left, GbUInt16 right) => new GbUInt16((ushort)(left + right.Value));
+        public static GbUInt16 operator +(int left, GbUInt16 right) => new GbUInt16((ushort)(left + right.value));
 
         /// <summary>
         /// Implements the operator ++.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ++(GbUInt16 value) => new GbUInt16((ushort)(value.Value + 1));
+        public static GbUInt16 operator ++(GbUInt16 value) => new GbUInt16((ushort)(value.value + 1));
 
         /// <summary>
         /// Implements the operator -.
@@ -133,21 +133,21 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.Value - right.Value));
+        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.value - right.value));
 
         /// <summary>
         /// Implements the operator --.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator --(GbUInt16 value) => new GbUInt16((ushort)(value.Value - 1));
+        public static GbUInt16 operator --(GbUInt16 value) => new GbUInt16((ushort)(value.value - 1));
 
         /// <summary>
         /// Implements the operator ~.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ~(GbUInt16 value) => new GbUInt16((ushort)~value.Value);
+        public static GbUInt16 operator ~(GbUInt16 value) => new GbUInt16((ushort)~value.value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ushort"/> to <see cref="GbUInt16"/>.
@@ -168,7 +168,7 @@ namespace JAGBE.GB.DataTypes
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator ushort(GbUInt16 value) => value.Value;
+        public static implicit operator ushort(GbUInt16 value) => value.value;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt16"/>.
@@ -196,6 +196,6 @@ namespace JAGBE.GB.DataTypes
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="string"/> that represents this instance.</returns>
-        public string ToString(string format, IFormatProvider formatProvider) => this.Value.ToString(format, formatProvider);
+        public string ToString(string format, IFormatProvider formatProvider) => this.value.ToString(format, formatProvider);
     }
 }
