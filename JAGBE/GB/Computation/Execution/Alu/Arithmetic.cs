@@ -1,4 +1,5 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 using static JAGBE.GB.Computation.Execution.Alu.Ops;
 
 namespace JAGBE.GB.Computation.Execution.Alu
@@ -226,7 +227,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + 1, false);
+                mem.R.SetR16(op.Dest, (GbUInt16)(mem.R.GetR16(op.Dest, false) + 1), false);
                 return true;
             }
 

@@ -102,7 +102,7 @@ namespace JAGBE.GB.Computation
                 this.TimaV = this.TimaM;
             }
 
-            this.sysTimer += Cpu.DelayStep;
+            this.sysTimer += (GbUInt16)Cpu.DelayStep;
             bool divBit = (this.Tac.GetBit(0) && this.sysTimer.HighByte.GetBit(1)) || this.sysTimer.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
             bool b = this.Tac.GetBit(1) && divBit;
             if (this.PrevTimerIn && !b)

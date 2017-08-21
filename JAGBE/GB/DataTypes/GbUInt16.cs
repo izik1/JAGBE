@@ -86,7 +86,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.value + right.value));
+        public static GbUInt16 operator +(GbUInt16 left, GbUInt16 right) => (GbUInt16)(left.value + right.value);
 
         /// <summary>
         /// Implements the operator +.
@@ -94,7 +94,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, sbyte right) => new GbUInt16((ushort)(left.value + right));
+        public static GbUInt16 operator +(GbUInt16 left, sbyte right) => (GbUInt16)(left.value + right);
 
         /// <summary>
         /// Implements the operator +.
@@ -102,7 +102,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(sbyte left, GbUInt16 right) => new GbUInt16((ushort)(left + right.value));
+        public static GbUInt16 operator +(sbyte left, GbUInt16 right) => (GbUInt16)(left + right.value);
 
         /// <summary>
         /// Implements the operator +.
@@ -110,7 +110,7 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(GbUInt16 left, int right) => new GbUInt16((ushort)(left.value + right));
+        public static int operator +(GbUInt16 left, int right) => (GbUInt16)(left.value + right);
 
         /// <summary>
         /// Implements the operator +.
@@ -118,14 +118,14 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator +(int left, GbUInt16 right) => new GbUInt16((ushort)(left + right.value));
+        public static int operator +(int left, GbUInt16 right) => (GbUInt16)(left + right.value);
 
         /// <summary>
         /// Implements the operator ++.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ++(GbUInt16 value) => new GbUInt16((ushort)(value.value + 1));
+        public static GbUInt16 operator ++(GbUInt16 value) => (GbUInt16)(value + 1);
 
         /// <summary>
         /// Implements the operator -.
@@ -133,21 +133,21 @@ namespace JAGBE.GB.DataTypes
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => new GbUInt16((ushort)(left.value - right.value));
+        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => (GbUInt16)(left.value - right.value);
 
         /// <summary>
         /// Implements the operator --.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator --(GbUInt16 value) => new GbUInt16((ushort)(value.value - 1));
+        public static GbUInt16 operator --(GbUInt16 value) => (GbUInt16)(value.value - 1);
 
         /// <summary>
         /// Implements the operator ~.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ~(GbUInt16 value) => new GbUInt16((ushort)~value.value);
+        public static GbUInt16 operator ~(GbUInt16 value) => (GbUInt16)~value.value;
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ushort"/> to <see cref="GbUInt16"/>.
@@ -161,7 +161,7 @@ namespace JAGBE.GB.DataTypes
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator GbUInt16(byte value) => new GbUInt16(value);
+        public static implicit operator GbUInt16(byte value) => new GbUInt16(0, value);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.

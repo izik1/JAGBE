@@ -95,7 +95,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 4:
-                    mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1) + 1, mem.R.Sp.HighByte);
+                    mem.SetMappedMemory((ushort)(new GbUInt16(op.Data2, op.Data1) + 1), mem.R.Sp.HighByte);
                     return true;
 
                 default:

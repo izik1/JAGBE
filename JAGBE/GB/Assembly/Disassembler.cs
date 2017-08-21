@@ -98,7 +98,7 @@ namespace JAGBE.GB.Assembly
 
             if (b == 0xCB)
             {
-                return DisassembleInstructionCb(memory.GetMappedMemory(memory.R.Pc + 1));
+                return DisassembleInstructionCb(memory.GetMappedMemory((ushort)(memory.R.Pc + 1)));
             }
 
             return nmOpStrings[b];
