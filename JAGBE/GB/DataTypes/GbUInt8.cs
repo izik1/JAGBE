@@ -10,6 +10,20 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt8 : IEquatable<GbUInt8>, IFormattable
     {
         /// <summary>
+        /// Performs an explicit conversion from <see cref="ushort"/> to <see cref="GbUInt8"/>.
+        /// </summary>
+        /// <param name="u16">The u16.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GbUInt8(ushort u16) => (byte)u16;
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GbUInt8"/> to <see cref="ushort"/>.
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator ushort(GbUInt8 u8) => (byte)u8;
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="GbUInt8"/> to <see cref="byte"/>.
         /// </summary>
         /// <param name="u8">The u8.</param>
@@ -31,7 +45,7 @@ namespace JAGBE.GB.DataTypes
         public static implicit operator GbUInt16(GbUInt8 u8) => new GbUInt16(0, u8.value);
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="GbUInt8"/>.
+        /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="i32">The i32.</param>
         /// <returns>The result of the conversion.</returns>

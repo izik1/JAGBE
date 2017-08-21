@@ -10,12 +10,12 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// The high byte of this instance's value
         /// </summary>
-        public GbUInt8 HighByte => (byte)(this.value >> 8);
+        public GbUInt8 HighByte => (GbUInt8)(this.value >> 8);
 
         /// <summary>
         /// The low byte of this instance's value
         /// </summary>
-        public GbUInt8 LowByte => (byte)(this.value & 0xFF);
+        public GbUInt8 LowByte => (GbUInt8)(this.value & 0xFF);
 
         /// <summary>
         /// The value of this instance
@@ -53,7 +53,7 @@ namespace JAGBE.GB.DataTypes
         /// </summary>
         /// <param name="highByte">The high byte of this instance.</param>
         /// <param name="lowByte">The low byte of this instance.</param>
-        public GbUInt16(byte highByte, byte lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
+        public GbUInt16(GbUInt8 highByte, GbUInt8 lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
 
         /// <summary>
         /// Returns a hash code for this instance.
