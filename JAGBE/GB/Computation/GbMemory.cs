@@ -561,7 +561,6 @@ namespace JAGBE.GB.Computation
 
             if (pointer < 0xF)
             {
-                // This one can be void because all registers are implemented.
                 this.timer.SetRegister((byte)pointer, value);
                 return;
             }

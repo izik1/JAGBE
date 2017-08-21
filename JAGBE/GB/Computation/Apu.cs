@@ -64,10 +64,11 @@ namespace JAGBE.GB.Computation
 
                 case 0x26:
                     this.NR52 = (byte)((value & 0x80) | (this.NR52 & 0x7F));
-                    if (!this.NR52.GetBit(7))
+                    if ((value & 0x80) == 0)
                     {
                         Clear();
                     }
+
                     return true;
 
                 default:

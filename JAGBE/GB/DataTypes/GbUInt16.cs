@@ -10,18 +10,12 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// The high byte of <see cref="Value"/>
         /// </summary>
-        public byte HighByte
-        {
-            get => (byte)((Value & 0xFF00) >> 8);
-        }
+        public byte HighByte => (byte)((this.Value & 0xFF00) >> 8);
 
         /// <summary>
         /// The low byte of <see cref="Value"/>
         /// </summary>
-        public byte LowByte
-        {
-            get => (byte)(Value & 0xFF);
-        }
+        public byte LowByte => (byte)(this.Value & 0xFF);
 
         /// <summary>
         /// The value of this instance
