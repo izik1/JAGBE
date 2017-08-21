@@ -10,12 +10,12 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// The high byte of this instance's value
         /// </summary>
-        public byte HighByte => (byte)(this.value >> 8);
+        public GbUInt8 HighByte => (byte)(this.value >> 8);
 
         /// <summary>
         /// The low byte of this instance's value
         /// </summary>
-        public byte LowByte => (byte)(this.value & 0xFF);
+        public GbUInt8 LowByte => (byte)(this.value & 0xFF);
 
         /// <summary>
         /// The value of this instance

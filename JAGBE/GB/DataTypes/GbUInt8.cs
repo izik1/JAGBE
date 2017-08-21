@@ -31,6 +31,13 @@ namespace JAGBE.GB.DataTypes
         public static implicit operator GbUInt16(GbUInt8 u8) => new GbUInt16(0, u8.value);
 
         /// <summary>
+        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="GbUInt8"/>.
+        /// </summary>
+        /// <param name="i32">The i32.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GbUInt8(int i32) => (byte)i32;
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="GbUInt16"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -67,12 +74,28 @@ namespace JAGBE.GB.DataTypes
         public static bool operator !=(GbUInt8 u8a, GbUInt8 u8b) => !(u8a.value == u8b.value);
 
         /// <summary>
+        /// Implements the operator &amp;.
+        /// </summary>
+        /// <param name="u8a">The u8a.</param>
+        /// <param name="u8b">The u8b.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GbUInt8 operator &(GbUInt8 u8a, GbUInt8 u8b) => (GbUInt8)(u8a.value & u8b.value);
+
+        /// <summary>
         /// Implements the operator ==.
         /// </summary>
         /// <param name="u8a">The u8a.</param>
         /// <param name="u8b">The u8b.</param>
         /// <returns>The result of the operator.</returns>
         public static bool operator ==(GbUInt8 u8a, GbUInt8 u8b) => u8a.value == u8b.value;
+
+        /// <summary>
+        /// Implements the operator &gt;&gt;.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="bits">The bits.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GbUInt8 operator >>(GbUInt8 value, int bits) => (GbUInt8)(value.value >> bits);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -93,6 +116,16 @@ namespace JAGBE.GB.DataTypes
         /// represent the same value; otherwise, <see langword="false"/>.
         /// </returns>
         public override bool Equals(object obj) => obj is GbUInt8 u8 && Equals(u8);
+
+        /// <summary>
+        /// Gets the specified bit <paramref name="bitNum"/> from this instance.
+        /// </summary>
+        /// <param name="bitNum">The bit number.</param>
+        /// <returns>
+        /// <see langword="true"/> if the given <paramref name="bitNum"/> of this instance is set
+        /// otherwise, <see langword="false"/>
+        /// </returns>
+        public bool GetBit(GbUInt8 bitNum) => ((this >> bitNum.value) & 1) == 1;
 
         /// <summary>
         /// Returns the hash code for this instance.

@@ -91,6 +91,7 @@
     <Compile Include="GB\Computation\Timer.cs" />
     <Compile Include="GB\DataTypes\GBRegisters.cs" />
     <Compile Include="GB\Computation\Execution\OpcodeFunc.cs" />
+    <Compile Include="GB\DataTypes\GbUInt8.cs" />
     <Compile Include="GB\GameBoy.cs" />
     <Compile Include="GB\DataTypes\GbUInt16.cs" />
     <Compile Include="GB\DataTypes\MemoryBankController.cs" />
