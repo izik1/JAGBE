@@ -8,12 +8,12 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt16 : IEquatable<GbUInt16>, IFormattable
     {
         /// <summary>
-        /// The high byte of <see cref="value"/>
+        /// The high byte of this instance's value
         /// </summary>
         public byte HighByte => (byte)((this.value & 0xFF00) >> 8);
 
         /// <summary>
-        /// The low byte of <see cref="value"/>
+        /// The low byte of this instance's value
         /// </summary>
         public byte LowByte => (byte)(this.value & 0xFF);
 
