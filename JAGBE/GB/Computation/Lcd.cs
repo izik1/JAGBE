@@ -271,7 +271,7 @@ namespace JAGBE.GB.Computation
                     {
                         byte tileX = (byte)(flags.GetBit(5) ? (7 - x) : x);
                         int index = GetPixelIndex(VRam, tileY, tileX, 0x1800, tile);
-                        if (spriteX + x < Width && index != 0 && (flags.GetBit(7) || lcdMem.displayMemory[displayOffset + x] == COLORS[0]))
+                        if (spriteX + x < Width && (!flags.GetBit(7) || lcdMem.displayMemory[displayOffset + x] == COLORS[0]))
                         {
                             lcdMem.displayMemory[displayOffset + x] = (int)COLORS[(pallet >> (index * 2)) & 0x3];
                         }
