@@ -1,12 +1,13 @@
 ﻿using System;
+using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
     internal static class Ops
     {
-        internal delegate byte BitOp(GbMemory mem, byte valIn, byte dest);
+        internal delegate byte BitOp(GbMemory mem, GbUInt8 valIn, GbUInt8 dest);
 
-        internal delegate void ArithOp8(GbMemory mem, byte valIn);
+        internal delegate void ArithOp8(GbMemory mem, GbUInt8 valIn);
 
         internal static bool BitOpFunc(Opcode op, GbMemory memory, int step, BitOp operation)
         {

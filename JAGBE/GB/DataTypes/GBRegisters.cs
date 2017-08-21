@@ -40,7 +40,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the A register.
         /// </summary>
-        internal byte A
+        internal GbUInt8 A
         {
             get => Af.HighByte;
             set => Af = new GbUInt16(value, Af.LowByte);
@@ -49,7 +49,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the F register.
         /// </summary>
-        internal byte F
+        internal GbUInt8 F
         {
             get => Af.LowByte;
             set => Af = new GbUInt16(Af.HighByte, value);
@@ -58,7 +58,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the B register.
         /// </summary>
-        internal byte B
+        internal GbUInt8 B
         {
             get => Bc.HighByte;
             set => Bc = new GbUInt16(value, Bc.LowByte);
@@ -67,7 +67,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the C register.
         /// </summary>
-        internal byte C
+        internal GbUInt8 C
         {
             get => Bc.LowByte;
             set => Bc = new GbUInt16(Bc.HighByte, value);
@@ -76,7 +76,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the D register.
         /// </summary>
-        internal byte D
+        internal GbUInt8 D
         {
             get => De.HighByte;
             set => De = new GbUInt16(value, De.LowByte);
@@ -85,7 +85,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the E register.
         /// </summary>
-        internal byte E
+        internal GbUInt8 E
         {
             get => De.LowByte;
             set => De = new GbUInt16(De.HighByte, value);
@@ -94,7 +94,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the H register.
         /// </summary>
-        internal byte H
+        internal GbUInt8 H
         {
             get => Hl.HighByte;
             set => Hl = new GbUInt16(value, Hl.LowByte);
@@ -103,7 +103,7 @@ namespace JAGBE.GB.DataTypes
         /// <summary>
         /// Gets or sets the L register.
         /// </summary>
-        internal byte L
+        internal GbUInt8 L
         {
             get => Hl.LowByte;
             set => Hl = new GbUInt16(Hl.HighByte, value);
@@ -118,7 +118,7 @@ namespace JAGBE.GB.DataTypes
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="index"/> is less than zero or greater than seven
         /// </exception>
-        public byte GetR8(int index)
+        public GbUInt8 GetR8(int index)
         {
             switch (index)
             {
@@ -232,7 +232,7 @@ namespace JAGBE.GB.DataTypes
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="index"/> is less than zero or greater than seven
         /// </exception>
-        public void SetR8(int index, byte value)
+        public void SetR8(int index, GbUInt8 value)
         {
             switch (index)
             {

@@ -10,6 +10,15 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt8 : IEquatable<GbUInt8>, IFormattable
     {
         /// <summary>
+        /// Sets the specified bit.
+        /// </summary>
+        /// <param name="bit">The bit.</param>
+        /// <returns>
+        /// a byte where bit <paramref name="bit"/> is set to 1 and everything else is the same.
+        /// </returns>
+        internal GbUInt8 Set(byte bit) => (byte)(this | (1 << bit));
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="ushort"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -148,6 +157,17 @@ namespace JAGBE.GB.DataTypes
         public override int GetHashCode() => this.value;
 
         /// <summary>
+        /// Determines if adding <paramref name="u8"/> to this instance would produce a half carry
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <remarks>
+        /// 0x0F is the largest value a nibble (4 bits) can hold which means any add that causes 2
+        /// nibbles to be &gt; 0xF causes a half carry.
+        /// </remarks>
+        /// <returns>The result of the operation.</returns>
+        public bool GetHFlag(GbUInt8 u8) => (((this & 0x0F) + (u8 & 0x0F)) & 0x10) == 0x10;
+
+        /// <summary>
         /// Returns the fully qualified type name of this instance.
         /// </summary>
         /// <returns>The fully qualified type name.</returns>
@@ -173,5 +193,34 @@ namespace JAGBE.GB.DataTypes
         /// </param>
         /// <returns>The value of the current instance in the specified format.</returns>
         public string ToString(string format, IFormatProvider formatProvider) => this.value.ToString(format, formatProvider);
+
+        /// <summary>
+        /// Assigns bit number <paramref name="bit"/> of this instance to <paramref name="val"/> and
+        /// returns the result.
+        /// </summary>
+        /// <param name="bit">The bit.</param>
+        /// <param name="val">if set to <see langword="true"/> sets the bit to true.</param>
+        /// <returns>The result of the operation</returns>
+        internal byte AssignBit(GbUInt8 bit, bool val) => (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
+
+        /// <summary>
+        /// Determines if subtracting <paramref name="u8"/> from this instance would produce a half borrow
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <remarks>
+        /// 0x00 is the smallest value a nibble (4 bits) can hold which means any subtraction that
+        /// causes 2 nibbles to be &lt; 0x0 causes a half carry. (borrow)
+        /// </remarks>
+        /// <returns>The result of the operation</returns>
+        internal bool GetHFlagN(GbUInt8 u8) => (this & 0xF) - (u8 & 0xF) < 0;
+
+        /// <summary>
+        /// Resets the specified <paramref name="bit"/>.
+        /// </summary>
+        /// <param name="bit">The bit.</param>
+        /// <returns>
+        /// a byte where bit <paramref name="bit"/> is set to 0 and everything else is the same.
+        /// </returns>
+        internal GbUInt8 Res(byte bit) => (GbUInt8)(this & ~(1 << bit));
     }
 }
