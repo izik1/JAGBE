@@ -157,13 +157,6 @@ namespace JAGBE.GB.DataTypes
         public static implicit operator GbUInt16(ushort value) => new GbUInt16(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="byte"/> to <see cref="GbUInt16"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GbUInt16(byte value) => new GbUInt16(0, value);
-
-        /// <summary>
         /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.
         /// </summary>
         /// <param name="value">The value.</param>
