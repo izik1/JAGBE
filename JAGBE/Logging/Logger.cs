@@ -32,6 +32,10 @@ namespace JAGBE.Logging
 
         public void WriteInfo(string message) => WriteLine(2, message);
 
+        public void WriteVerbose(string message) => WriteLine(1, message);
+
+        public void WriteWarning(string message) => WriteLine(3, message);
+
         private void WriteLine(ushort priority, string message)
         {
             if (priority == 0)
@@ -46,9 +50,5 @@ namespace JAGBE.Logging
 
             this.writer.WriteLine("[" + priority.ToString("X4") + "]: " + message);
         }
-
-        public void WriteVerbose(string message) => WriteLine(1, message);
-
-        public void WriteWarning(string message) => WriteLine(3, message);
     }
 }
