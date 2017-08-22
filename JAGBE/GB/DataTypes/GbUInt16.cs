@@ -8,39 +8,30 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt16 : IEquatable<GbUInt16>, IFormattable
     {
         /// <summary>
-        /// The high byte of this instance's value
+        /// Performs an implicit conversion from <see cref="ushort"/> to <see cref="GbUInt16"/>.
         /// </summary>
-        public GbUInt8 HighByte => (GbUInt8)(this.value >> 8);
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GbUInt16(ushort value) => new GbUInt16(value);
 
         /// <summary>
-        /// The low byte of this instance's value
+        /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.
         /// </summary>
-        public GbUInt8 LowByte => (GbUInt8)(this.value & 0xFF);
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator ushort(GbUInt16 value) => value.value;
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt16"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GbUInt16(int value) => new GbUInt16((ushort)value);
 
         /// <summary>
         /// The value of this instance
         /// </summary>
         private readonly ushort value;
-
-        /// <summary>
-        /// Determines whether the specified <see cref="object"/>, is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
-        /// <returns>
-        /// <see langword="true"/> if the specified <see cref="object"/> is equal to this instance;
-        /// otherwise, <see langword="false"/>.
-        /// </returns>
-        public override bool Equals(object obj) => obj is GbUInt16 && this.Equals((GbUInt16)obj);
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
-        /// parameter; otherwise, <see langword="false"/>.
-        /// </returns>
-        public bool Equals(GbUInt16 other) => this.value == other.value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbUInt16"/> struct.
@@ -56,21 +47,29 @@ namespace JAGBE.GB.DataTypes
         public GbUInt16(GbUInt8 highByte, GbUInt8 lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
 
         /// <summary>
-        /// Returns a hash code for this instance.
+        /// The high byte of this instance's value
         /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures
-        /// like a hash table.
-        /// </returns>
-        public override int GetHashCode() => this.value.GetHashCode();
+        public GbUInt8 HighByte => (GbUInt8)(this.value >> 8);
 
         /// <summary>
-        /// Implements the operator ==.
+        /// The low byte of this instance's value
+        /// </summary>
+        public GbUInt8 LowByte => (GbUInt8)(this.value & 0xFF);
+
+        /// <summary>
+        /// Implements the operator -.
         /// </summary>
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static bool operator ==(GbUInt16 left, GbUInt16 right) => left.Equals(right);
+        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => (GbUInt16)(left.value - right.value);
+
+        /// <summary>
+        /// Implements the operator --.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GbUInt16 operator --(GbUInt16 value) => (GbUInt16)(value.value - 1);
 
         /// <summary>
         /// Implements the operator !=.
@@ -79,6 +78,13 @@ namespace JAGBE.GB.DataTypes
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
         public static bool operator !=(GbUInt16 left, GbUInt16 right) => !left.Equals(right);
+
+        /// <summary>
+        /// Implements the operator ~.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The result of the operator.</returns>
+        public static GbUInt16 operator ~(GbUInt16 value) => (GbUInt16)~value.value;
 
         /// <summary>
         /// Implements the operator +.
@@ -128,47 +134,41 @@ namespace JAGBE.GB.DataTypes
         public static GbUInt16 operator ++(GbUInt16 value) => (GbUInt16)(value + 1);
 
         /// <summary>
-        /// Implements the operator -.
+        /// Implements the operator ==.
         /// </summary>
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator -(GbUInt16 left, GbUInt16 right) => (GbUInt16)(left.value - right.value);
+        public static bool operator ==(GbUInt16 left, GbUInt16 right) => left.Equals(right);
 
         /// <summary>
-        /// Implements the operator --.
+        /// Determines whether the specified <see cref="object"/>, is equal to this instance.
         /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator --(GbUInt16 value) => (GbUInt16)(value.value - 1);
+        /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
+        /// <returns>
+        /// <see langword="true"/> if the specified <see cref="object"/> is equal to this instance;
+        /// otherwise, <see langword="false"/>.
+        /// </returns>
+        public override bool Equals(object obj) => obj is GbUInt16 && this.Equals((GbUInt16)obj);
 
         /// <summary>
-        /// Implements the operator ~.
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ~(GbUInt16 value) => (GbUInt16)~value.value;
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// <see langword="true"/> if the current object is equal to the <paramref name="other"/>
+        /// parameter; otherwise, <see langword="false"/>.
+        /// </returns>
+        public bool Equals(GbUInt16 other) => this.value == other.value;
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="ushort"/> to <see cref="GbUInt16"/>.
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GbUInt16(ushort value) => new GbUInt16(value);
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator ushort(GbUInt16 value) => value.value;
-
-        /// <summary>
-        /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt16"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static explicit operator GbUInt16(int value) => new GbUInt16((ushort)value);
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures
+        /// like a hash table.
+        /// </returns>
+        public override int GetHashCode() => this.value.GetHashCode();
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.
