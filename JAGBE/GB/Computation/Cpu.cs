@@ -3,6 +3,7 @@ using JAGBE.GB.DataTypes;
 using JAGBE.GB.Computation.Execution;
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
+using JAGBE.Logging;
 
 namespace JAGBE.GB.Computation
 {
@@ -181,14 +182,14 @@ namespace JAGBE.GB.Computation
                 if (this.memory.Status == CpuState.ERROR)
                 {
                     this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
-                    Console.WriteLine((prevPc).ToString("X4") + ": " + this.memory.GetMappedMemory(prevPc).ToString("X2") +
-                        " (" + Disassembler.DisassembleInstruction(this.memory) + ") ERR");
+                    Logger.LogLine(0xC, (prevPc).ToString("X4") + ": " + this.memory.GetMappedMemory(prevPc).ToString("X2") +
+                        " (" + Disassembler.DisassembleInstruction(this.memory) + ") --ERR");
                     throw new InvalidOperationException(); // ..Because an exception just gets thrown
                 }
 
                 if (this.memory.Status == CpuState.HUNG)
                 {
-                    Console.WriteLine("Hung...");
+                    Logger.LogLine(1, "Cpu has hung.");
                     this.delay += DelayStep;
                     continue;
                 }
@@ -212,7 +213,7 @@ namespace JAGBE.GB.Computation
 
                 if (this.WriteToConsole)
                 {
-                    Console.WriteLine(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
+                    Logger.LogLine(1, this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
                 }
 
                 prevPc = this.Pc;

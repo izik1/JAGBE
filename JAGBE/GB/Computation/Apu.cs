@@ -1,5 +1,6 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
+using JAGBE.Logging;
 
 namespace JAGBE.GB.Computation
 {
@@ -35,7 +36,7 @@ namespace JAGBE.GB.Computation
                     return (byte)(this.NR52 | 0x70);
 
                 default:
-                    Console.WriteLine("Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
+                    Logger.LogLine(7, "Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
                     return 0xFF;
             }
         }

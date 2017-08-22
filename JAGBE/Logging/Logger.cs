@@ -16,6 +16,8 @@ namespace JAGBE.Logging
             this.minPriority = minPriority;
         }
 
+        public static void LogLine(ushort priority, string message) => Instance.WriteLine(priority, message);
+
         public void Redirect(TextWriter writer) => this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
         public void SetLogLevel(ushort minPriority) => this.minPriority = minPriority;

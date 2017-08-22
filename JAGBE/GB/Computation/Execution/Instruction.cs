@@ -1,5 +1,6 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
+using JAGBE.Logging;
 
 namespace JAGBE.GB.Computation.Execution
 {
@@ -262,7 +263,7 @@ namespace JAGBE.GB.Computation.Execution
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
         {
-            Console.WriteLine("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
+            Logger.LogLine(0xC, "Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
             mem.Status = CpuState.ERROR;
             return true;
         }

@@ -2,6 +2,7 @@
 using System.Text;
 using JAGBE.GB.DataTypes;
 using JAGBE.GB.Input;
+using JAGBE.Logging;
 
 namespace JAGBE.GB.Computation
 {
@@ -368,7 +369,7 @@ namespace JAGBE.GB.Computation
 
             if (number < 3)
             {
-                Console.WriteLine("Serial Read unimplemented");
+                Logger.LogLine(0x5, "Serial Read unimplemented");
                 return 0xFF;
             }
 
@@ -394,7 +395,7 @@ namespace JAGBE.GB.Computation
 
             if (!IsUnusedIoRegister(number))
             {
-                Console.WriteLine("Possible bad Read from IO 0x" + number.ToString("X2") + " (reg)");
+                Logger.LogLine(4, "Possible bad Read from 0xFF" + number.ToString("X2") + " (IO)");
             }
 
             return 0xFF;
@@ -537,16 +538,9 @@ namespace JAGBE.GB.Computation
                 return;
             }
 
-            if (pointer == 1)
+            if (pointer < 3)
             {
-                Console.WriteLine("Attempt to write to SB (0xFF01) ignored as it is unimplemented.");
-                return;
-            }
-
-            if (pointer == 2)
-            {
-                Console.WriteLine("Attempt to write to SC (0xFF02) ignored as it is unimplemented.");
-                return;
+                Logger.LogLine(4, "Serial Write Failed");
             }
 
             if (pointer < 0xF)
@@ -565,7 +559,7 @@ namespace JAGBE.GB.Computation
             {
                 if (!this.apu.SetRegister((byte)pointer, value))
                 {
-                    Console.WriteLine("Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
+                    Logger.LogLine(4, "Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
                         this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
                 }
 
