@@ -13,38 +13,9 @@ namespace JAGBE.UI
     {
         private readonly GameBoy gameBoy;
 
-        private byte keys = 0xFF;
-
         private readonly Key[] keybinds = { Key.A, Key.S, Key.Space, Key.Enter, Key.Right, Key.Left, Key.Up, Key.Down };
 
-        /// <summary>
-        /// Gets the rom and boot rom.
-        /// </summary>
-        /// <param name="configLocation">The expected location of the config file.</param>
-        /// <returns></returns>
-        private static string[] GetRom(string configLocation)
-        {
-            string[] strs;
-            try
-            {
-                strs = File.ReadAllLines(configLocation);
-            }
-            catch (Exception)
-            {
-                strs = null;
-            }
-
-            if (strs == null || strs.Length != 2)
-            {
-                strs = new string[2];
-                Console.WriteLine("Enter path to rom");
-                strs[0] = Console.ReadLine();
-                Console.WriteLine("Enter path to boot rom");
-                strs[1] = Console.ReadLine();
-            }
-
-            return strs;
-        }
+        private byte keys = 0xFF;
 
         public Window() : this(160, 144)
         {
@@ -170,6 +141,35 @@ namespace JAGBE.UI
             }
 
             this.gameBoy.Update((int)this.TargetUpdateFrequency);
+        }
+
+        /// <summary>
+        /// Gets the rom and boot rom.
+        /// </summary>
+        /// <param name="configLocation">The expected location of the config file.</param>
+        /// <returns></returns>
+        private static string[] GetRom(string configLocation)
+        {
+            string[] strs;
+            try
+            {
+                strs = File.ReadAllLines(configLocation);
+            }
+            catch (Exception)
+            {
+                strs = null;
+            }
+
+            if (strs == null || strs.Length != 2)
+            {
+                strs = new string[2];
+                Console.WriteLine("Enter path to rom");
+                strs[0] = Console.ReadLine();
+                Console.WriteLine("Enter path to boot rom");
+                strs[1] = Console.ReadLine();
+            }
+
+            return strs;
         }
     }
 }
