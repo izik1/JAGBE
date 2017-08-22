@@ -175,7 +175,7 @@ namespace JAGBE.GB.Computation.Execution
 
                 if (step == 1)
                 {
-                    mem.SetMappedMemory((ushort)(0xFF00 + mem.R.C), mem.R.A);
+                    mem.SetMappedMemory((GbUInt16)(0xFF00 + mem.R.C), mem.R.A);
                     return true;
                 }
 
@@ -210,7 +210,7 @@ namespace JAGBE.GB.Computation.Execution
 
                 if (step == 1)
                 {
-                    mem.R.A = mem.GetMappedMemory((ushort)(mem.R.C + 0xFF00));
+                    mem.R.A = mem.GetMappedMemory((GbUInt16)(mem.R.C + 0xFF00));
                     return true;
                 }
 
