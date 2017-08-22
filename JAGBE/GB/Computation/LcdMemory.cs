@@ -1,5 +1,4 @@
-﻿using System;
-using JAGBE.GB.DataTypes;
+﻿using JAGBE.GB.DataTypes;
 using JAGBE.Logging;
 
 namespace JAGBE.GB.Computation
@@ -204,7 +203,7 @@ namespace JAGBE.GB.Computation
                     break;
 
                 default:
-                    Logger.LogLine(2, "Invalid LCD write (" + pointer.ToString("X2") + ")");
+                    Logger.LogInfo("Invalid LCD write (" + pointer.ToString("X2") + ")");
                     break;
             }
         }

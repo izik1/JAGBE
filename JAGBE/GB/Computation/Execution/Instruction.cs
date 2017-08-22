@@ -263,7 +263,7 @@ namespace JAGBE.GB.Computation.Execution
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
         {
-            Logger.LogLine(0xC, "Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
+            Logger.LogError("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
             mem.Status = CpuState.ERROR;
             return true;
         }

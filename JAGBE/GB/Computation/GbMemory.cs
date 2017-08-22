@@ -369,7 +369,7 @@ namespace JAGBE.GB.Computation
 
             if (number < 3)
             {
-                Logger.LogLine(0x5, "Serial Read unimplemented");
+                Logger.LogInfo("Serial read failed");
                 return 0xFF;
             }
 
@@ -395,7 +395,7 @@ namespace JAGBE.GB.Computation
 
             if (!IsUnusedIoRegister(number))
             {
-                Logger.LogLine(4, "Possible bad Read from 0xFF" + number.ToString("X2") + " (IO)");
+                Logger.LogInfo("Possible bad read from 0xFF" + number.ToString("X2") + " (IO)");
             }
 
             return 0xFF;
@@ -540,7 +540,7 @@ namespace JAGBE.GB.Computation
 
             if (pointer < 3)
             {
-                Logger.LogLine(4, "Serial Write Failed");
+                Logger.LogInfo("Serial write failed");
             }
 
             if (pointer < 0xF)
@@ -559,7 +559,7 @@ namespace JAGBE.GB.Computation
             {
                 if (!this.apu.SetRegister((byte)pointer, value))
                 {
-                    Logger.LogLine(4, "Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
+                    Logger.LogWarning("Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
                         this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
                 }
 

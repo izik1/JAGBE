@@ -36,7 +36,7 @@ namespace JAGBE.GB.Computation
                     return (byte)(this.NR52 | 0x70);
 
                 default:
-                    Logger.LogLine(7, "Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
+                    Logger.LogWarning("Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
                     return 0xFF;
             }
         }
