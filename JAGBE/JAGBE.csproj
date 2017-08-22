@@ -97,6 +97,7 @@
     <Compile Include="GB\DataTypes\MemoryBankController.cs" />
     <Compile Include="GB\Input\IInputHandler.cs" />
     <Compile Include="GB\Input\InputEventArgs.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Stats\AttributeReflector.cs" />
     <Compile Include="UI\ContentPipe.cs" />
     <Compile Include="Program.cs" />
