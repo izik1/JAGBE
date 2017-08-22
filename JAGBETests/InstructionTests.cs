@@ -211,7 +211,7 @@ namespace JAGBETests
                 {
                     RunInst(memory);
 
-                    Assert.AreEqual(new GbUInt16((ushort)(((i & 1) == 0) ^ r == 1 ? 0xC : 3)), memory.R.Pc);
+                    Assert.AreEqual((GbUInt16)(((i & 1) == 0) ^ r == 1 ? 0xC : 3), memory.R.Pc);
                     memory.R.Pc = 0;
                     memory.Rom[0] += 8;
                 }
