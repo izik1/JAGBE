@@ -17,6 +17,20 @@ namespace JAGBE.GB.DataTypes
         public static explicit operator GbUInt8(ushort u16) => (byte)u16;
 
         /// <summary>
+        /// Performs an explicit conversion from <see cref="GbUInt8"/> to <see cref="sbyte"/>.
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator sbyte(GbUInt8 u8) => (sbyte)u8.value;
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref="sbyte"/> to <see cref="GbUInt8"/>.
+        /// </summary>
+        /// <param name="s8">The s8.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator GbUInt8(sbyte s8) => (byte)s8;
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="GbUInt8"/> to <see cref="ushort"/>.
         /// </summary>
         /// <param name="u8">The u8.</param>
