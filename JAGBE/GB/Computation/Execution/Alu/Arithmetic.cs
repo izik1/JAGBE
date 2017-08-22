@@ -48,7 +48,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
 
             if (step == 1)
             {
-                ushort val = mem.R.GetR16(op.Src, false);
+                GbUInt16 val = mem.R.GetR16(op.Src, false);
                 mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHalfCarry(mem.R.Hl)).AssignBit(
                     RFlags.CF, val + mem.R.Hl < mem.R.Hl);
                 mem.R.Hl += val;

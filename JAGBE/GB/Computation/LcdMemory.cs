@@ -18,7 +18,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// The DMA address
         /// </summary>
-        public ushort DMAAddress;
+        public GbUInt16 DMAAddress;
 
         /// <summary>
         /// The DMA value
@@ -125,7 +125,7 @@ namespace JAGBE.GB.Computation
                     return this.LYC;
 
                 case 0x46:
-                    return ((GbUInt16)(this.DMAAddress)).HighByte;
+                    return this.DMAAddress.HighByte;
 
                 case 0x47:
                     return this.BgPallet;

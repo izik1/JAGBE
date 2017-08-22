@@ -155,7 +155,7 @@ namespace JAGBE.GB.Computation
                 }
             }
 
-            ushort prevPc = 0;
+            GbUInt16 prevPc = 0;
 
             while (this.delay < 0)
             {

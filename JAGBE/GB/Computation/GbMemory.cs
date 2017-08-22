@@ -235,14 +235,14 @@ namespace JAGBE.GB.Computation
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        internal GbUInt8 GetMappedMemory(ushort address) => GetMappedMemory(address, false);
+        internal GbUInt8 GetMappedMemory(GbUInt16 address) => GetMappedMemory(address, false);
 
         /// <summary>
         /// Gets the memory at <paramref name="address"/> - for use in DMAs.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns></returns>
-        internal GbUInt8 GetMappedMemoryDma(ushort address) => GetMappedMemory(address, true);
+        internal GbUInt8 GetMappedMemoryDma(GbUInt16 address) => GetMappedMemory(address, true);
 
         /// <summary>
         /// Loads a 8-bit value and increments the pc.
@@ -268,7 +268,7 @@ namespace JAGBE.GB.Computation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
-        internal void SetMappedMemory(ushort pointer, GbUInt8 value)
+        internal void SetMappedMemory(GbUInt16 pointer, GbUInt8 value)
         {
             if (pointer < 0x8000)
             {
@@ -414,7 +414,7 @@ namespace JAGBE.GB.Computation
         /// <param name="address">The address.</param>
         /// <param name="ignoreDmaBlock">if set to <see langword="true"/> ignore dma write restriction.</param>
         /// <returns></returns>
-        private GbUInt8 GetMappedMemory(ushort address, bool ignoreDmaBlock)
+        private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
             if (!ignoreDmaBlock && this.lcdMemory.DMA < Cpu.DelayStep * 162)
             {
@@ -485,7 +485,7 @@ namespace JAGBE.GB.Computation
         /// <param name="bank">The ROM bank.</param>
         /// <param name="address">The address.</param>
         /// <returns></returns>
-        private byte GetRomMemory(int bank, ushort address)
+        private byte GetRomMemory(int bank, GbUInt16 address)
         {
             if (this.bootMode && bank == 0 && address < 0x100)
             {
@@ -587,7 +587,7 @@ namespace JAGBE.GB.Computation
         /// <remarks>Common to all MBC modes</remarks>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetMappedMemoryCommon(ushort pointer, GbUInt8 value)
+        private void SetMappedMemoryCommon(GbUInt16 pointer, GbUInt8 value)
         {
             if (pointer <= 0x9FFF)
             {

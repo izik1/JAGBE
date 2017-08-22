@@ -8,6 +8,20 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt16 : IEquatable<GbUInt16>, IFormattable
     {
         /// <summary>
+        /// determines weather adding <paramref name="val"/> to this instance would produce a half carry.
+        /// </summary>
+        /// <param name="val">The second value.</param>
+        /// <returns></returns>
+        public bool GetHalfCarry(GbUInt16 val) => (((this & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000;
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="u16">The u16.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator int(GbUInt16 u16) => u16.value;
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="ushort"/> to <see cref="GbUInt16"/>.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -15,11 +29,11 @@ namespace JAGBE.GB.DataTypes
         public static implicit operator GbUInt16(ushort value) => new GbUInt16(value);
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.
+        /// Performs an explicit conversion from <see cref="GbUInt16"/> to <see cref="ushort"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator ushort(GbUInt16 value) => value.value;
+        public static explicit operator ushort(GbUInt16 value) => value.value;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt16"/>.
