@@ -53,6 +53,7 @@ namespace JAGBE.UI
                 bootRomPath = Console.ReadLine();
             }
             this.gameBoy = new GameBoy(romPath, bootRomPath, this);
+            Console.WriteLine("Now Playing: " + Path.GetFileName(romPath));
             this.Keyboard.KeyRepeat = false;
         }
 
