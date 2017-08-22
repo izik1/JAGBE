@@ -146,7 +146,7 @@ namespace JAGBE.GB.Computation.Execution
             {
                 if (step == 0)
                 {
-                    mem.R.F &= RFlags.ZB;
+                    mem.R.F &= RFlags.ZCB;
                     mem.R.F ^= RFlags.CB;
                     return true;
                 }

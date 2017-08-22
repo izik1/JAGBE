@@ -9,6 +9,19 @@ namespace JAGBETests
     [TestClass]
     public class InstructionTests
     {
+        [TestMethod]
+        [TestCategory("Bitwise")]
+        public void CheckCcf()
+        {
+            GbMemory mem = ConfigureMemory(1);
+            InitNmTest(mem, 0x3F, 0);
+            RegTest(mem, 0, RFlags.CB);
+            RegTest(mem, 0, 0);
+            mem.R.F = RFlags.ZB;
+            RegTest(mem, 0, RFlags.ZCB);
+            RegTest(mem, 0, RFlags.ZB);
+        }
+
         /// <summary>
         /// Checks that the ADC instruction gives the correct output.
         /// </summary>
