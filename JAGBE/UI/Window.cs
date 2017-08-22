@@ -17,6 +17,35 @@ namespace JAGBE.UI
 
         private readonly Key[] keybinds = { Key.A, Key.S, Key.Space, Key.Enter, Key.Right, Key.Left, Key.Up, Key.Down };
 
+        /// <summary>
+        /// Gets the rom and boot rom.
+        /// </summary>
+        /// <param name="configLocation">The expected location of the config file.</param>
+        /// <returns></returns>
+        private static string[] GetRom(string configLocation)
+        {
+            string[] strs;
+            try
+            {
+                strs = File.ReadAllLines(configLocation);
+            }
+            catch (Exception)
+            {
+                strs = null;
+            }
+
+            if (strs == null || strs.Length != 2)
+            {
+                strs = new string[2];
+                Console.WriteLine("Enter path to rom");
+                strs[0] = Console.ReadLine();
+                Console.WriteLine("Enter path to boot rom");
+                strs[1] = Console.ReadLine();
+            }
+
+            return strs;
+        }
+
         public Window() : this(160, 144)
         {
         }
@@ -27,33 +56,10 @@ namespace JAGBE.UI
 
         private Window(int width, int height) : base(width, height, GraphicsMode.Default, "JAGBE Emulator",
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
-
         {
-            string romPath;
-            string bootRomPath;
-            if (File.Exists("config.cfg"))
-            {
-                string[] strs = File.ReadAllLines("config.cfg");
-                if (strs.Length == 2)
-                {
-                    romPath = strs[0];
-                    bootRomPath = strs[1];
-                    Console.WriteLine("Loaded from config.");
-                }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Enter path to rom");
-                romPath = Console.ReadLine();
-                Console.WriteLine("Enter path to boot rom");
-                bootRomPath = Console.ReadLine();
-            }
-            this.gameBoy = new GameBoy(romPath, bootRomPath, this);
-            Console.WriteLine("Now Playing: " + Path.GetFileName(romPath));
+            string[] roms = GetRom("config.cfg");
+            this.gameBoy = new GameBoy(roms[0], roms[1], this);
+            Console.WriteLine("Now Playing: " + Path.GetFileName(roms[0]));
             this.Keyboard.KeyRepeat = false;
         }
 
