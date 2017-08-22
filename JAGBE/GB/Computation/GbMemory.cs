@@ -406,7 +406,7 @@ namespace JAGBE.GB.Computation
         /// <param name="p1">The p1.</param>
         /// <returns></returns>
         private byte GetJoypad(byte p1) =>
-            (byte)((!this.Joypad.GetBit(5) ? (p1 & 0xF) : !this.Joypad.GetBit(4) ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
+            (byte)((!this.Joypad[5] ? (p1 & 0xF) : !this.Joypad[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
         /// <summary>
         /// Gets the mapped memory.

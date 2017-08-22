@@ -102,7 +102,7 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x07] = new Opcode(0, 0, (op, mem, step) => // RLCA
             {
-                mem.R.F = mem.R.A.GetBit(7) ? RFlags.CB : (byte)0;
+                mem.R.F = mem.R.A[7] ? RFlags.CB : (byte)0;
                 mem.R.A <<= 1;
                 return true;
             });
@@ -110,16 +110,16 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x0F] = new Opcode(0, 0, (op, mem, step) => // RRCA
             {
-                mem.R.F = mem.R.A.GetBit(0) ? RFlags.CB : (byte)0;
+                mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
                 mem.R.A >>= 1;
                 return true;
             });
 
             ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
             {
-                bool b = mem.R.A.GetBit(7);
+                bool b = mem.R.A[7];
                 mem.R.A <<= 1;
-                mem.R.A |= (byte)(mem.R.F.GetBit(RFlags.CF) ? 1 : 0);
+                mem.R.A |= (byte)(mem.R.F[RFlags.CF] ? 1 : 0);
                 mem.R.F = b ? RFlags.CB : (byte)0;
                 return true;
             });
@@ -127,8 +127,8 @@ namespace JAGBE.GB.Computation.Execution
 
             ops[0x1F] = new Opcode(0, 0, (op, mem, step) => // RRA
             {
-                bool oldCf = mem.R.F.GetBit(RFlags.CF);
-                mem.R.F = mem.R.A.GetBit(0) ? RFlags.CB : (byte)0;
+                bool oldCf = mem.R.F[RFlags.CF];
+                mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
                 mem.R.A = (byte)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
                 return true;
             });

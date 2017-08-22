@@ -16,7 +16,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <returns></returns>
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            bool c = mem.R.F.GetBit(RFlags.CF);
+            bool c = mem.R.F[RFlags.CF];
             GbUInt8 b = (GbUInt8)(val + (c ? 1 : 0));
             GbUInt8 s = (GbUInt8)(mem.R.A + b);
             mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
@@ -127,26 +127,26 @@ namespace JAGBE.GB.Computation.Execution.Alu
             if (step == 0)
             {
                 int res = mem.R.A;
-                if (mem.R.F.GetBit(RFlags.NF))
+                if (mem.R.F[RFlags.NF])
                 {
-                    if (mem.R.F.GetBit(RFlags.HF))
+                    if (mem.R.F[RFlags.HF])
                     {
                         res = (res - 6) & 0xFF;
                     }
 
-                    if (mem.R.F.GetBit(RFlags.CF))
+                    if (mem.R.F[RFlags.CF])
                     {
                         res -= 0x60;
                     }
                 }
                 else
                 {
-                    if (mem.R.F.GetBit(RFlags.HF) || (res & 0xF) > 9)
+                    if (mem.R.F[RFlags.HF] || (res & 0xF) > 9)
                     {
                         res += 0x06;
                     }
 
-                    if (mem.R.F.GetBit(RFlags.CF) || res > 0x9F)
+                    if (mem.R.F[RFlags.CF] || res > 0x9F)
                     {
                         res += 0x60;
                     }
@@ -272,7 +272,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <returns></returns>
         public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            byte c = (byte)(mem.R.F.GetBit(RFlags.CB) ? 1 : 0);
+            byte c = (byte)(mem.R.F[RFlags.CB] ? 1 : 0);
             byte res = (byte)(mem.R.A - (c + val));
             bool hc = (c + val == 256) || (mem.R.A.GetHFlagN((byte)(c + val)));
             mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, res == 0).AssignBit(RFlags.HF, hc).AssignBit(RFlags.CF, mem.R.A - val - c < 0);

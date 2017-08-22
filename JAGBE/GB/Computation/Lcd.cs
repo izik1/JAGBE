@@ -22,7 +22,7 @@ namespace JAGBE.GB.Computation
         public static void Tick(GbMemory mem)
         {
             LcdMemory lcdMem = mem.lcdMemory;
-            if (!lcdMem.Lcdc.GetBit(7))
+            if (!lcdMem.Lcdc[7])
             {
                 if (lcdMem.LY != 0 || lcdMem.cy != 0)
                 {
@@ -47,7 +47,7 @@ namespace JAGBE.GB.Computation
                     if (lcdMem.cy == Cpu.DelayStep)
                     {
                         mem.IF |= 1;
-                        lcdMem.IRC |= lcdMem.STAT.GetBit(6) && lcdMem.LYC == 144;
+                        lcdMem.IRC |= lcdMem.STAT[6] && lcdMem.LYC == 144;
                     }
                     else if (lcdMem.cy == Cpu.DelayStep * 113)
                     {
@@ -65,7 +65,7 @@ namespace JAGBE.GB.Computation
             {
                 if (lcdMem.cy == Cpu.DelayStep)
                 {
-                    if (lcdMem.STAT.GetBit(6) && lcdMem.LYC == 144)
+                    if (lcdMem.STAT[6] && lcdMem.LYC == 144)
                     {
                         lcdMem.IRC = true;
                     }
@@ -84,7 +84,7 @@ namespace JAGBE.GB.Computation
             {
                 if (lcdMem.cy == Cpu.DelayStep)
                 {
-                    if (lcdMem.STAT.GetBit(6) && lcdMem.LYC == 144)
+                    if (lcdMem.STAT[6] && lcdMem.LYC == 144)
                     {
                         lcdMem.IRC = true;
                     }
@@ -129,8 +129,8 @@ namespace JAGBE.GB.Computation
 
         private static int GetPixelIndex(GbUInt8[] VRam, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
         {
-            int i = (VRam[(tileNumber * 16) + baseTileAddress + (y * 2)].GetBit((byte)(7 - x)) ? 1 : 0);
-            return i + (VRam[(tileNumber * 16) + baseTileAddress + (y * 2) + 1].GetBit((byte)(7 - x)) ? 2 : 0);
+            int i = (VRam[(tileNumber * 16) + baseTileAddress + (y * 2)][(byte)(7 - x)] ? 1 : 0);
+            return i + (VRam[(tileNumber * 16) + baseTileAddress + (y * 2) + 1][(byte)(7 - x)] ? 2 : 0);
         }
 
         private static void RenderLine(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam)
@@ -144,7 +144,7 @@ namespace JAGBE.GB.Computation
                 if (lcdMem.cy == Cpu.DelayStep)
                 {
                     lcdMem.STAT = (GbUInt8)((lcdMem.STAT & 0xFC) | 0x2);
-                    if (lcdMem.LY != 0 && lcdMem.LYC == lcdMem.LY && (lcdMem.STAT.GetBit(6)))
+                    if (lcdMem.LY != 0 && lcdMem.LYC == lcdMem.LY && (lcdMem.STAT[6]))
                     {
                         lcdMem.IRC = true;
                     }
@@ -166,17 +166,17 @@ namespace JAGBE.GB.Computation
                 }
                 else
                 {
-                    if (lcdMem.Lcdc.GetBit(0))
+                    if (lcdMem.Lcdc[0])
                     {
                         ScanLine(lcdMem, VRam);
                     }
 
-                    if (lcdMem.Lcdc.GetBit(5))
+                    if (lcdMem.Lcdc[5])
                     {
                         ScanLineWindow(lcdMem, VRam);
                     }
 
-                    if (lcdMem.Lcdc.GetBit(1))
+                    if (lcdMem.Lcdc[1])
                     {
                         ScanLineSprite(lcdMem, VRam, Oam);
                     }
@@ -211,15 +211,15 @@ namespace JAGBE.GB.Computation
 
         private static void ScanLine(LcdMemory lcdMem, GbUInt8[] VRam)
         {
-            ushort mapOffset = (ushort)(lcdMem.Lcdc.GetBit(3) ? 0x1C00 : 0x1800); // Base offset
+            ushort mapOffset = (ushort)(lcdMem.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((lcdMem.SCY + lcdMem.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(lcdMem.SCX >> 3);
             byte y = (byte)((lcdMem.LY + lcdMem.SCY) & 7);
             byte x = (byte)(lcdMem.SCX & 7);
 
-            ushort tileOffset = (ushort)(lcdMem.Lcdc.GetBit(4) ? 0 : 0x800);
+            ushort tileOffset = (ushort)(lcdMem.Lcdc[4] ? 0 : 0x800);
             ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
-            if (!lcdMem.Lcdc.GetBit(4) && tile < 128)
+            if (!lcdMem.Lcdc[4] && tile < 128)
             {
                 tile += 256;
             }
@@ -237,7 +237,7 @@ namespace JAGBE.GB.Computation
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
                     tile = VRam[(ushort)(lineOffset + mapOffset)];
-                    if (!lcdMem.Lcdc.GetBit(4) && tile < 128)
+                    if (!lcdMem.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
                     }
@@ -250,7 +250,7 @@ namespace JAGBE.GB.Computation
 
         private static void ScanLineSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam)
         {
-            if (lcdMem.Lcdc.GetBit(2))
+            if (lcdMem.Lcdc[2])
             {
                 throw new NotSupportedException();
             }
@@ -265,14 +265,14 @@ namespace JAGBE.GB.Computation
                 GbUInt8 flags = Oam[oamOffset + 3];
                 if (spriteY <= lcdMem.LY && spriteY + 8 > lcdMem.LY)
                 {
-                    GbUInt8 pallet = flags.GetBit(4) ? lcdMem.objPallet1 : lcdMem.objPallet0;
+                    GbUInt8 pallet = flags[4] ? lcdMem.objPallet1 : lcdMem.objPallet0;
                     int displayOffset = (Width * lcdMem.LY) + spriteX;
-                    byte tileY = (byte)(flags.GetBit(6) ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
+                    byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
                     for (int x = 0; x < 8; x++)
                     {
-                        byte tileX = (byte)(flags.GetBit(5) ? (7 - x) : x);
+                        byte tileX = (byte)(flags[5] ? (7 - x) : x);
                         int index = GetPixelIndex(VRam, tileY, tileX, 0x1800, tile);
-                        if (spriteX + x < Width && (!flags.GetBit(7) || lcdMem.displayMemory[displayOffset + x] == COLORS[0]))
+                        if (spriteX + x < Width && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == COLORS[0]))
                         {
                             lcdMem.displayMemory[displayOffset + x] = (int)COLORS[(pallet >> (index * 2)) & 0x3];
                         }
@@ -286,15 +286,15 @@ namespace JAGBE.GB.Computation
 
         private static void ScanLineWindow(LcdMemory lcdMem, GbUInt8[] VRam)
         {
-            ushort mapOffset = (ushort)(lcdMem.Lcdc.GetBit(3) ? 0x1C00 : 0x1800); // Base offset
+            ushort mapOffset = (ushort)(lcdMem.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((lcdMem.WY + lcdMem.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(lcdMem.WX >> 3);
             byte y = (byte)((lcdMem.WY + lcdMem.WY) & 7);
             byte x = (byte)(lcdMem.WX & 7);
 
-            ushort tileOffset = (ushort)(lcdMem.Lcdc.GetBit(4) ? 0 : 0x800);
+            ushort tileOffset = (ushort)(lcdMem.Lcdc[4] ? 0 : 0x800);
             ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
-            if (!lcdMem.Lcdc.GetBit(4) && tile < 128)
+            if (!lcdMem.Lcdc[4] && tile < 128)
             {
                 tile += 256;
             }
@@ -311,7 +311,7 @@ namespace JAGBE.GB.Computation
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
                     tile = VRam[(ushort)(lineOffset + mapOffset)];
-                    if (!lcdMem.Lcdc.GetBit(4) && tile < 128)
+                    if (!lcdMem.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
                     }

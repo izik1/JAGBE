@@ -103,8 +103,8 @@ namespace JAGBE.GB.Computation
             }
 
             this.sysTimer += (GbUInt16)Cpu.DelayStep;
-            bool divBit = (this.Tac.GetBit(0) && this.sysTimer.HighByte.GetBit(1)) || this.sysTimer.LowByte.GetBit((byte)(((this.Tac & 3) * 2) + 3));
-            bool b = this.Tac.GetBit(1) && divBit;
+            bool divBit = (this.Tac[0] && this.sysTimer.HighByte[1]) || this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 3)];
+            bool b = this.Tac[1] && divBit;
             if (this.PrevTimerIn && !b)
             {
                 bool bt = this.ScheduleTimaInterupt;

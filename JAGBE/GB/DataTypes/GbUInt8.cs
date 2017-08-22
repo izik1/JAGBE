@@ -10,6 +10,25 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt8 : IEquatable<GbUInt8>, IFormattable
     {
         /// <summary>
+        /// Gets the state of bit <paramref name="u8"/>.
+        /// </summary>
+        /// <value>The <see cref="bool"/>.</value>
+        /// <param name="u8">The u8.</param>
+        /// <returns></returns>
+        public bool this[byte u8]
+        {
+            get
+            {
+                if (u8 > 7)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(u8));
+                }
+
+                return ((this >> u8) & 1) == 1;
+            }
+        }
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="ushort"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -151,16 +170,6 @@ namespace JAGBE.GB.DataTypes
         /// represent the same value; otherwise, <see langword="false"/>.
         /// </returns>
         public override bool Equals(object obj) => obj is GbUInt8 u8 && Equals(u8);
-
-        /// <summary>
-        /// Gets the specified bit <paramref name="bitNum"/> from this instance.
-        /// </summary>
-        /// <param name="bitNum">The bit number.</param>
-        /// <returns>
-        /// <see langword="true"/> if the given <paramref name="bitNum"/> of this instance is set
-        /// otherwise, <see langword="false"/>
-        /// </returns>
-        public bool GetBit(GbUInt8 bitNum) => ((this >> bitNum.value) & 1) == 1;
 
         /// <summary>
         /// Returns the hash code for this instance.
