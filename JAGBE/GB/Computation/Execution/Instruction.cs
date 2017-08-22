@@ -254,22 +254,6 @@ namespace JAGBE.GB.Computation.Execution
             return CbOps[op.Data1].Invoke(mem, step - 1);
         }
 
-        internal static void WriteAllUnimplementedOpcodes(Opcode[] ops)
-        {
-            int c = 0;
-            for (int i = 0; i < 0x100; i++)
-            {
-                GbMemory m = new GbMemory(null);
-                ops[i].Invoke(m, 0);
-                if (m.Status == CpuState.ERROR)
-                {
-                    c++;
-                }
-            }
-
-            Console.WriteLine(256 - c);
-        }
-
         private static readonly Opcode InvalidOpcode = new Opcode(0, 0, (o, m, s) =>
         {
             m.Status = CpuState.HUNG;
