@@ -89,8 +89,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <returns></returns>
         public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (byte)(mem.R.A & val);
-            mem.R.F = (byte)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
+            mem.R.A &= val;
+            mem.R.F = (GbUInt8)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
         });
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (byte)~val;
+            mem.R.A = (GbUInt8)~val;
             mem.R.F |= RFlags.NHB;
         });
 
@@ -165,7 +165,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     mem.R.F |= RFlags.ZB;
                 }
 
-                mem.R.A = (byte)res;
+                mem.R.A = (GbUInt8)res;
                 return true;
             }
 
@@ -207,7 +207,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).Set(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlagN(1));
-            return (byte)(val - 1);
+            return (GbUInt8)(val - 1);
         });
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         public static bool Inc8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlag(1));
-            return (byte)(val + 1);
+            return (GbUInt8)(val + 1);
         });
 
         /// <summary>
@@ -258,8 +258,8 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <returns></returns>
         public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (byte)(mem.R.A | val);
-            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
+            mem.R.A = (GbUInt8)(mem.R.A | val);
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (GbUInt8)0;
         });
 
         /// <summary>
