@@ -71,7 +71,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
                     return false;
 
                 case 3:
-                    memory.R.Sp += (sbyte)(byte)op.Data1;
+                    memory.R.Sp += (sbyte)op.Data1;
                     return true;
 
                 default:
@@ -118,7 +118,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (GbUInt8)~val;
+            mem.R.A = ~val;
             mem.R.F |= RFlags.NHB;
         });
 
@@ -258,7 +258,7 @@ namespace JAGBE.GB.Computation.Execution.Alu
         /// <returns></returns>
         public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A = (GbUInt8)(mem.R.A | val);
+            mem.R.A |= val;
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : (GbUInt8)0;
         });
 
