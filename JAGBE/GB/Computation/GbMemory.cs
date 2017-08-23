@@ -192,7 +192,7 @@ namespace JAGBE.GB.Computation
         /// <summary>
         /// Updates the key state.
         /// </summary>
-        private void UpdateKeys()
+        internal void UpdateKeys()
         {
             if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
             {

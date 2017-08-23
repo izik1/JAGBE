@@ -113,7 +113,12 @@ namespace JAGBE.GB.Computation.Execution
                 mem.R.A >>= 1;
                 return true;
             });
-
+            ops[0x10] = new Opcode(0, 0, (op, mem, step) =>
+             {
+                 mem.R.Pc++;
+                 mem.Status = CpuState.STOP;
+                 return true;
+             });
             ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
             {
                 bool b = mem.R.A[7];

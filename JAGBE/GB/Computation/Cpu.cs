@@ -174,6 +174,13 @@ namespace JAGBE.GB.Computation
 
                 if (this.memory.Status == CpuState.STOP)
                 {
+                    this.memory.UpdateKeys();
+                    this.delay += DelayStep;
+                    if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
+                    {
+                        this.memory.Status = CpuState.OKAY;
+                    }
+
                     continue;
                 }
 
