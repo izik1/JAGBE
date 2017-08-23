@@ -10,25 +10,6 @@ namespace JAGBE.GB.DataTypes
     public struct GbUInt8 : IEquatable<GbUInt8>, IFormattable
     {
         /// <summary>
-        /// Gets the state of bit <paramref name="u8"/>.
-        /// </summary>
-        /// <value>The <see cref="bool"/>.</value>
-        /// <param name="u8">The u8.</param>
-        /// <returns></returns>
-        public bool this[byte u8]
-        {
-            get
-            {
-                if (u8 > 7)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(u8));
-                }
-
-                return ((this >> u8) & 1) == 1;
-            }
-        }
-
-        /// <summary>
         /// Performs an explicit conversion from <see cref="ushort"/> to <see cref="GbUInt8"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -111,6 +92,25 @@ namespace JAGBE.GB.DataTypes
         /// </summary>
         /// <param name="u8">The u8.</param>
         public GbUInt8(byte u8) => this.value = u8;
+
+        /// <summary>
+        /// Gets the state of bit <paramref name="u8"/>.
+        /// </summary>
+        /// <value>The <see cref="bool"/>.</value>
+        /// <param name="u8">The u8.</param>
+        /// <returns></returns>
+        public bool this[byte u8]
+        {
+            get
+            {
+                if (u8 > 7)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(u8));
+                }
+
+                return ((this >> u8) & 1) == 1;
+            }
+        }
 
         /// <summary>
         /// Implements the operator !=.
