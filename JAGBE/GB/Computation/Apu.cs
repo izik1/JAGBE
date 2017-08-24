@@ -40,7 +40,7 @@ namespace JAGBE.GB.Computation
                     return this.NR10;
 
                 case 0x11:
-                    return this.NR11;
+                    return this.NR11 | 0x3F;
 
                 case 0x12:
                     return this.NR12;
