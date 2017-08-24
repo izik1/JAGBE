@@ -540,7 +540,9 @@ namespace JAGBE.GB.Computation
 
             if (pointer < 3)
             {
-                Logger.LogInfo("Serial write failed");
+                // FIXME:
+                //Logger.LogInfo("Serial write failed");
+                return;
             }
 
             if (pointer < 0xF)
