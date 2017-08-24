@@ -20,6 +20,10 @@ namespace JAGBE.GB.Computation
         private GbUInt8 NR32;
         private GbUInt8 NR33;
         private GbUInt8 NR34;
+        private GbUInt8 NR41;
+        private GbUInt8 NR42;
+        private GbUInt8 NR43;
+        private GbUInt8 NR44;
         private GbUInt8 NR50;
         private GbUInt8 NR51;
         private GbUInt8 NR52;
@@ -41,6 +45,10 @@ namespace JAGBE.GB.Computation
             this.NR32 = 0;
             this.NR33 = 0;
             this.NR34 = 0;
+            this.NR41 = 0;
+            this.NR42 = 0;
+            this.NR43 = 0;
+            this.NR44 = 0;
             this.NR50 = 0;
             this.NR51 = 0;
         }
@@ -95,6 +103,18 @@ namespace JAGBE.GB.Computation
 
                 case 0x1E:
                     return this.NR34 | 0x87;
+
+                case 0x20:
+                    return this.NR41 | 0x3F;
+
+                case 0x21:
+                    return this.NR42;
+
+                case 0x22:
+                    return this.NR43;
+
+                case 0x23:
+                    return this.NR44 | 0xBF;
 
                 case 0x24:
                     return this.NR50;
