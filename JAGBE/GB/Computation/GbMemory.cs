@@ -559,8 +559,7 @@ namespace JAGBE.GB.Computation
             {
                 if (!this.apu.SetRegister((byte)pointer, value))
                 {
-                    Logger.LogWarning("Failed write (APU Rg): " + pointer.ToString("X2") + " (ptr) " +
-                        this.R.Pc.ToString("X4") + " (pc) " + value.ToString("X2") + " (value)");
+                    Logger.LogWarning("Failed write @FF" + pointer.ToString("X2") + "h v:" + value.ToString("X2") + " (ALU)");
                 }
 
                 return;
