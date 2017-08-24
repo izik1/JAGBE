@@ -60,6 +60,11 @@ namespace JAGBE.GB.Computation
                 return 0xFF;
             }
 
+            if (num >= 30)
+            {
+                return this.WavePattern[num - 30];
+            }
+
             switch (num)
             {
                 case 0x10:
@@ -180,6 +185,42 @@ namespace JAGBE.GB.Computation
 
                 case 0x19:
                     this.NR24 = value;
+                    return true;
+
+                case 0x1A:
+                    this.NR30 = value & 0x80;
+                    return true;
+
+                case 0x1B:
+                    this.NR31 = value;
+                    return true;
+
+                case 0x1C:
+                    this.NR32 = value & 0x60;
+                    return true;
+
+                case 0x1D:
+                    this.NR33 = value;
+                    return true;
+
+                case 0x1E:
+                    this.NR34 = value;
+                    return true;
+
+                case 0x20:
+                    this.NR41 = value & 0x3F;
+                    return true;
+
+                case 0x21:
+                    this.NR42 = value;
+                    return true;
+
+                case 0x22:
+                    this.NR43 = value;
+                    return true;
+
+                case 0x23:
+                    this.NR44 = (value & 0xC0);
                     return true;
 
                 case 0x24:
