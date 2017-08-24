@@ -143,7 +143,7 @@ namespace JAGBE.GB.Computation
             {
                 if (lcdMem.cy == Cpu.DelayStep)
                 {
-                    lcdMem.STAT = (GbUInt8)((lcdMem.STAT & 0xFC) | 0x2);
+                    lcdMem.STAT = ((lcdMem.STAT & 252) | 0x2);
                     if (lcdMem.LY != 0 && lcdMem.LYC == lcdMem.LY && (lcdMem.STAT[6]))
                     {
                         lcdMem.IRC = true;
@@ -266,13 +266,14 @@ namespace JAGBE.GB.Computation
                 if (spriteY <= lcdMem.LY && spriteY + 8 > lcdMem.LY)
                 {
                     GbUInt8 pallet = flags[4] ? lcdMem.objPallet1 : lcdMem.objPallet0;
-                    int displayOffset = (Width * lcdMem.LY) + spriteX;
+                    int displayOffset = ((Height - lcdMem.LY - 1) * Width) + spriteX;
                     byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
                     for (int x = 0; x < 8; x++)
                     {
                         byte tileX = (byte)(flags[5] ? (7 - x) : x);
-                        int index = GetPixelIndex(VRam, tileY, tileX, 0x1800, tile);
-                        if (spriteX + x < Width && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == COLORS[0]))
+                        int index = GetPixelIndex(VRam, tileY, tileX, 0, tile);
+                        int palletPos = (pallet >> (index * 2)) & 0x3;
+                        if (spriteX + x < Width && palletPos != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
                         {
                             lcdMem.displayMemory[displayOffset + x] = (int)COLORS[(pallet >> (index * 2)) & 0x3];
                         }
