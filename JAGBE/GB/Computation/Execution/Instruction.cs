@@ -7,12 +7,34 @@ namespace JAGBE.GB.Computation.Execution
     internal sealed class Instruction
     {
         private static readonly Opcode[] CbOps = GetCbOps();
+
+        private static readonly Opcode InvalidOpcode = new Opcode(0, 0, (o, m, s) =>
+        {
+            m.Status = CpuState.HUNG;
+            return false;
+        });
+
         private static readonly Opcode[] NmOps = GetNmOps();
         private byte opcode;
 
         public Instruction(GbUInt8 opcode) => this.opcode = (byte)opcode;
 
         public bool Run(GbMemory memory, int step) => NmOps[this.opcode].Invoke(memory, step);
+
+        private static bool CbPrefix(Opcode op, GbMemory mem, int step)
+        {
+            if (step == 0)
+            {
+                return false;
+            }
+
+            if (step == 1)
+            {
+                op.Data1 = mem.LdI8();
+            }
+
+            return CbOps[op.Data1].Invoke(mem, step - 1);
+        }
 
         private static Opcode[] GetCbOps()
         {
@@ -244,27 +266,6 @@ namespace JAGBE.GB.Computation.Execution
             ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
             return ops;
         }
-
-        private static bool CbPrefix(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                op.Data1 = mem.LdI8();
-            }
-
-            return CbOps[op.Data1].Invoke(mem, step - 1);
-        }
-
-        private static readonly Opcode InvalidOpcode = new Opcode(0, 0, (o, m, s) =>
-        {
-            m.Status = CpuState.HUNG;
-            return false;
-        });
 
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
         {
