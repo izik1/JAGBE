@@ -6,6 +6,11 @@ namespace JAGBE.GB.Computation
 {
     internal sealed class Apu
     {
+        private GbUInt8 NR10;
+        private GbUInt8 NR11;
+        private GbUInt8 NR12;
+        private GbUInt8 NR13;
+        private GbUInt8 NR14;
         private GbUInt8 NR50;
         private GbUInt8 NR51;
         private GbUInt8 NR52;
@@ -13,6 +18,11 @@ namespace JAGBE.GB.Computation
 
         internal void Clear()
         {
+            this.NR10 = 0;
+            this.NR11 = 0;
+            this.NR12 = 0;
+            this.NR13 = 0;
+            this.NR14 = 0;
             this.NR50 = 0;
             this.NR51 = 0;
         }
@@ -26,6 +36,21 @@ namespace JAGBE.GB.Computation
 
             switch (num)
             {
+                case 0x10:
+                    return this.NR10;
+
+                case 0x11:
+                    return this.NR11;
+
+                case 0x12:
+                    return this.NR12;
+
+                case 0x13:
+                    return this.NR13 | 0xFF;
+
+                case 0x14:
+                    return this.NR14 | 0x87;
+
                 case 0x24:
                     return this.NR50;
 
@@ -56,6 +81,26 @@ namespace JAGBE.GB.Computation
 
             switch (num)
             {
+                case 0x10:
+                    this.NR10 = value;
+                    return true;
+
+                case 0x11:
+                    this.NR11 = value;
+                    return true;
+
+                case 0x12:
+                    this.NR12 = value;
+                    return true;
+
+                case 0x13:
+                    this.NR13 = value;
+                    return true;
+
+                case 0x14:
+                    this.NR14 = value;
+                    return true;
+
                 case 0x24:
                     this.NR50 = value;
                     return true;
