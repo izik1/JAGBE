@@ -60,9 +60,9 @@ namespace JAGBE.GB.Computation
                 return 0xFF;
             }
 
-            if (num >= 30)
+            if (num >= 0x30)
             {
-                return this.WavePattern[num - 30];
+                return this.WavePattern[num - 0x30];
             }
 
             switch (num)
