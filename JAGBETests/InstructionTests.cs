@@ -220,6 +220,53 @@ namespace JAGBETests
             }
         }
 
+        [TestMethod]
+        [TestCategory("Ld")]
+        public void CheckLdR8R8Timing()
+        {
+            GbMemory mem = new GbMemory(); // Just a null memory.
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (i == 6 || j == 6)
+                    {
+                        continue;
+                    }
+
+                    Assert.IsTrue(new Instruction((GbUInt8)(0x40 + (i * 8) + j)).Run(mem, 0));
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Ld")]
+        public void CheckLdR8R8Values()
+        {
+            GbMemory mem = ConfigureMemory(1);
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (i == 6 || j == 6)
+                    {
+                        continue;
+                    }
+
+                    GbUInt8 destR = (GbUInt8)i;
+                    GbUInt8 srcR = (GbUInt8)j;
+                    Instruction instr = new Instruction((GbUInt8)(0x40 + (destR * 8) + srcR));
+                    for (int k = 0; k < 256; k++)
+                    {
+                        mem.R.SetR8(destR, (GbUInt8)(255 - k)); // Ensure that dest is always different from source.
+                        mem.R.SetR8(srcR, (GbUInt8)k);
+                        RunInst(mem, instr);
+                        Assert.AreEqual((GbUInt8)k, mem.R.GetR8(destR));
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Checks that the OR instruction gives the correct output.
         /// </summary>
@@ -432,9 +479,10 @@ namespace JAGBETests
             mem.R.Pc = 0;
         }
 
-        private static void RunInst(GbMemory mem)
+        private static void RunInst(GbMemory mem) => RunInst(mem, new Instruction(mem.LdI8()));
+
+        private static void RunInst(GbMemory mem, Instruction inst)
         {
-            Instruction inst = new Instruction(mem.LdI8());
             int step = 0;
             while (!inst.Run(mem, step))
             {
