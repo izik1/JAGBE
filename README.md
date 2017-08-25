@@ -5,16 +5,16 @@ and to try not to stick everything in one file.
 
 Currently passes the following of blargg's tests:
 
-|test number|success?|
-|-|-|
-|01|:white_check_mark:|
-|02|:x:|
-|03|:x:|
-|04|:x:|
-|05|:white_check_mark:|
-|06|:white_check_mark:|
-|07|:x: (doesn't complete)|
-|08|:white_check_mark:|
-|09|:x:|
-|10|:white_check_mark:|
-|11|:x:|
+|#|name|success?|
+|-|-|-|
+|01|special|:white_check_mark:|
+|02|interrupts|:x:|
+|03|op sp,hl|:x:|
+|04|op r,imm|:x:|
+|05|op rp|:white_check_mark:|
+|06|ld r,r|:white_check_mark:|
+|07|jr,jp,call,ret,rst|:x: (doesn't complete)|
+|08|misc instrs|:white_check_mark:|
+|09|op r,r|:x:|
+|10|bit ops|:white_check_mark:|
+|11|op a,(hl)|:x:|
