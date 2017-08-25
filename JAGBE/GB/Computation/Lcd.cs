@@ -129,7 +129,7 @@ namespace JAGBE.GB.Computation
 
         private static int GetColorIndex(GbUInt8 pallet, int pixelIndex) => (pallet >> (pixelIndex) * 2) & 3;
 
-        private static int GetPixelIndex(GbUInt8[] VRam, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
+        private static int GetPalletIndex(GbUInt8[] VRam, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
         {
             int i = (VRam[(tileNumber * 16) + baseTileAddress + (y * 2)][(byte)(7 - x)] ? 1 : 0);
             return i + (VRam[(tileNumber * 16) + baseTileAddress + (y * 2) + 1][(byte)(7 - x)] ? 2 : 0);
@@ -229,7 +229,7 @@ namespace JAGBE.GB.Computation
             for (int i = 0; i < Width; i++)
             {
                 // pixel part 1, pixel part 2......>>
-                int index = GetPixelIndex(VRam, y, x, tileOffset, tile);
+                int index = GetPalletIndex(VRam, y, x, tileOffset, tile);
                 lcdMem.displayMemory[((Height - lcdMem.LY - 1) * Width) + i] =
                     (int)COLORS[(lcdMem.BgPallet >> (index * 2)) & 0x3];
 
@@ -272,7 +272,7 @@ namespace JAGBE.GB.Computation
                     byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
                     for (int x = 0; x < 8; x++)
                     {
-                        int colorIndex = GetColorIndex(pallet, GetPixelIndex(VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile));
+                        int colorIndex = GetColorIndex(pallet, GetPalletIndex(VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile));
                         if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
                         {
                             lcdMem.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
@@ -302,7 +302,7 @@ namespace JAGBE.GB.Computation
 
             for (int i = 0; i < Width; i++)
             {
-                int index = GetPixelIndex(VRam, y, x, tileOffset, tile);
+                int index = GetPalletIndex(VRam, y, x, tileOffset, tile);
                 lcdMem.displayMemory[((Height - lcdMem.LY - 1) * Width) + i] =
                     (int)COLORS[(lcdMem.BgPallet >> (index * 2)) & 0x3];
 
