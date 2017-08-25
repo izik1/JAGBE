@@ -127,6 +127,8 @@ namespace JAGBE.GB.Computation
             }
         }
 
+        private static int GetColorIndex(GbUInt8 pallet, int pixelIndex) => (pallet >> (pixelIndex) * 2) & 3;
+
         private static int GetPixelIndex(GbUInt8[] VRam, byte y, byte x, ushort baseTileAddress, ushort tileNumber)
         {
             int i = (VRam[(tileNumber * 16) + baseTileAddress + (y * 2)][(byte)(7 - x)] ? 1 : 0);
@@ -270,10 +272,10 @@ namespace JAGBE.GB.Computation
                     byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
                     for (int x = 0; x < 8; x++)
                     {
-                        int palletPos = (pallet >> (GetPixelIndex(VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile) * 2)) & 0x3;
-                        if (spriteX + x < Width && palletPos != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
+                        int colorIndex = GetColorIndex(pallet, GetPixelIndex(VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile));
+                        if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
                         {
-                            lcdMem.displayMemory[displayOffset + x] = (int)COLORS[palletPos];
+                            lcdMem.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
                         }
                     }
                 }
