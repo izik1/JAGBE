@@ -144,7 +144,7 @@ namespace JAGBE.GB.Computation
             {
                 if (lcdMem.cy == Cpu.DelayStep)
                 {
-                    lcdMem.STAT = ((lcdMem.STAT & 252) | 0x2);
+                    lcdMem.STAT = ((lcdMem.STAT & 0xFC) | 2);
                     if (lcdMem.LY != 0 && lcdMem.LYC == lcdMem.LY && (lcdMem.STAT[6]))
                     {
                         lcdMem.IRC = true;
@@ -153,7 +153,7 @@ namespace JAGBE.GB.Computation
             }
             else if (lcdMem.cy == Cpu.DelayStep * 11)
             {
-                lcdMem.STAT = (byte)((lcdMem.STAT & 0xFC) | 0x3);
+                lcdMem.STAT = (byte)((lcdMem.STAT & 0xFC) | 3);
 
 #if NULLRENDERER
 
