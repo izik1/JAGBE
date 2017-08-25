@@ -1,4 +1,3 @@
-﻿using System;
 using JAGBE.GB.DataTypes;
 using JAGBE.Logging;
 
