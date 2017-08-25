@@ -243,7 +243,7 @@ namespace JAGBETests
         [TestCategory("Ld")]
         public void CheckLdR8R8Values()
         {
-            GbMemory mem = ConfigureMemory(1);
+            GbMemory mem = ConfigureMemory(0);
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -263,6 +263,52 @@ namespace JAGBETests
                         RunInst(mem, instr);
                         Assert.AreEqual((GbUInt8)k, mem.R.GetR8(destR));
                     }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Ld")]
+        public void CheckLdrHL()
+        {
+            GbMemory mem = ConfigureMemory(0);
+            mem.R.Hl = 0xC000;
+            for (int i = 0; i < 8; i++)
+            {
+                if (i == 4 || i == 5 || i == 6)
+                {
+                    if (i != 6)
+                    {
+                        Instruction inst = new Instruction((GbUInt8)(0x46 + (i * 8)));
+                        Assert.IsFalse(inst.Run(mem, 0));
+                        Assert.IsTrue(inst.Run(mem, 1));
+
+                        inst = new Instruction((GbUInt8)(0x70 + i));
+                        Assert.IsFalse(inst.Run(mem, 0));
+                        Assert.IsTrue(inst.Run(mem, 1));
+                    }
+
+                    continue;
+                }
+
+                for (int j = 0; j < 256; j++)
+                {
+                    GbUInt8 overriddenVal = (GbUInt8)(255 - j);
+                    mem.R.SetR8(i, overriddenVal);
+                    mem.SetMappedMemoryHl((GbUInt8)j);
+                    Instruction inst = new Instruction((GbUInt8)(0x46 + (i * 8)));
+                    Assert.IsFalse(inst.Run(mem, 0));
+                    Assert.AreEqual(overriddenVal, mem.R.GetR8(i));
+                    Assert.IsTrue(inst.Run(mem, 1));
+                    Assert.AreEqual((GbUInt8)j, mem.R.GetR8(i));
+
+                    mem.R.SetR8(i, (GbUInt8)j);
+                    mem.SetMappedMemoryHl((GbUInt8)(255 - j));
+                    inst = new Instruction((GbUInt8)(0x70 + i));
+                    Assert.IsFalse(inst.Run(mem, 0));
+                    Assert.AreEqual(overriddenVal, mem.GetMappedMemoryHl());
+                    Assert.IsTrue(inst.Run(mem, 1));
+                    Assert.AreEqual((GbUInt8)j, mem.GetMappedMemoryHl());
                 }
             }
         }
