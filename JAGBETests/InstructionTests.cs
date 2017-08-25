@@ -411,12 +411,16 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckXor()
         {
-            GbMemory memory = ConfigureMemory(1);
+            GbMemory memory = ConfigureMemory(2);
             InitNmTest(memory, 0xA8, 2);
             memory.R.A = 2;
+            memory.Rom[1] = 2;
             ArithmeticTest(memory, 0, RFlags.ZB);
             ArithmeticTest(memory, 2, 0);
             memory.Rom[0] = 0xAE;
+            ArithmeticTest(memory, 0, RFlags.ZB);
+            ArithmeticTest(memory, 2, 0);
+            memory.Rom[0] = 0xEE;
             ArithmeticTest(memory, 0, RFlags.ZB);
             ArithmeticTest(memory, 2, 0);
         }
