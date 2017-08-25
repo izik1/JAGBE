@@ -270,12 +270,10 @@ namespace JAGBE.GB.Computation
                     byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
                     for (int x = 0; x < 8; x++)
                     {
-                        byte tileX = (byte)(flags[5] ? (7 - x) : x);
-                        int index = GetPixelIndex(VRam, tileY, tileX, 0, tile);
-                        int palletPos = (pallet >> (index * 2)) & 0x3;
+                        int palletPos = (pallet >> (GetPixelIndex(VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile) * 2)) & 0x3;
                         if (spriteX + x < Width && palletPos != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
                         {
-                            lcdMem.displayMemory[displayOffset + x] = (int)COLORS[(pallet >> (index * 2)) & 0x3];
+                            lcdMem.displayMemory[displayOffset + x] = (int)COLORS[palletPos];
                         }
                     }
                 }
