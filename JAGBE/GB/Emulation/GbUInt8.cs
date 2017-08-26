@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JAGBE.GB.DataTypes
+namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// A struct for 8-bit unsigned integers, for use in Game Boy emulation.

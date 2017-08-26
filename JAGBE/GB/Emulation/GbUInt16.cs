@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JAGBE.GB.DataTypes
+namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// A struct for 16-bit unsigned integers with direct access to the high and low bytes.

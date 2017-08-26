@@ -1,4 +1,4 @@
-﻿using JAGBE.GB.DataTypes;
+﻿using JAGBE.GB;
 using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation

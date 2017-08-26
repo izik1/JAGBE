@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using JAGBE.GB.DataTypes;
+using JAGBE.GB;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
 

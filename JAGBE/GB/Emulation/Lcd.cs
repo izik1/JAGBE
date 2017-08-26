@@ -1,7 +1,7 @@
 ﻿#define PERLINERENDERER
 
 using System;
-using JAGBE.GB.DataTypes;
+using JAGBE.GB;
 
 namespace JAGBE.GB.Emulation
 {

@@ -89,12 +89,12 @@
     <Compile Include="GB\Emulation\Opcode.cs" />
     <Compile Include="GB\Emulation\RFlags.cs" />
     <Compile Include="GB\Emulation\Timer.cs" />
-    <Compile Include="GB\DataTypes\GBRegisters.cs" />
+    <Compile Include="GB\Emulation\GBRegisters.cs" />
     <Compile Include="GB\Emulation\OpcodeFunc.cs" />
-    <Compile Include="GB\DataTypes\GbUInt8.cs" />
+    <Compile Include="GB\Emulation\GbUInt8.cs" />
     <Compile Include="GB\GameBoy.cs" />
-    <Compile Include="GB\DataTypes\GbUInt16.cs" />
-    <Compile Include="GB\DataTypes\MemoryBankController.cs" />
+    <Compile Include="GB\Emulation\GbUInt16.cs" />
+    <Compile Include="GB\Emulation\MemoryBankController.cs" />
     <Compile Include="GB\Input\IInputHandler.cs" />
     <Compile Include="GB\Input\InputEventArgs.cs" />
     <Compile Include="Logging\Logger.cs" />

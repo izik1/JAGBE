@@ -1,5 +1,5 @@
 ﻿using System;
-using JAGBE.GB.DataTypes;
+using JAGBE.GB.Emulation;
 using static JAGBE.GB.Emulation.Alu.Ops;
 
 namespace JAGBE.GB.Emulation.Alu

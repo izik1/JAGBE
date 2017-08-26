@@ -1,5 +1,5 @@
 ﻿using System;
-using JAGBE.GB.DataTypes;
+using JAGBE.GB.Emulation;
 using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation

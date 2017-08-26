@@ -1,4 +1,4 @@
-﻿namespace JAGBE.GB.DataTypes
+﻿namespace JAGBE.GB.Emulation
 {
     internal enum MemoryBankController
     {
@@ -7,6 +7,7 @@
         /// to A000h-BFFFh, but a tiny circuit would be required to enable and disable it.
         /// </summary>
         None,
+
         MBC1,
     }
 }

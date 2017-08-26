@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JAGBE.GB.DataTypes
+namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// Keeps track of a GameBoy's registers
