@@ -269,7 +269,7 @@ namespace JAGBETests
 
         [TestMethod]
         [TestCategory("Ld")]
-        public void CheckLdrHL()
+        public void CheckLdrHl()
         {
             GbMemory mem = ConfigureMemory(0);
             mem.R.Hl = 0xC000;
@@ -425,11 +425,11 @@ namespace JAGBETests
         {
             GbMemory mem = ConfigureMemory(2);
             mem.Rom[0] = 0xCB;
-            mem.R.Hl = 0xC000;
 
             for (int i = 0; i < 8; i++)
             {
                 mem.Rom[1] = (byte)(0x20 + i);
+                mem.R.Hl = 0xC000;
                 for (int j = 0; j < 256; j++)
                 {
                     byte expectedFlags = j > 0x80 ? RFlags.CB : j == 0x80 ? RFlags.ZCB : j == 0 ? RFlags.ZB : (byte)0;
@@ -439,7 +439,6 @@ namespace JAGBETests
                         mem.SetMappedMemoryHl((GbUInt8)j);
                         System.Console.WriteLine(j);
                         HlTest(mem, (byte)(j << 1), expectedFlags);
-                        mem.R.Hl = 0xC000;
                     }
                     else
                     {
