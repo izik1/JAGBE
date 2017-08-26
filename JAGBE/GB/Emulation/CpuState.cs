@@ -1,4 +1,4 @@
-﻿namespace JAGBE.GB.Computation
+﻿namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// The states a given <see cref="Cpu"/> can be in.

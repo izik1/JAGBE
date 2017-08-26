@@ -1,11 +1,11 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
-using JAGBE.GB.Computation;
+using JAGBE.GB.Emulation;
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
 
-namespace JAGBE.GB.Computation
+namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// This class manages the GameBoy's cpu.

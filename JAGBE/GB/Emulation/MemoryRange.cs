@@ -1,4 +1,4 @@
-﻿namespace JAGBE.GB.Computation
+﻿namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// Defines constants for ranges of memory.

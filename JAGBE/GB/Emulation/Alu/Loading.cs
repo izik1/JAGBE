@@ -1,7 +1,7 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
 
-namespace JAGBE.GB.Computation.Alu
+namespace JAGBE.GB.Emulation.Alu
 {
     internal static class Loading
     {

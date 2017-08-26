@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using JAGBE.GB.Computation;
-
-using JAGBE.GB.Computation;
-
 using JAGBE.GB.DataTypes;
+using JAGBE.GB.Emulation;
 
 namespace JAGBETests
 

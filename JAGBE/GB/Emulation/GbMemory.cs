@@ -4,7 +4,7 @@ using JAGBE.GB.DataTypes;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
 
-namespace JAGBE.GB.Computation
+namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// A class for keeping track of the Memory state of the Game Boy.

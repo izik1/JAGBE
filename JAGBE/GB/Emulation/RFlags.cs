@@ -1,4 +1,4 @@
-﻿namespace JAGBE.GB.Computation
+﻿namespace JAGBE.GB.Emulation
 {
     /// <summary>
     /// Defines constants for the flags in the flags register.

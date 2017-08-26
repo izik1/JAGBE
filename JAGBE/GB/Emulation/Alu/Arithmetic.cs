@@ -1,8 +1,8 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
-using static JAGBE.GB.Computation.Alu.Ops;
+using static JAGBE.GB.Emulation.Alu.Ops;
 
-namespace JAGBE.GB.Computation.Alu
+namespace JAGBE.GB.Emulation.Alu
 {
     internal static class Arithmetic
     {

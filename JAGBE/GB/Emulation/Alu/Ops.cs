@@ -1,7 +1,7 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
 
-namespace JAGBE.GB.Computation.Alu
+namespace JAGBE.GB.Emulation.Alu
 {
     /// <summary>
     /// Provides static methods for Cpu operations that follow certain patterns.

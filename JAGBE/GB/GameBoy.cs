@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using JAGBE.GB.Computation;
+using JAGBE.GB.Emulation;
 
 namespace JAGBE.GB
 {
