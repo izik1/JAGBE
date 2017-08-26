@@ -9,22 +9,72 @@ using OpenTK.Input;
 
 namespace JAGBE.UI
 {
+    /// <summary>
+    /// The GameWindow class contains cross-platform methods to create and render on an OpenGL
+    /// window, handle input and load resources.
+    /// </summary>
+    /// <remarks>
+    /// GameWindow contains several events you can hook or override to add your custom logic:
+    /// <list>
+    /// <item>
+    /// OnLoad: Occurs after creating the OpenGL context, but before entering the main loop. Override
+    /// to load resources.
+    /// </item>
+    /// <item>
+    /// OnUnload: Occurs after exiting the main loop, but before deleting the OpenGL context.
+    /// Override to unload resources.
+    /// </item>
+    /// <item>
+    /// OnResize: Occurs whenever GameWindow is resized. You should update the OpenGL Viewport and
+    /// Projection Matrix here.
+    /// </item>
+    /// <item>
+    /// OnUpdateFrame: Occurs at the specified logic update rate. Override to add your game logic.
+    /// </item>
+    /// <item>
+    /// OnRenderFrame: Occurs at the specified frame render rate. Override to add your rendering code.
+    /// </item>
+    /// </list>
+    /// Call the Run() method to start the application's main loop. Run(double, double) takes two
+    /// parameters that specify the logic update rate, and the render update rate.
+    /// </remarks>
     internal sealed class Window : GameWindow, IInputHandler
     {
+        /// <summary>
+        /// The <see cref="GameBoy"/> instance that is used for emulation.
+        /// </summary>
         private readonly GameBoy gameBoy;
 
+        /// <summary>
+        /// The keybindings for input.
+        /// </summary>
         private readonly Key[] keybinds = { Key.A, Key.S, Key.Space, Key.Enter, Key.Right, Key.Left, Key.Up, Key.Down };
 
+        /// <summary>
+        /// The state of the keys
+        /// </summary>
         private byte keys = 0xFF;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
         public Window() : this(160, 144)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Window"/> class.
+        /// </summary>
+        /// <param name="scale">The scale.</param>
         public Window(int scale) : this(160 * scale, 144 * scale)
         {
         }
 
+        /// <summary>
+        /// Constructs a new <see cref="Window"/> with the specified attributes.
+        /// </summary>
+        /// <param name="width">The width of the Window in pixels.</param>
+        /// <param name="height">The height of the Window in pixels.</param>
         private Window(int width, int height) : base(width, height, GraphicsMode.Default, "JAGBE Emulator",
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -36,11 +86,20 @@ namespace JAGBE.UI
 
         public event EventHandler<InputEventArgs> OnInput;
 
+        /// <summary>
+        /// Called when the <see cref="P:OpenTK.INativeWindow.Focused"/> property of the NativeWindow
+        /// has changed.
+        /// </summary>
+        /// <param name="e">Not used.</param>
         protected override void OnFocusedChanged(EventArgs e)
         {
             // Left intentionally empty
         }
 
+        /// <summary>
+        /// Occurs whenever a keyboard key is pressed.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             if (e.IsRepeat)
@@ -71,6 +130,10 @@ namespace JAGBE.UI
             }
         }
 
+        /// <summary>
+        /// Called when a keyboard key is released.
+        /// </summary>
+        /// <param name="e">The <see cref="T:OpenTK.Input.KeyboardKeyEventArgs"/> for this event.</param>
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
             int i = Array.IndexOf(this.keybinds, e.Key);
@@ -95,6 +158,10 @@ namespace JAGBE.UI
             }
         }
 
+        /// <summary>
+        /// Called after an OpenGL context has been established, but before entering the main loop.
+        /// </summary>
+        /// <param name="e">Not used.</param>
         protected override void OnLoad(EventArgs e)
         {
             GL.Enable(EnableCap.Blend);
@@ -106,6 +173,10 @@ namespace JAGBE.UI
             GL.Enable(EnableCap.Texture2D);
         }
 
+        /// <summary>
+        /// Called when the frame is rendered.
+        /// </summary>
+        /// <param name="e">Contains information necessary for frame rendering.</param>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -126,6 +197,10 @@ namespace JAGBE.UI
             this.SwapBuffers();
         }
 
+        /// <summary>
+        /// Called when the frame is updated.
+        /// </summary>
+        /// <param name="e">Contains information necessary for frame updating.</param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if (this.gameBoy.cpu.WriteToConsole)
@@ -147,7 +222,7 @@ namespace JAGBE.UI
         /// Gets the rom and boot rom.
         /// </summary>
         /// <param name="configLocation">The expected location of the config file.</param>
-        /// <returns></returns>
+        /// <returns>The path of the rom and boot rom</returns>
         private static string[] GetRom(string configLocation)
         {
             string[] strs;
