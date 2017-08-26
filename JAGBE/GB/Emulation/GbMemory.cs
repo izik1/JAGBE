@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using JAGBE.GB;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
 
@@ -279,23 +278,7 @@ namespace JAGBE.GB.Emulation
                 }
                 else if (this.MBCMode == MemoryBankController.MBC1)
                 {
-                    if (pointer < 0x2000)
-                    {
-                        this.ERamEnabled = (value & 0xF) == 0xA;
-                    }
-                    else if (pointer < 0x4000)
-                    {
-                        this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
-                            (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
-                    }
-                    else if (pointer < 0x6000)
-                    {
-                        this.MappedRamBank = (byte)(value & 3);
-                    }
-                    else
-                    {
-                        this.MbcRamMode = ((value & 1) == 1);
-                    }
+                    SetMappedMemoryMbc1(pointer, value);
                 }
                 else
                 {
@@ -305,6 +288,27 @@ namespace JAGBE.GB.Emulation
             else
             {
                 SetMappedMemoryCommon(pointer, value);
+            }
+        }
+
+        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
+        {
+            if (pointer < 0x2000)
+            {
+                this.ERamEnabled = (value & 0xF) == 0xA;
+            }
+            else if (pointer < 0x4000)
+            {
+                this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
+                    (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
+            }
+            else if (pointer < 0x6000)
+            {
+                this.MappedRamBank = (byte)(value & 3);
+            }
+            else
+            {
+                this.MbcRamMode = ((value & 1) == 1);
             }
         }
 

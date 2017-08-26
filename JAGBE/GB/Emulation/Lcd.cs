@@ -1,7 +1,6 @@
 ﻿#define PERLINERENDERER
 
 using System;
-using JAGBE.GB;
 
 namespace JAGBE.GB.Emulation
 {
@@ -258,23 +257,28 @@ namespace JAGBE.GB.Emulation
             // FIXME: Doesn't handle overlapping sprites.
             for (int i = 0; i < 40; i++)
             {
-                int oamOffset = i * 4;
-                byte spriteY = (byte)(Oam[oamOffset] - 16);
-                byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
-                GbUInt8 tile = Oam[oamOffset + 2];
-                GbUInt8 flags = Oam[oamOffset + 3];
-                if (spriteY <= lcdMem.LY && spriteY + 8 > lcdMem.LY)
+                ScanSprite(lcdMem, VRam, Oam, i);
+            }
+        }
+
+        private static void ScanSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
+        {
+            int oamOffset = spriteNumber * 4;
+            byte spriteY = (byte)(Oam[oamOffset] - 16);
+            byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
+            GbUInt8 tile = Oam[oamOffset + 2];
+            GbUInt8 flags = Oam[oamOffset + 3];
+            if (spriteY <= lcdMem.LY && spriteY + 8 > lcdMem.LY)
+            {
+                GbUInt8 pallet = flags[4] ? lcdMem.objPallet1 : lcdMem.objPallet0;
+                int displayOffset = ((Height - lcdMem.LY - 1) * Width) + spriteX;
+                byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
+                for (int x = 0; x < 8; x++)
                 {
-                    GbUInt8 pallet = flags[4] ? lcdMem.objPallet1 : lcdMem.objPallet0;
-                    int displayOffset = ((Height - lcdMem.LY - 1) * Width) + spriteX;
-                    byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
-                    for (int x = 0; x < 8; x++)
+                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
+                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
                     {
-                        int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
-                        if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
-                        {
-                            lcdMem.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
-                        }
+                        lcdMem.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
                     }
                 }
             }

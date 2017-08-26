@@ -1,9 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using JAGBE.GB.Emulation;
 
 namespace JAGBETests
-
 {
     [TestClass]
     public class InstructionTests

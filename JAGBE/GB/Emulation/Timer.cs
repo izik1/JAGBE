@@ -1,6 +1,4 @@
-﻿using JAGBE.GB;
-
-namespace JAGBE.GB.Emulation
+﻿namespace JAGBE.GB.Emulation
 {
     internal sealed class Timer
     {

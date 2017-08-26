@@ -1,5 +1,4 @@
 ﻿using System;
-using JAGBE.GB.Emulation;
 
 namespace JAGBE.GB.Emulation.Alu
 {

@@ -1,8 +1,4 @@
 ﻿using System;
-using JAGBE.GB.Emulation;
-
-using JAGBE.GB.Emulation;
-
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
@@ -138,25 +134,6 @@ namespace JAGBE.GB.Emulation
                 this.memory.Update();
                 syncDelay += DelayStep;
             }
-            void TickDMA()
-            {
-                LcdMemory lcdMem = this.memory.lcdMemory;
-                if (lcdMem.DMA < DelayStep * 162)
-                {
-                    if (lcdMem.DMA != 0)
-                    {
-                        if (lcdMem.DMA > DelayStep)
-                        {
-                            this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
-                        }
-
-                        lcdMem.DMAValue = this.memory.GetMappedMemoryDma(this.memory.lcdMemory.DMAAddress);
-                        lcdMem.DMAAddress++;
-                    }
-
-                    lcdMem.DMA += DelayStep;
-                }
-            }
 
             GbUInt16 prevPc = 0;
 
@@ -216,7 +193,7 @@ namespace JAGBE.GB.Emulation
                     }
                 }
 
-                TickDMA();
+                TickDma();
 
                 //TODO: Write breakpoint handler here.
 
@@ -234,7 +211,7 @@ namespace JAGBE.GB.Emulation
                 {
                     ticks++;
                     TickIoDevices();
-                    TickDMA();
+                    TickDma();
                     this.delay += DelayStep;
                 }
 
@@ -244,7 +221,27 @@ namespace JAGBE.GB.Emulation
             while (syncDelay < 0)
             {
                 TickIoDevices();
-                TickDMA();
+                TickDma();
+            }
+        }
+
+        private void TickDma()
+        {
+            LcdMemory lcdMem = this.memory.lcdMemory;
+            if (lcdMem.DMA < DelayStep * 162)
+            {
+                if (lcdMem.DMA != 0)
+                {
+                    if (lcdMem.DMA > DelayStep)
+                    {
+                        this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
+                    }
+
+                    lcdMem.DMAValue = this.memory.GetMappedMemoryDma(this.memory.lcdMemory.DMAAddress);
+                    lcdMem.DMAAddress++;
+                }
+
+                lcdMem.DMA += DelayStep;
             }
         }
 

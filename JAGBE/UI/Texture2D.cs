@@ -3,7 +3,7 @@
 namespace JAGBE.UI
 {
     /// <summary>
-    /// A class for keeping track of 2d OpenGL textures
+    /// A structure for keeping track of 2d OpenGL textures.
     /// </summary>
     internal struct Texture2D : IEquatable<Texture2D>
     {

@@ -201,7 +201,7 @@ namespace JAGBE.GB.Emulation
         /// nibbles to be &gt; 0xF causes a half carry.
         /// </remarks>
         /// <returns>The result of the operation.</returns>
-        public bool GetHFlag(GbUInt8 u8) => (((this & 0x0F) + (u8 & 0x0F)) & 0x10) == 0x10;
+        public bool GetHCarry(GbUInt8 u8) => (((this & 0x0F) + (u8 & 0x0F)) & 0x10) == 0x10;
 
         /// <summary>
         /// Sets the specified bit.

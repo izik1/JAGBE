@@ -1,5 +1,4 @@
 ﻿using System;
-using JAGBE.GB.Emulation;
 using static JAGBE.GB.Emulation.Alu.Ops;
 
 namespace JAGBE.GB.Emulation.Alu
@@ -20,7 +19,7 @@ namespace JAGBE.GB.Emulation.Alu
             GbUInt8 b = (GbUInt8)(val + (c ? 1 : 0));
             GbUInt8 s = (GbUInt8)(mem.R.A + b);
             mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-            RFlags.HF, mem.R.A.GetHFlag(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
+            RFlags.HF, mem.R.A.GetHCarry(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
             mem.R.A = s;
         });
 
@@ -35,7 +34,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
-            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHFlag(val)).AssignBit(RFlags.CF, s < mem.R.A);
+            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHCarry(val)).AssignBit(RFlags.CF, s < mem.R.A);
             mem.R.A = s;
         });
 
@@ -244,7 +243,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns></returns>
         public static bool Inc8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
-            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlag(1));
+            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHCarry(1));
             return (GbUInt8)(val + 1);
         });
 
