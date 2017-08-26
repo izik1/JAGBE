@@ -1,7 +1,7 @@
 ﻿using System;
-using static JAGBE.GB.Computation.Execution.Alu.Ops;
+using static JAGBE.GB.Computation.Alu.Ops;
 
-namespace JAGBE.GB.Computation.Execution.Alu
+namespace JAGBE.GB.Computation.Alu
 {
     /// <summary>
     /// This class contains all of the emulated Cpu's Bitwise operations.

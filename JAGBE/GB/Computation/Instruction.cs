@@ -2,7 +2,7 @@
 using JAGBE.GB.DataTypes;
 using JAGBE.Logging;
 
-namespace JAGBE.GB.Computation.Execution
+namespace JAGBE.GB.Computation
 {
     internal sealed class Instruction
     {

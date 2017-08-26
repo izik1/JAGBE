@@ -1,7 +1,7 @@
 ﻿using System;
 using JAGBE.GB.DataTypes;
 
-namespace JAGBE.GB.Computation.Execution
+namespace JAGBE.GB.Computation
 {
     internal sealed class Opcode
     {
