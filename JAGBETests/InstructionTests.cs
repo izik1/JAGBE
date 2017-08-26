@@ -423,13 +423,31 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckSla()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0x20, 0x40);
-            RegTest(memory, 0x80, 0);
-            RegTest(memory, 0, RFlags.ZCB);
-            memory.Rom[1] = 0x26;
-            HlTest(memory, 0x80, 0);
-            HlTest(memory, 0, RFlags.ZCB);
+            GbMemory mem = ConfigureMemory(2);
+            mem.Rom[0] = 0xCB;
+            mem.R.Hl = 0xC000;
+
+            for (int i = 0; i < 8; i++)
+            {
+                mem.Rom[1] = (byte)(0x20 + i);
+                for (int j = 0; j < 256; j++)
+                {
+                    byte expectedFlags = j > 0x80 ? RFlags.CB : j == 0x80 ? RFlags.ZCB : j == 0 ? RFlags.ZB : (byte)0;
+                    mem.R.F = 0;
+                    if (i == 6)
+                    {
+                        mem.SetMappedMemoryHl((GbUInt8)j);
+                        System.Console.WriteLine(j);
+                        HlTest(mem, (byte)(j << 1), expectedFlags);
+                        mem.R.Hl = 0xC000;
+                    }
+                    else
+                    {
+                        mem.R.SetR8(i, (GbUInt8)j);
+                        RegTest(mem, (byte)(j << 1), expectedFlags, i);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -521,10 +539,12 @@ namespace JAGBETests
             m.SetMappedMemoryHl(initVal);
         }
 
-        private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags)
+        private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags) => RegTest(mem, expectedRegData, expectedFlags, 0);
+
+        private static void RegTest(GbMemory mem, GbUInt8 expectedRegData, byte expectedFlags, int reg)
         {
             RunInst(mem);
-            Assert.AreEqual(expectedRegData, mem.R.B, "Data");
+            Assert.AreEqual(expectedRegData, mem.R.GetR8(reg), "Data");
             Assert.AreEqual(expectedFlags, mem.R.F, "Flags");
             mem.R.Pc = 0;
         }
