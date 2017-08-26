@@ -224,33 +224,11 @@ namespace JAGBETests
         }
 
         /// <summary>
-        /// Checks the timing for ld r,r instructions.
+        /// Checks the timing and output values for ld r,r instructions.
         /// </summary>
         [TestMethod]
         [TestCategory("Ld")]
-        public void CheckLdR8R8Timing()
-        {
-            GbMemory mem = new GbMemory(); // Just a null memory.
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (i == 6 || j == 6)
-                    {
-                        continue;
-                    }
-
-                    Assert.IsTrue(new Instruction((GbUInt8)(0x40 + (i * 8) + j)).Run(mem, 0));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks output values for ld r,r instructions.
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Ld")]
-        public void CheckLdR8R8Values()
+        public void CheckLdR8R8()
         {
             GbMemory mem = ConfigureMemory(0);
             for (int i = 0; i < 8; i++)
@@ -265,6 +243,7 @@ namespace JAGBETests
                     GbUInt8 destR = (GbUInt8)i;
                     GbUInt8 srcR = (GbUInt8)j;
                     Instruction instr = new Instruction((GbUInt8)(0x40 + (destR * 8) + srcR));
+                    Assert.IsTrue(instr.Run(mem, 0)); // Test timing.
                     for (int k = 0; k < 256; k++)
                     {
                         mem.R.SetR8(destR, (GbUInt8)(255 - k)); // Ensure that dest is always different from source.
