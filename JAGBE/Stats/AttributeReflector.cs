@@ -30,7 +30,7 @@ namespace JAGBE.Stats
         /// <summary>
         /// Writes all method stubs to the console.
         /// </summary>
-        public static void GetAllStubs()
+        public static List<string> GetAllStubs()
         {
             // Reflection doesn't seem to grab this method.
             List<string> strs = new List<string>(0);
@@ -39,11 +39,7 @@ namespace JAGBE.Stats
                 GetMethodsOfTypeWithAttribute(t, typeof(StubAttribute), strs);
             }
 
-            strs.Sort(); // TODO: sort by namespace, then class, then method (by length then by 0-9A-Za-z)
-            foreach (string str in strs)
-            {
-                Console.WriteLine(str);
-            }
+            return strs;
         }
     }
 }
