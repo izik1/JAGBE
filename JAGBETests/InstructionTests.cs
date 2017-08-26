@@ -66,43 +66,60 @@ namespace JAGBETests
         }
 
         /// <summary>
-        /// Checks that the BIT instruction gives the correct output.
+        /// Checks that the BIT instruction has the correct timimg and output.
         /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckBit()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0x40, 0xFF);
+            GbMemory mem = ConfigureMemory(1);
+            Instruction instr = new Instruction(0xCB);
 
-            for (int i = 0; i < 8; i++)
+            for (int bitNum = 7; bitNum >= 0; bitNum--)
             {
-                RegTest(memory, 0xFF, RFlags.HB);
-                memory.Rom[1] += 8;
-            }
+                for (int reg = 7; reg >= 0; reg--)
+                {
+                    if (reg == 6)
+                    {
+                        continue;
+                    }
 
-            memory.Rom[1] = 0x40;
-            memory.R.B = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                RegTest(memory, 0, RFlags.ZHB);
-                memory.Rom[1] += 8;
-            }
+                    for (int val = 255; val >= 0; val--)
+                    {
+                        byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
+                        mem.Rom[0] = (byte)(0x40 + (bitNum * 8) + reg);
+                        GbUInt8 cachedVal = (GbUInt8)val;
+                        mem.R.SetR8(reg, cachedVal);
+                        for (int fVal = 15; fVal >= 0; fVal--)
+                        {
+                            mem.R.F = (GbUInt8)(fVal << 4);
+                            Assert.IsTrue(instr.Run(mem, 1));
+                            Assert.AreEqual(cachedVal, mem.R.GetR8(reg)); // The register shouldn't change.
+                            Assert.AreEqual(RFlags.HB | ((fVal & 1) == 0 ? (GbUInt8)0 : RFlags.CB) | expectedZFlag, mem.R.F);
+                            mem.R.Pc = 0;
+                        }
+                    }
+                }
 
-            memory.Rom[1] = 0x46;
-
-            for (int i = 0; i < 8; i++)
-            {
-                HlTest(memory, 0xFF, RFlags.HB);
-                memory.Rom[1] += 8;
-            }
-
-            memory.Rom[1] = 0x46;
-            memory.SetMappedMemoryHl(0);
-            for (int i = 0; i < 8; i++)
-            {
-                HlTest(memory, 0, RFlags.ZHB);
-                memory.Rom[1] += 8;
+                mem.R.Hl = 0xC000;
+                for (int val = 255; val >= 0; val--)
+                {
+                    byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
+                    mem.Rom[0] = (byte)(0x46 + (bitNum * 8));
+                    GbUInt8 cachedVal = (GbUInt8)val;
+                    mem.SetMappedMemoryHl(cachedVal);
+                    for (int fVal = 15; fVal >= 0; fVal--)
+                    {
+                        mem.R.F = (GbUInt8)(fVal << 4);
+                        GbUInt8 initFlags = mem.R.F;
+                        Assert.IsFalse(instr.Run(mem, 1));
+                        Assert.AreEqual(initFlags, mem.R.F);
+                        Assert.IsTrue(instr.Run(mem, 2));
+                        Assert.AreEqual((GbUInt8)val, mem.GetMappedMemoryHl()); // The value shouldn't change.
+                        Assert.AreEqual(RFlags.HB | ((fVal & 1) == 0 ? (GbUInt8)0 : RFlags.CB) | expectedZFlag, mem.R.F);
+                        mem.R.Pc = 0;
+                    }
+                }
             }
         }
 
@@ -243,13 +260,12 @@ namespace JAGBETests
                     GbUInt8 destR = (GbUInt8)i;
                     GbUInt8 srcR = (GbUInt8)j;
                     Instruction instr = new Instruction((GbUInt8)(0x40 + (destR * 8) + srcR));
-                    Assert.IsTrue(instr.Run(mem, 0)); // Test timing.
                     for (int k = 0; k < 256; k++)
                     {
                         mem.R.SetR8(destR, (GbUInt8)(255 - k)); // Ensure that dest is always different from source.
                         mem.R.SetR8(srcR, (GbUInt8)k);
-                        RunInst(mem, instr);
-                        Assert.AreEqual((GbUInt8)k, mem.R.GetR8(destR));
+                        Assert.IsTrue(instr.Run(mem, 0)); // Check timing.
+                        Assert.AreEqual((GbUInt8)k, mem.R.GetR8(destR)); // Check value.
                     }
                 }
             }
@@ -262,7 +278,7 @@ namespace JAGBETests
         [TestCategory("Ld")]
         public void CheckLdrHl()
         {
-            GbMemory mem = ConfigureMemory(0);
+            GbMemory mem = new GbMemory();
             mem.R.Hl = 0xC000;
             for (int i = 0; i < 8; i++)
             {
