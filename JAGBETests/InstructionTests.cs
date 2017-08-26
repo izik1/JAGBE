@@ -106,6 +106,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that the Complement Carry flag instruction gives the correct output.
+        /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
         public void CheckCcf()
@@ -220,6 +223,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks the timing for ld r,r instructions.
+        /// </summary>
         [TestMethod]
         [TestCategory("Ld")]
         public void CheckLdR8R8Timing()
@@ -239,6 +245,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks output values for ld r,r instructions.
+        /// </summary>
         [TestMethod]
         [TestCategory("Ld")]
         public void CheckLdR8R8Values()
@@ -267,6 +276,9 @@ namespace JAGBETests
             }
         }
 
+        /// <summary>
+        /// Checks that Ld r,(hl) and Ld (hl),r give the correct output and have the correct timing.
+        /// </summary>
         [TestMethod]
         [TestCategory("Ld")]
         public void CheckLdrHl()
