@@ -3,12 +3,37 @@ using JAGBE.GB.DataTypes;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
+    /// <summary>
+    /// Provides static methods for Cpu operations that follow certain patterns.
+    /// </summary>
     internal static class Ops
     {
+        /// <summary>
+        /// A delegate for Bitwise operations.
+        /// </summary>
+        /// <param name="mem">The memory.</param>
+        /// <param name="valIn">The input value.</param>
+        /// <param name="dest">The dest.</param>
+        /// <returns>The result of the operation</returns>
         internal delegate GbUInt8 BitOp(GbMemory mem, GbUInt8 valIn, GbUInt8 dest);
 
+        /// <summary>
+        /// A delegate for Arithmetic operations.
+        /// </summary>
+        /// <param name="mem">The memory.</param>
+        /// <param name="valIn">The input value.</param>
         internal delegate void ArithOp8(GbMemory mem, GbUInt8 valIn);
 
+        /// <summary>
+        /// A framework for calling bitwise operation instructions.
+        /// </summary>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <param name="operation">The operation.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="operation"/> is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="step"/> is &gt; 2</exception>
         internal static bool BitOpFunc(Opcode op, GbMemory memory, int step, BitOp operation)
         {
             if (operation == null)
@@ -40,6 +65,16 @@ namespace JAGBE.GB.Computation.Execution.Alu
             }
         }
 
+        /// <summary>
+        /// A framework for calling arithmetic operation instructions.
+        /// </summary>
+        /// <param name="op">The op.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <param name="operation">The operation.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="operation"/> is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="step"/> is &gt; 1</exception>
         internal static bool ArithOp8Func(Opcode op, GbMemory memory, int step, ArithOp8 operation)
         {
             if (operation == null)

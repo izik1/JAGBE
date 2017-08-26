@@ -5,6 +5,9 @@ using JAGBE.Attributes;
 
 namespace JAGBE.Stats
 {
+    /// <summary>
+    /// Provides methods for Reflecting methods with given attributes.
+    /// </summary>
     internal static class AttributeReflector
     {
         /// <summary>
@@ -32,7 +35,6 @@ namespace JAGBE.Stats
         /// </summary>
         public static List<string> GetAllStubs()
         {
-            // Reflection doesn't seem to grab this method.
             List<string> strs = new List<string>(0);
             foreach (Type t in typeof(AttributeReflector).Assembly.GetTypes())
             {

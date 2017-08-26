@@ -3,8 +3,21 @@ using static JAGBE.GB.Computation.Execution.Alu.Ops;
 
 namespace JAGBE.GB.Computation.Execution.Alu
 {
+    /// <summary>
+    /// This class contains all of the emulated Cpu's Bitwise operations.
+    /// </summary>
     internal static class Bitwise
     {
+        /// <summary>
+        /// Checks if the dest bit of the src register is true.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="step"/> is &gt; 1 or &lt; 0
+        /// </exception>
         public static bool Bit(Opcode code, GbMemory memory, int step)
         {
             if (step == 0)
@@ -27,8 +40,22 @@ namespace JAGBE.GB.Computation.Execution.Alu
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Resources the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Res(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (m, val, dest) => val.Res((byte)dest));
 
+        /// <summary>
+        /// Rls the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Rl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val << 1) | (mem.R.F[RFlags.CF] ? 1 : 0));
@@ -36,6 +63,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// RLCs the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Rlc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)(val << 1);
@@ -43,6 +77,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// Rrs the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Rr(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (mem.R.F[RFlags.CF] ? 0x80 : 0));
@@ -50,6 +91,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// RRCs the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Rrc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (val[0] ? 1 : 0));
@@ -91,6 +139,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// Sras the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Sra(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (val & (1 << 7)));
@@ -98,6 +153,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// SRLs the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Srl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)(val >> 1);
@@ -105,6 +167,13 @@ namespace JAGBE.GB.Computation.Execution.Alu
             return retVal;
         });
 
+        /// <summary>
+        /// Swaps the specified code.
+        /// </summary>
+        /// <param name="code">The code.</param>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         public static bool Swap(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val << 4) | (val >> 4));
