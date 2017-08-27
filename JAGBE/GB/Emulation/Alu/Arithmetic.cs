@@ -15,13 +15,13 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns></returns>
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            bool c = mem.R.F[RFlags.CF];
-            int b = (GbUInt8)(val + (c ? 1 : 0));
-            GbUInt8 s = (GbUInt8)(mem.R.A + b);
-            bool carry = mem.R.A + b > 0xFF;
-            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-                RFlags.HF, carry || mem.R.A.GetHCarry((GbUInt8)b)).AssignBit(RFlags.CF, carry);
-            mem.R.A = s;
+            // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1038
+            // Reimplemented on 8/26/2017 thanks to the previous link.
+            int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
+            int res = val + cIn + mem.R.A;
+            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZB : (GbUInt8)0).AssignBit(RFlags.HF,
+                (mem.R.A & 0x0F) + (val & 0x0F) + cIn > 0x0F).AssignBit(RFlags.CF, res > 0xFF);
+            mem.R.A = (GbUInt8)res;
         });
 
         /// <summary>
