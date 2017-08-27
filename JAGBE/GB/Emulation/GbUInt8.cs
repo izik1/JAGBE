@@ -246,7 +246,15 @@ namespace JAGBE.GB.Emulation
         /// <param name="bit">The bit.</param>
         /// <param name="val">if set to <see langword="true"/> sets the bit to true.</param>
         /// <returns>The result of the operation</returns>
-        internal GbUInt8 AssignBit(GbUInt8 bit, bool val) => (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
+        internal GbUInt8 AssignBit(GbUInt8 bit, bool val)
+        {
+            if (bit > 7)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bit));
+            }
+
+            return (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
+        }
 
         /// <summary>
         /// Determines if subtracting <paramref name="u8"/> from this instance would produce a half borrow
