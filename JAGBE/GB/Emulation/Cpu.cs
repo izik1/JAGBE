@@ -31,6 +31,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private int delay;
 
+        public CpuState Status => this.memory.Status;
+
         private bool hung;
 
         /// <summary>

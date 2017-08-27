@@ -103,6 +103,9 @@ namespace JAGBETests
                 }
             }
 
+            // Error just in case something caught the exception.
+            Assert.IsFalse(c.Status == CpuState.HUNG || c.Status == CpuState.ERROR);
+
             if (sw.ElapsedMilliseconds >= MAXELAPSEDMS)
             {
                 Assert.Inconclusive("Timed out (hash): " + shaString);
