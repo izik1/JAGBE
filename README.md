@@ -28,3 +28,37 @@ Currently passes the following of blargg's instruction tests:
 |name|success?|
 |-|-|
 |instr_timing|:x:|
+
+MoonEye tests:
+
+|test|state|comment|
+|-|-|-|
+|add_sp_e_timing|:x:|Doesn't complete.|
+|boot_regs-dmgABCX|:white_check_mark:|All correct data.|
+|call_cc_timing|:x:|Doesn't complete.|
+|call_cc_timing2|:x:|B,C,D are wrong.|
+|call_timing|:x:|Doesn't complete.|
+|call_timing2|:x:|B,C,D are wrong.|
+|di_timing-GS|:question:|-|
+|div_timing|:question:|-|
+|ei_timing|:question:|-|
+|halt_ime0_ei|:question:|-|
+|halt_ime0_nointr_timing|:question:|-|
+|halt_ime1_timing|:question:|-|
+|halt_ime1_timing2-GS|:question:|-|
+|if_ie_registers|:question:|-|
+|intr_timing|:question:|-|
+|jp_cc_timing|:question:|-|
+|jp_timing|:question:|-|
+|ld_hl_sp_e_timing|:question:|-|
+|oam_dma_restart|:question:|-|
+|oam_dma_start|:question:|-|
+|oam_dma_timing|:question:|-|
+|pop_timing|:question:|-|
+|push_timing|:question:|-|
+|rapid_di_ei|:question:|-|
+|ret_cc_timing|:question:|-|
+|ret_timing|:question:|-|
+|reti_intr_timing|:question:|-|
+|reti_timing|:question:|-|
+|rst_timing|:question:|-|
