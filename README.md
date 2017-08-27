@@ -3,7 +3,7 @@ JAGBE or Just Another GameBoy Emulator for long, is exactly what it sounds like,
 the goal of this emulator is to further learn how emulators work (maybe make something that will play more than tetris),
 and to try not to stick everything in one file.
 
-Currently passes the following of blargg's tests:
+Currently passes the following of blargg's instruction tests:
 
 |#|name|success?|
 |-|-|-|
@@ -18,3 +18,13 @@ Currently passes the following of blargg's tests:
 |09|op r,r|:white_check_mark:|
 |10|bit ops|:white_check_mark:|
 |11|op a,(hl)|:white_check_mark:|
+
+|Memory Timing #|success?|
+|-|-|
+|1|:x:|
+|2|:x:|
+|3|:x:|
+
+|name|success?|
+|-|-|
+|instr_timing|:x:|

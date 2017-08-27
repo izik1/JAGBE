@@ -101,7 +101,7 @@
             }
 
             this.sysTimer += (GbUInt16)Cpu.DelayStep;
-            bool divBit = (this.Tac[0] && this.sysTimer.HighByte[1]) || this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 3)];
+            bool divBit = (this.Tac[0] && this.sysTimer.HighByte[1]) || this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)];
             bool b = this.Tac[1] && divBit;
             if (this.PrevTimerIn && !b)
             {
