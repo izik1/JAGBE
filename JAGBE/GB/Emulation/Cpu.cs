@@ -72,6 +72,8 @@ namespace JAGBE.GB.Emulation
         /// <value><see langword="true"/> if debug; otherwise, <see langword="false"/>.</value>
         public bool WriteToConsole { get; set; }
 
+        private bool hung;
+
         /// <summary>
         /// Resets the memory of this instance.
         /// </summary>
@@ -175,7 +177,12 @@ namespace JAGBE.GB.Emulation
 
                 if (this.memory.Status == CpuState.HUNG)
                 {
-                    Logger.LogVerbose("Cpu has hung.");
+                    if (!this.hung)
+                    {
+                        Logger.LogWarning("Cpu has hung.");
+                        this.hung = true;
+                    }
+
                     this.delay += DelayStep;
                     continue;
                 }
