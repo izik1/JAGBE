@@ -12,14 +12,14 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Add_sp_e_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "add_sp_e_timing.gb", "");
         }
 
         [TestMethod]
         public void Boot_hwio_dmgABCXmgb()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "boot_hwio-dmgABCXmgb.gb", "");
         }
 
@@ -30,35 +30,35 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Call_cc_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "call_cc_timing.gb", "");
         }
 
         [TestMethod]
         public void Call_cc_timing2()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "call_cc_timing2.gb", "");
         }
 
         [TestMethod]
         public void Call_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "call_timing.gb", "");
         }
 
         [TestMethod]
         public void Call_timing2()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "call_timing2.gb", "");
         }
 
         [TestMethod]
         public void DI_timing_GS()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "di_timing_GS.gb", "");
         }
 
@@ -71,63 +71,63 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Halt_ime0_ei()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "halt_ime0_ei.gb", "");
         }
 
         [TestMethod]
         public void Halt_ime0_nointr_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "halt_ime0_nointr_timing.gb", "");
         }
 
         [TestMethod]
         public void Halt_ime1_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "halt_ime1_timing.gb", "");
         }
 
         [TestMethod]
         public void Halt_ime1_timing2_GS()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "halt_ime1_timing2_GS.gb", "");
         }
 
         [TestMethod]
         public void IF_IE_registers()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "if_ie_registers.gb", "");
         }
 
         [TestMethod]
         public void Intr_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "intr_timing.gb", "");
         }
 
         [TestMethod]
         public void JP_cc_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "jp_cc_timing.gb", "");
         }
 
         [TestMethod]
         public void JP_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "jp_timing.gb", "");
         }
 
         [TestMethod]
         public void LD_hl_sp_e_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "ld_hl_sp_e_timing.gb", "");
         }
 
@@ -137,7 +137,7 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Oam_dma_start()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "oam_dma_start.gb", "");
         }
 
@@ -150,7 +150,7 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Push_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "push_timing.gb", "");
         }
 
@@ -160,14 +160,14 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Ret_cc_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "ret_cc_timing.gb", "");
         }
 
         [TestMethod]
         public void Ret_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "ret_timing.gb", "");
         }
 
@@ -177,14 +177,14 @@ namespace JAGBETests.RomTests.mooneye
         [TestMethod]
         public void Reti_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "reti_timing.gb", "");
         }
 
         [TestMethod]
         public void Rst_timing()
         {
-            Assert.Inconclusive();
+            Assert.Inconclusive("No SHA");
             TestDisplayOut(BasePath + "rst_timing.gb", "");
         }
     }
