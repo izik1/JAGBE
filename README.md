@@ -34,31 +34,31 @@ MoonEye tests:
 |test|state|comment|
 |-|-|-|
 |add_sp_e_timing|:x:|Doesn't complete.|
-|boot_regs-dmgABCX|:white_check_mark:|All correct data.|
+|boot_regs-dmgABCX|:white_check_mark:|-|
 |call_cc_timing|:x:|Doesn't complete.|
 |call_cc_timing2|:x:|B,C,D are wrong.|
-|call_timing|:x:|Doesn't complete.|
+|call_timing|:x:|Incorrect.|
 |call_timing2|:x:|B,C,D are wrong.|
-|di_timing-GS|:question:|-|
-|div_timing|:question:|-|
-|ei_timing|:question:|-|
-|halt_ime0_ei|:question:|-|
-|halt_ime0_nointr_timing|:question:|-|
-|halt_ime1_timing|:question:|-|
-|halt_ime1_timing2-GS|:question:|-|
-|if_ie_registers|:question:|-|
-|intr_timing|:question:|-|
-|jp_cc_timing|:question:|-|
-|jp_timing|:question:|-|
-|ld_hl_sp_e_timing|:question:|-|
-|oam_dma_restart|:question:|-|
-|oam_dma_start|:question:|-|
-|oam_dma_timing|:question:|-|
-|pop_timing|:question:|-|
-|push_timing|:question:|-|
-|rapid_di_ei|:question:|-|
-|ret_cc_timing|:question:|-|
-|ret_timing|:question:|-|
-|reti_intr_timing|:question:|-|
-|reti_timing|:question:|-|
-|rst_timing|:question:|-|
+|di_timing-GS|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|div_timing|:white_check_mark:|-|
+|ei_timing|:white_check_mark:|-|
+|halt_ime0_ei|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|halt_ime0_nointr_timing|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|halt_ime1_timing|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|halt_ime1_timing2-GS|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|if_ie_registers|:x:|C,E Incorrect.|
+|intr_timing|:x:|E Incorrect.|
+|jp_cc_timing|:x:|Doesn't complete.|
+|jp_timing|:x:|Doesn't complete.|
+|ld_hl_sp_e_timing|:x:|Doesn't complete.|
+|oam_dma_restart|:white_check_mark:|-|
+|oam_dma_start|:x:|B,C,D,E Incorrect.|
+|oam_dma_timing|:white_check_mark:|-|
+|pop_timing|:white_check_mark:|-|
+|push_timing|:x:|D Incorrect.|
+|rapid_di_ei|:white_check_mark:|-|
+|ret_cc_timing|:x:|Doesn't complete.|
+|ret_timing|:x:|Doesn't complete.|
+|reti_intr_timing|:white_check_mark:|-|
+|reti_timing|:x:|Doesn't complete.|
+|rst_timing|:x:|B Incorrect.|
