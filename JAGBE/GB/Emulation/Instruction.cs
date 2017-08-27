@@ -1,5 +1,4 @@
 ﻿using System;
-using JAGBE.GB.Emulation;
 using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation
@@ -11,7 +10,7 @@ namespace JAGBE.GB.Emulation
         private static readonly Opcode InvalidOpcode = new Opcode(0, 0, (o, m, s) =>
         {
             m.Status = CpuState.HUNG;
-            return false;
+            return true;
         });
 
         private static readonly Opcode[] NmOps = GetNmOps();
@@ -220,7 +219,6 @@ namespace JAGBE.GB.Emulation
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
             ops[0xD3] = InvalidOpcode;
-            ops[0xD4] = InvalidOpcode;
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
             ops[0xE8] = new Opcode(0, 0, Alu.Arithmetic.AddSpR8);
             ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>

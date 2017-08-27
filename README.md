@@ -13,7 +13,7 @@ Currently passes the following of blargg's tests:
 |04|op r,imm|:white_check_mark:|
 |05|op rp|:white_check_mark:|
 |06|ld r,r|:white_check_mark:|
-|07|jr,jp,call,ret,rst|:x: (doesn't complete)|
+|07|jr,jp,call,ret,rst|:white_check_mark:|
 |08|misc instrs|:white_check_mark:|
 |09|op r,r|:white_check_mark:|
 |10|bit ops|:white_check_mark:|
