@@ -23,8 +23,7 @@ namespace JAGBETests.RomTests
         [TestMethod]
         public void Cpu_Instrs_03()
         {
-            Assert.Inconclusive("No SHA");
-            TestDisplayOut(baseTestPath + "03-op sp,hl.gb", "");
+            TestDisplayOut(baseTestPath + "03-op sp,hl.gb", "CgqhrBepL9+hTWlUBzGjV0ajffCcArgdCEEKaNQ0SIE=");
         }
 
         [TestMethod]

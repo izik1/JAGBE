@@ -9,7 +9,7 @@ Currently passes the following of blargg's instruction tests:
 |-|-|-|
 |01|special|:white_check_mark:|
 |02|interrupts|:x:|
-|03|op sp,hl|:x:|
+|03|op sp,hl|:white_check_mark:|
 |04|op r,imm|:white_check_mark:|
 |05|op rp|:white_check_mark:|
 |06|ld r,r|:white_check_mark:|
@@ -36,9 +36,9 @@ MoonEye tests:
 |add_sp_e_timing|:x:|Doesn't complete.|
 |boot_regs-dmgABCX|:white_check_mark:|-|
 |call_cc_timing|:x:|Doesn't complete.|
-|call_cc_timing2|:x:|B,C,D are wrong.|
+|call_cc_timing2|:x:|B,C,D Incorrect.|
 |call_timing|:x:|Incorrect.|
-|call_timing2|:x:|B,C,D are wrong.|
+|call_timing2|:x:|B,C,D Incorrect.|
 |di_timing-GS|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
 |div_timing|:white_check_mark:|-|
 |ei_timing|:white_check_mark:|-|

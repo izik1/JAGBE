@@ -188,10 +188,9 @@ namespace JAGBE.GB.Emulation.Alu
 
                 case 2:
                     sbyte s = (sbyte)op.Data1;
-                    int val = s + (int)mem.R.Sp;
-                    mem.R.F = (GbUInt8)(val > 0xFFFF || val < 0 ? RFlags.HCB : 0);
-                    mem.R.F = mem.R.F.AssignBit(RFlags.HF, s >= 0 ? ((GbUInt16)s).GetHalfCarry(mem.R.Sp) : ((mem.R.Sp & 0xFFF) - s) < 0);
-                    mem.R.Sp = (ushort)val;
+                    mem.R.F = (((mem.R.Sp & 0xFF) + (s & 0xFF)) > 0xFF ? RFlags.CB : (GbUInt8)0)
+                        .AssignBit(RFlags.HF, ((mem.R.Sp & 0x0F) + (s & 0x0F)) > 0x0F);
+                    mem.R.Hl = mem.R.Sp + s;
                     return true;
 
                 default:
