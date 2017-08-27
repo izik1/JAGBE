@@ -54,7 +54,8 @@
     <Compile Include="GbMemoryTests.cs" />
     <Compile Include="InstructionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RomTests.cs" />
+    <Compile Include="RomTests\BlarggCpuInstrsTests.cs" />
+    <Compile Include="RomTests\Helpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
