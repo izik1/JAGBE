@@ -214,7 +214,7 @@ namespace JAGBE.GB.Emulation.Alu
                 }
                 else if (op.Dest == 8)
                 {
-                    mem.R.A = mem.GetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
+                    mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
                 }
                 else
                 {

@@ -17,4 +17,4 @@ Currently passes the following of blargg's tests:
 |08|misc instrs|:white_check_mark:|
 |09|op r,r|:white_check_mark:|
 |10|bit ops|:white_check_mark:|
-|11|op a,(hl)|:x:|
+|11|op a,(hl)|:white_check_mark:|
