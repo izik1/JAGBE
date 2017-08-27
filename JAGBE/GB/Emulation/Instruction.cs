@@ -126,6 +126,11 @@ namespace JAGBE.GB.Emulation
             {
                 mem.R.F = mem.R.A[7] ? RFlags.CB : (byte)0;
                 mem.R.A <<= 1;
+                if (mem.R.F[RFlags.CF])
+                {
+                    mem.R.A |= 0x01;
+                }
+
                 return true;
             });
             ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
@@ -133,6 +138,11 @@ namespace JAGBE.GB.Emulation
             {
                 mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
                 mem.R.A >>= 1;
+                if (mem.R.F[RFlags.CF])
+                {
+                    mem.R.A |= 0x80;
+                }
+
                 return true;
             });
             ops[0x10] = new Opcode(0, 0, (op, mem, step) =>

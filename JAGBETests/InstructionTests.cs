@@ -366,10 +366,10 @@ namespace JAGBETests
             GbMemory memory = ConfigureMemory(2);
             InitCbTest(memory, 0, 0x40);
             RegTest(memory, 0x80, 0);
-            RegTest(memory, 0, RFlags.ZCB);
+            RegTest(memory, 1, RFlags.CB);
             memory.Rom[1] = 0x06;
             HlTest(memory, 0x80, 0);
-            HlTest(memory, 0, RFlags.ZCB);
+            HlTest(memory, 1, RFlags.CB);
         }
 
         /// <summary>

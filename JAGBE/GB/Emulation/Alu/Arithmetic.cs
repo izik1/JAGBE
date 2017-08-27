@@ -16,10 +16,11 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             bool c = mem.R.F[RFlags.CF];
-            GbUInt8 b = (GbUInt8)(val + (c ? 1 : 0));
+            int b = (GbUInt8)(val + (c ? 1 : 0));
             GbUInt8 s = (GbUInt8)(mem.R.A + b);
+            bool carry = mem.R.A + b > 0xFF;
             mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(
-            RFlags.HF, mem.R.A.GetHCarry(b)).AssignBit(RFlags.CF, (c ? s - 1 : s) < mem.R.A);
+                RFlags.HF, carry || mem.R.A.GetHCarry((GbUInt8)b)).AssignBit(RFlags.CF, carry);
             mem.R.A = s;
         });
 
