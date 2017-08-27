@@ -18,12 +18,47 @@ namespace JAGBE.GB.Emulation
                 0xFF0F380F
         };
 
+        public static byte[] DisplayToBytes(int[] displayMem)
+        {
+            int displayMemLength = displayMem.Length;
+            if ((displayMemLength & 3) != 0)
+            {
+                throw new InvalidOperationException();
+            }
+
+            byte[] arr = new byte[displayMemLength / 4];
+
+            for (int i = 0; i < displayMemLength; i++)
+            {
+                int j = i & 3;
+                int data = 0;
+                bool valid = false;
+                for (int k = 0; k < 4; k++)
+                {
+                    if ((int)COLORS[k] == displayMem[i])
+                    {
+                        data = k;
+                        valid = true;
+                    }
+                }
+
+                if (!valid)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                arr[i / 4] |= (byte)(data << j);
+            }
+
+            return arr;
+        }
+
         public static void Tick(GbMemory mem)
         {
             LcdMemory lcdMem = mem.lcdMemory;
             if (!lcdMem.Lcdc[7])
             {
-                if (lcdMem.LY != 0 || lcdMem.cy != 0)
+                if (lcdMem.LY != 0 || lcdMem.cy != 0 || lcdMem.displayMemory[0] == 0)
                 {
                     DisableLcd(lcdMem);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
@@ -21,22 +22,16 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal const int DelayStep = 4;
 
+        private bool breakMode;
+
+        private readonly HashSet<ushort> breakPoints = new HashSet<ushort>();
+
         /// <summary>
         /// The delay until the next cycle.
         /// </summary>
         private int delay;
 
-        /// <summary>
-        /// Gets the pc.
-        /// </summary>
-        /// <value>The pc.</value>
-        internal GbUInt16 Pc => this.memory.R.Pc;
-
-        /// <summary>
-        /// This re-dumps the memory each time it's called.
-        /// </summary>
-        /// <value>The ram dump.</value>
-        internal byte[] RamDump => this.memory.DumpRam();
+        private bool hung;
 
         /// <summary>
         /// The memory of this cpu
@@ -72,7 +67,19 @@ namespace JAGBE.GB.Emulation
         /// <value><see langword="true"/> if debug; otherwise, <see langword="false"/>.</value>
         public bool WriteToConsole { get; set; }
 
-        private bool hung;
+        /// <summary>
+        /// Gets the pc.
+        /// </summary>
+        /// <value>The pc.</value>
+        internal GbUInt16 Pc => this.memory.R.Pc;
+
+        /// <summary>
+        /// This re-dumps the memory each time it's called.
+        /// </summary>
+        /// <value>The ram dump.</value>
+        internal byte[] RamDump => this.memory.DumpRam();
+
+        public void AddBreakPoint(ushort address) => this.breakPoints.Add(address);
 
         /// <summary>
         /// Resets the memory of this instance.
@@ -202,9 +209,14 @@ namespace JAGBE.GB.Emulation
 
                 TickDma();
 
-                //TODO: Write breakpoint handler here.
+                if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
+                {
+                    this.breakMode = true;
+                    Logger.LogInfo("hit breakpoint $" + this.Pc.ToString("X4"));
+                    Logger.Instance.SetMinLogLevel(0);
+                }
 
-                if (this.WriteToConsole)
+                if (this.breakMode)
                 {
                     Logger.LogVerbose(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
                 }
@@ -229,26 +241,6 @@ namespace JAGBE.GB.Emulation
             {
                 TickIoDevices();
                 TickDma();
-            }
-        }
-
-        private void TickDma()
-        {
-            LcdMemory lcdMem = this.memory.lcdMemory;
-            if (lcdMem.DMA < DelayStep * 162)
-            {
-                if (lcdMem.DMA != 0)
-                {
-                    if (lcdMem.DMA > DelayStep)
-                    {
-                        this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
-                    }
-
-                    lcdMem.DMAValue = this.memory.GetMappedMemoryDma(this.memory.lcdMemory.DMAAddress);
-                    lcdMem.DMAAddress++;
-                }
-
-                lcdMem.DMA += DelayStep;
             }
         }
 
@@ -309,6 +301,26 @@ namespace JAGBE.GB.Emulation
             }
 
             throw new ArgumentOutOfRangeException(nameof(step));
+        }
+
+        private void TickDma()
+        {
+            LcdMemory lcdMem = this.memory.lcdMemory;
+            if (lcdMem.DMA < DelayStep * 162)
+            {
+                if (lcdMem.DMA != 0)
+                {
+                    if (lcdMem.DMA > DelayStep)
+                    {
+                        this.memory.Oam[(lcdMem.DMA / DelayStep) - 2] = lcdMem.DMAValue;
+                    }
+
+                    lcdMem.DMAValue = this.memory.GetMappedMemoryDma(this.memory.lcdMemory.DMAAddress);
+                    lcdMem.DMAAddress++;
+                }
+
+                lcdMem.DMA += DelayStep;
+            }
         }
     }
 }
