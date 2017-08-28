@@ -14,36 +14,15 @@ namespace JAGBE.GB.Emulation
         });
 
         private static readonly Opcode[] NmOps = GetNmOps();
-        private byte opcode;
+        private readonly byte opcode;
 
         public Instruction(GbUInt8 opcode) => this.opcode = (byte)opcode;
 
         public bool Run(GbMemory memory, int step) => NmOps[this.opcode].Invoke(memory, step);
 
-        private static bool CbPrefix(Opcode op, GbMemory mem, int step)
-        {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                op.Data1 = mem.LdI8();
-            }
-
-            return CbOps[op.Data1].Invoke(mem, step - 1);
-        }
-
         private static Opcode[] GetCbOps()
         {
             Opcode[] ops = new Opcode[0x100];
-
-            for (int i = 0; i < 0x100; i++)
-            {
-                ops[i] = new Opcode((byte)i, 1, Unimplemented);
-            }
-
             for (int i = 0; i < 8; i++)
             {
                 ops[i + 0x00] = new Opcode(0, (byte)i, Alu.Bitwise.Rlc);
@@ -70,7 +49,6 @@ namespace JAGBE.GB.Emulation
         {
             Opcode[] ops = new Opcode[0x100];
 
-            // Keep as a fallback instead of NullRefrenceExceptions, which are much harder to debug.
             for (int i = 0; i < 0x100; i++)
             {
                 ops[i] = new Opcode((byte)i, 0, Unimplemented);
@@ -81,10 +59,6 @@ namespace JAGBE.GB.Emulation
                 if (i != 0x36)
                 {
                     ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Loading.Ld8);
-                }
-                else
-                {
-                    // Put HALT instruction here.
                 }
             }
 
@@ -144,13 +118,13 @@ namespace JAGBE.GB.Emulation
 
                 return true;
             });
-            ops[0x10] = new Opcode(0, 0, (op, mem, step) =>
-             {
-                 mem.R.Pc++;
-                 mem.Status = CpuState.STOP;
-                 return true;
-             });
-            ops[0x17] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0x10] = new Opcode(0, 0, (op, mem, step) => // STOP
+            {
+                mem.R.Pc++;
+                mem.Status = CpuState.STOP;
+                return true;
+            });
+            ops[0x17] = new Opcode(0, 0, (op, mem, step) => // RLA
             {
                 bool b = mem.R.A[7];
                 mem.R.A <<= 1;
@@ -193,7 +167,20 @@ namespace JAGBE.GB.Emulation
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
             ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
             ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);
-            ops[0xCB] = new Opcode(0, 0, CbPrefix);
+            ops[0xCB] = new Opcode(0, 0, (op, mem, step) => // CBPrefix
+            {
+                if (step == 0)
+                {
+                    return false;
+                }
+
+                if (step == 1)
+                {
+                    op.Data1 = mem.LdI8();
+                }
+
+                return CbOps[op.Data1].Invoke(mem, step - 1);
+            });
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
             ops[0xD3] = InvalidOpcode;
@@ -202,7 +189,7 @@ namespace JAGBE.GB.Emulation
             ops[0xDB] = InvalidOpcode;
             ops[0xDE] = new Opcode(7, 8, Alu.Arithmetic.Sbc);
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
-            ops[0xE2] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0xE2] = new Opcode(0, 0, (op, mem, step) => // LD (C),A
             {
                 if (step == 0)
                 {
@@ -220,7 +207,7 @@ namespace JAGBE.GB.Emulation
             ops[0xD3] = InvalidOpcode;
             ops[0xE6] = new Opcode(7, 8, Alu.Arithmetic.And);
             ops[0xE8] = new Opcode(0, 0, Alu.Arithmetic.AddSpR8);
-            ops[0xE9] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0xE9] = new Opcode(0, 0, (op, mem, step) => // JP (HL)
             {
                 if (step == 0)
                 {
@@ -236,7 +223,7 @@ namespace JAGBE.GB.Emulation
             ops[0xED] = InvalidOpcode;
             ops[0xEE] = new Opcode(7, 8, Alu.Arithmetic.Xor);
             ops[0xF0] = new Opcode(7, 0, Alu.Loading.LdH);
-            ops[0xF2] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0xF2] = new Opcode(0, 0, (op, mem, step) => // LD A,(C)
             {
                 if (step == 0)
                 {

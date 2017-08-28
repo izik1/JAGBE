@@ -3,6 +3,7 @@
   <Rules AnalyzerId="CodeCracker.CSharp" RuleNamespace="CodeCracker.CSharp">
     <Rule Id="CC0001" Action="None" />
     <Rule Id="CC0057" Action="None" />
+    <Rule Id="CC0068" Action="None" />
     <Rule Id="CC0073" Action="None" />
     <Rule Id="CC0089" Action="None" />
     <Rule Id="CC0091" Action="None" />
