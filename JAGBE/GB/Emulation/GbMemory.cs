@@ -384,7 +384,7 @@ namespace JAGBE.GB.Emulation
 
             if (number < 0xF)
             {
-                return this.timer.GetRegister(number);
+                return this.timer[number];
             }
 
             if (number == 0xF)
@@ -394,12 +394,12 @@ namespace JAGBE.GB.Emulation
 
             if (number <= 0x3F)
             {
-                return this.apu.GetRegister(number);
+                return this.apu[number];
             }
 
             if (number < 0x50)
             {
-                return this.lcdMemory.GetRegister(number);
+                return this.lcdMemory[number];
             }
 
             if (!IsUnusedIoRegister(number))
@@ -556,7 +556,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer < 0xF)
             {
-                this.timer.SetRegister((byte)pointer, value);
+                this.timer[(byte)pointer] = value;
                 return;
             }
 
@@ -568,17 +568,13 @@ namespace JAGBE.GB.Emulation
 
             if (pointer <= 0x3F)
             {
-                if (!this.apu.SetRegister((byte)pointer, value))
-                {
-                    Logger.LogWarning("Failed write @FF" + pointer.ToString("X2") + "h v:" + value.ToString("X2") + " (ALU)");
-                }
-
+                this.apu[(byte)pointer] = value;
                 return;
             }
 
             if (pointer <= 0x4F)
             {
-                this.lcdMemory.SetRegister(pointer - 0x40, value);
+                this.lcdMemory[(byte)(pointer - 0x40)] = value;
                 return;
             }
 

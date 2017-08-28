@@ -38,42 +38,43 @@
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.sysTimer;
 
-        internal GbUInt8 GetRegister(byte number)
+        public GbUInt8 this[byte index]
         {
-            switch (number)
+            get
             {
-                case 4: return this.sysTimer.HighByte;
-                case 5: return this.TimaV;
-                case 6: return this.TimaM;
-                case 7: return this.Tac;
-                default: return 0xFF;
-            }
-        }
-
-        internal void SetRegister(byte pointer, GbUInt8 value)
-        {
-            if (pointer < 4 || pointer > 7)
-            {
-                return;
+                switch (index)
+                {
+                    case 4: return this.sysTimer.HighByte;
+                    case 5: return this.TimaV;
+                    case 6: return this.TimaM;
+                    case 7: return this.Tac;
+                    default: return 0xFF;
+                }
             }
 
-            switch (pointer)
+            set
             {
-                case 4:
-                    this.sysTimer = 0;
-                    break;
+                switch (index)
+                {
+                    case 4:
+                        this.sysTimer = 0;
+                        return;
 
-                case 5:
-                    this.TimaV = value;
-                    break;
+                    case 5:
+                        this.TimaV = value;
+                        return;
 
-                case 6:
-                    this.TimaM = value;
-                    break;
+                    case 6:
+                        this.TimaM = value;
+                        return;
 
-                default:
-                    this.Tac = (value & 3);
-                    break;
+                    case 7:
+                        this.Tac = (value & 3);
+                        return;
+
+                    default:
+                        return;
+                }
             }
         }
 
