@@ -53,11 +53,11 @@ namespace JAGBE.GB.Emulation.Alu
                     return true;
 
                 case 1:
-                    memory.instrData1 = memory.GetMappedMemoryHl();
+                    op.Data1 = memory.GetMappedMemoryHl();
                     return false;
 
                 case 2:
-                    memory.SetMappedMemoryHl(operation(memory, memory.instrData1, op.Dest));
+                    memory.SetMappedMemoryHl(operation(memory, op.Data1, op.Dest));
                     return true;
 
                 default:

@@ -51,21 +51,21 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    mem.instrData1 = mem.LdI8(); // Low byte.
+                    op.Data1 = mem.LdI8(); // Low byte.
                     return false;
 
                 case 2:
-                    mem.instrData2 = mem.LdI8(); // High byte.
+                    op.Data2 = mem.LdI8(); // High byte.
                     return false;
 
                 case 3:
                     if (op.Dest == 7)
                     {
-                        mem.R.A = mem.GetMappedMemory(new GbUInt16(mem.instrData2, mem.instrData1));
+                        mem.R.A = mem.GetMappedMemory(new GbUInt16(op.Data2, op.Data1));
                     }
                     else
                     {
-                        mem.SetMappedMemory(new GbUInt16(mem.instrData2, mem.instrData1), mem.R.A);
+                        mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1), mem.R.A);
                     }
                     return true;
 
@@ -82,19 +82,19 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    mem.instrData1 = mem.LdI8();
+                    op.Data1 = mem.LdI8();
                     return false;
 
                 case 2:
-                    mem.instrData2 = mem.LdI8();
+                    op.Data2 = mem.LdI8();
                     return false;
 
                 case 3:
-                    mem.SetMappedMemory(new GbUInt16(mem.instrData2, mem.instrData1), mem.R.Sp.LowByte);
+                    mem.SetMappedMemory(new GbUInt16(op.Data2, op.Data1), mem.R.Sp.LowByte);
                     return false;
 
                 case 4:
-                    mem.SetMappedMemory((ushort)(new GbUInt16(mem.instrData2, mem.instrData1) + 1), mem.R.Sp.HighByte);
+                    mem.SetMappedMemory((ushort)(new GbUInt16(op.Data2, op.Data1) + 1), mem.R.Sp.HighByte);
                     return true;
 
                 default:
@@ -130,17 +130,17 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    mem.instrData1 = mem.LdI8();
+                    op.Data1 = mem.LdI8();
                     if (op.Dest == 6)
                     {
                         return false;
                     }
 
-                    mem.R.SetR8(op.Dest, mem.instrData1);
+                    mem.R.SetR8(op.Dest, op.Data1);
                     return true;
 
                 case 2:
-                    mem.SetMappedMemory(mem.R.Hl, mem.instrData1);
+                    mem.SetMappedMemory(mem.R.Hl, op.Data1);
                     return true;
 
                 default:
@@ -156,17 +156,17 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    mem.instrData1 = mem.LdI8();
+                    op.Data1 = mem.LdI8();
                     return false;
 
                 case 2:
                     if (op.Dest == 7)
                     {
-                        mem.R.A = mem.GetMappedMemory((GbUInt16)0xFF00 + mem.instrData1);
+                        mem.R.A = mem.GetMappedMemory((GbUInt16)0xFF00 + op.Data1);
                     }
                     else
                     {
-                        mem.SetMappedMemory((GbUInt16)0xFF00 + mem.instrData1, mem.R.A);
+                        mem.SetMappedMemory((GbUInt16)0xFF00 + op.Data1, mem.R.A);
                     }
                     return true;
 
@@ -183,11 +183,11 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    mem.instrData1 = mem.LdI8();
+                    op.Data1 = mem.LdI8();
                     return false;
 
                 case 2:
-                    sbyte s = (sbyte)mem.instrData1;
+                    sbyte s = (sbyte)op.Data1;
                     mem.R.F = (((mem.R.Sp & 0xFF) + (s & 0xFF)) > 0xFF ? RFlags.CB : (GbUInt8)0)
                         .AssignBit(RFlags.HF, ((mem.R.Sp & 0x0F) + (s & 0x0F)) > 0x0F);
                     mem.R.Hl = mem.R.Sp + s;
