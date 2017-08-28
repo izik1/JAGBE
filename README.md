@@ -19,15 +19,15 @@ Currently passes the following of blargg's instruction tests:
 |10|bit ops|:white_check_mark:|
 |11|op a,(hl)|:white_check_mark:|
 
-|Memory Timing #|success?|
-|-|-|
-|1|:x:|
-|2|:x:|
-|3|:x:|
+|Memory Timing #|type|success?|
+|-|-|-|
+|1|read|:white_check_mark:|
+|2|write|:white_check_mark:|
+|3|modify|:white_check_mark:|
 
 |name|success?|
 |-|-|
-|instr_timing|:x:|
+|instr_timing|:white_check_mark:|
 
 MoonEye tests:
 
