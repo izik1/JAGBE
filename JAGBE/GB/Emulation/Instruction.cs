@@ -84,7 +84,7 @@ namespace JAGBE.GB.Emulation
                 }
                 else
                 {
-                    // Put Stop instruction here.
+                    // Put HALT instruction here.
                 }
             }
 
@@ -190,7 +190,6 @@ namespace JAGBE.GB.Emulation
 
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
-
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
             ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
             ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);
