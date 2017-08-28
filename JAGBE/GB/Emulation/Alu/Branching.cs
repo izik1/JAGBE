@@ -16,7 +16,7 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 2:
-                    mem.instrData1 = mem.LdI8(); // High byte.
+                    mem.instrData2 = mem.LdI8(); // High byte.
                     return false;
 
                 case 3:
