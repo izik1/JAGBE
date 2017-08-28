@@ -4,8 +4,8 @@ using static JAGBETests.RomTests.Helpers;
 namespace JAGBETests.RomTests
 {
     [TestClass]
-    [TestCategory("cpu_instrs")]
-    public class BlarggCpuInstrsTests
+    [TestCategory("blargg/cpu_instrs")]
+    public class CpuInstrs
     {
         private const string baseTestPath = "blargg/cpu_instrs/individual/";
 

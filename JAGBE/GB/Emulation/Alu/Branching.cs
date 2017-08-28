@@ -17,10 +17,10 @@ namespace JAGBE.GB.Emulation.Alu
 
                 case 2:
                     op.Data2 = mem.LdI8(); // High byte.
-                    return false;
+                    return op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
 
                 case 3:
-                    return op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
+                    return false;
 
                 case 4:
                     mem.Push(mem.R.Pc.HighByte);
