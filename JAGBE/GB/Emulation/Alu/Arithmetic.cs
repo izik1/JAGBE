@@ -49,8 +49,8 @@ namespace JAGBE.GB.Emulation.Alu
             if (step == 1)
             {
                 GbUInt16 val = mem.R.GetR16(op.Src, false);
-                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHalfCarry(mem.R.Hl)).AssignBit(
-                    RFlags.CF, val + mem.R.Hl < mem.R.Hl);
+                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, (((mem.R.Hl & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000)
+                    .AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
                 mem.R.Hl += val;
                 return true;
             }
@@ -93,7 +93,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A &= val;
-            mem.R.F = (GbUInt8)((mem.R.A == 0 ? RFlags.ZB : 0) | RFlags.HB);
+            mem.R.F = mem.R.A == 0 ? RFlags.ZHB : RFlags.HB;
         });
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns></returns>
         public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            byte s = (byte)(memory.R.A - val);
+            byte s = (byte)(mem.R.A - val);
             mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val)).AssignBit(RFlags.CF, s > mem.R.A);
             mem.R.A = s;
         });
@@ -310,7 +310,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A ^= val;
-            mem.R.F = memory.R.A == 0 ? RFlags.ZB : (byte)0;
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
         });
     }
 }

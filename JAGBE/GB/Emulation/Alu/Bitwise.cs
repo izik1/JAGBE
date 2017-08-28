@@ -47,7 +47,8 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
         /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
-        public static bool Res(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (m, val, dest) => val.Res((byte)dest));
+        public static bool Res(Opcode code, GbMemory memory, int step) =>
+            BitOpFunc(code, memory, step, (m, val, dest) => val.Res((byte)dest));
 
         /// <summary>
         /// Rls the specified code.

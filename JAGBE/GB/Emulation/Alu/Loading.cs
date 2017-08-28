@@ -162,11 +162,11 @@ namespace JAGBE.GB.Emulation.Alu
                 case 2:
                     if (op.Dest == 7)
                     {
-                        mem.R.A = mem.GetMappedMemory((ushort)(0xFF00 + op.Data1));
+                        mem.R.A = mem.GetMappedMemory((GbUInt16)0xFF00 + op.Data1);
                     }
                     else
                     {
-                        mem.SetMappedMemory((ushort)(0xFF00 + op.Data1), mem.R.A);
+                        mem.SetMappedMemory((GbUInt16)0xFF00 + op.Data1, mem.R.A);
                     }
                     return true;
 
