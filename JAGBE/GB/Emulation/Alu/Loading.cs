@@ -27,17 +27,13 @@ namespace JAGBE.GB.Emulation.Alu
                 if (op.Src == 6)
                 {
                     memory.R.SetR8(op.Dest, memory.GetMappedMemoryHl());
-                    return true;
                 }
-
-                if (op.Dest == 6)
+                else
                 {
                     memory.SetMappedMemory(memory.R.Hl, memory.R.GetR8(op.Src));
-                    return true;
                 }
 
-                // Should never throw.
-                throw new InvalidOperationException();
+                return true;
             }
 
             throw new ArgumentOutOfRangeException(nameof(step));
@@ -255,42 +251,38 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static bool Pop(Opcode op, GbMemory mem, int step)
         {
-            if (step == 0)
+            switch (step)
             {
-                return false;
+                case 0:
+                    return false;
+
+                case 1:
+                    if (op.Dest == 3)
+                    {
+                        mem.R.F = mem.Pop() & 0xF0;
+                    }
+                    else
+                    {
+                        mem.R.SetR8((op.Dest * 2) + 1, mem.Pop());
+                    }
+
+                    return false;
+
+                case 2:
+                    if (op.Dest == 3)
+                    {
+                        mem.R.A = mem.Pop();
+                    }
+                    else
+                    {
+                        mem.R.SetR8(op.Dest * 2, mem.Pop());
+                    }
+
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(step));
             }
-
-            if (step == 1)
-            {
-                GbUInt8 b = mem.Pop();
-                if (op.Dest == 3)
-                {
-                    b &= 0xF0;
-                    mem.R.F = b;
-                }
-                else
-                {
-                    mem.R.SetR8((op.Dest * 2) + 1, b);
-                }
-
-                return false;
-            }
-
-            if (step == 2)
-            {
-                if (op.Dest == 3)
-                {
-                    mem.R.A = mem.Pop();
-                }
-                else
-                {
-                    mem.R.SetR8(op.Dest * 2, mem.Pop());
-                }
-
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
         }
 
         public static bool Push(Opcode op, GbMemory mem, int step)
