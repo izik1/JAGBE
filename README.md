@@ -5,7 +5,7 @@ and to try not to stick everything in one file.
 
 Currently passes the following of blargg's instruction tests:
 
-|#|name|success?|
+|#|name|state|
 |-|-|-|
 |01|special|:white_check_mark:|
 |02|interrupts|:x:|
@@ -19,13 +19,15 @@ Currently passes the following of blargg's instruction tests:
 |10|bit ops|:white_check_mark:|
 |11|op a,(hl)|:white_check_mark:|
 
-|Memory Timing #|type|success?|
+Memory Timing:
+
+|#|access type|state|
 |-|-|-|
 |1|read|:white_check_mark:|
 |2|write|:white_check_mark:|
 |3|modify|:white_check_mark:|
 
-|name|success?|
+|name|state|
 |-|-|
 |instr_timing|:white_check_mark:|
 
