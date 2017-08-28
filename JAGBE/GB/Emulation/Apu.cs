@@ -27,6 +27,9 @@ namespace JAGBE.GB.Emulation
         private GbUInt8 NR52;
         private readonly GbUInt8[] WavePattern = new GbUInt8[16];
 
+        /// <summary>
+        /// Sets all registers to zero.
+        /// </summary>
         internal void Clear()
         {
             this.NR10 = 0;
@@ -51,6 +54,11 @@ namespace JAGBE.GB.Emulation
             this.NR51 = 0;
         }
 
+        /// <summary>
+        /// Gets the register.
+        /// </summary>
+        /// <param name="num">The register number.</param>
+        /// <returns>The value of the register</returns>
         internal GbUInt8 GetRegister(GbUInt8 num)
         {
             if (num < 0x10 || num > 0x3F)
@@ -92,6 +100,14 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        /// <summary>
+        /// Sets the register.
+        /// </summary>
+        /// <param name="num">The number.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// <see langword="true"/> if the write was successful, <see langword="false"/> otherwise.
+        /// </returns>
         internal bool SetRegister(byte num, GbUInt8 value)
         {
             if (num < 0x10 || num > 0x3F)
@@ -189,7 +205,7 @@ namespace JAGBE.GB.Emulation
 
                 case 0x26:
                     this.NR52 = (byte)((value & 0x80) | (this.NR52 & 0x7F));
-                    if ((value & 0x80) == 0)
+                    if (!value[7])
                     {
                         Clear();
                     }

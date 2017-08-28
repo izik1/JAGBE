@@ -1,15 +1,22 @@
-﻿#define PERLINERENDERER
-
-using System;
+﻿using System;
 
 namespace JAGBE.GB.Emulation
 {
     internal static class Lcd
     {
+        /// <summary>
+        /// The height of the Game Boy LCD screen.
+        /// </summary>
         public const int Height = 144;
 
+        /// <summary>
+        /// The width of the Game Boy LCD screen.
+        /// </summary>
         public const int Width = 160;
 
+        /// <summary>
+        /// The colors that should be displayed.
+        /// </summary>
         private static readonly uint[] COLORS =
         {
                 0xFF9BBC0F,
@@ -18,6 +25,12 @@ namespace JAGBE.GB.Emulation
                 0xFF0F380F
         };
 
+        /// <summary>
+        /// Converts display memory to a byte representation.
+        /// </summary>
+        /// <param name="displayMem">The display memory.</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static byte[] DisplayToBytes(int[] displayMem)
         {
             int displayMemLength = displayMem.Length;
@@ -53,6 +66,10 @@ namespace JAGBE.GB.Emulation
             return arr;
         }
 
+        /// <summary>
+        /// Ticks the LCD.
+        /// </summary>
+        /// <param name="mem">The memory.</param>
         public static void Tick(GbMemory mem)
         {
             LcdMemory lcdMem = mem.lcdMemory;
@@ -189,9 +206,6 @@ namespace JAGBE.GB.Emulation
             {
                 lcdMem.STAT = (byte)((lcdMem.STAT & 0xFC) | 3);
 
-#if NULLRENDERER
-
-#elif PERLINERENDERER
                 if (lcdMem.ForceNullRender)
                 {
                     for (int i = 0; i < Width; i++)
@@ -216,8 +230,6 @@ namespace JAGBE.GB.Emulation
                         ScanLineSprite(lcdMem, VRam, Oam);
                     }
                 }
-
-#endif
             }
             else if (lcdMem.cy < Cpu.DelayStep * 63)
             {
@@ -242,8 +254,11 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-#if PERLINERENDERER
-
+        /// <summary>
+        /// Scans a line.
+        /// </summary>
+        /// <param name="lcdMem">The LCD memory.</param>
+        /// <param name="VRam">The vram.</param>
         private static void ScanLine(LcdMemory lcdMem, GbUInt8[] VRam)
         {
             // Offset from the start of VRAM to the start of the background map.
@@ -279,9 +294,13 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-#endif
-#if PERLINERENDERER
-
+        /// <summary>
+        /// Scans the sprites of a line.
+        /// </summary>
+        /// <param name="lcdMem">The LCD memory.</param>
+        /// <param name="VRam">The v ram.</param>
+        /// <param name="Oam">The oam.</param>
+        /// <exception cref="NotSupportedException"></exception>
         private static void ScanLineSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam)
         {
             if (lcdMem.Lcdc[2])
@@ -296,6 +315,13 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        /// <summary>
+        /// Scans a sprite.
+        /// </summary>
+        /// <param name="lcdMem">The LCD memory.</param>
+        /// <param name="VRam">The v ram.</param>
+        /// <param name="Oam">The oam.</param>
+        /// <param name="spriteNumber">The sprite number.</param>
         private static void ScanSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
         {
             int oamOffset = spriteNumber * 4;
@@ -319,9 +345,12 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-#endif
-#if PERLINERENDERER
-
+        /// <summary>
+        /// Scans the window of a line.
+        /// </summary>
+        /// <param name="lcdMem">The LCD memory.</param>
+        /// <param name="VRam">The v ram.</param>
+        /// <exception cref="NotSupportedException"></exception>
         private static void ScanLineWindow(LcdMemory lcdMem, GbUInt8[] VRam)
         {
             ushort mapOffset = (ushort)(lcdMem.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
@@ -355,7 +384,5 @@ namespace JAGBE.GB.Emulation
                 }
             }
         }
-
-#endif
     }
 }

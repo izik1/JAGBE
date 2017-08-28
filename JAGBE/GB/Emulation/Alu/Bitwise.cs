@@ -46,7 +46,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Res(Opcode code, GbMemory memory, int step) =>
             BitOpFunc(code, memory, step, (m, val, dest) => val.Res((byte)dest));
 
@@ -56,7 +56,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Rl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val << 1) | (mem.R.F[RFlags.CF] ? 1 : 0));
@@ -70,7 +70,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Rlc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val << 1) | (val >> 7));
@@ -84,7 +84,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Rr(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (mem.R.F[RFlags.CF] ? 0x80 : 0));
@@ -98,7 +98,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Rrc(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (val << 7));
@@ -113,9 +113,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns>
-        /// <see langword="true"/> if the operation is complete, <see langword="false"/> otherwise
-        /// </returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Set(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) => val.Set(dest));
 
@@ -129,9 +127,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns>
-        /// The state of the operation <see langword="true"/> if complete, <see langword="false"/> otherwise
-        /// </returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Sla(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
@@ -146,7 +142,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Sra(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val >> 1) | (val & 0x80));
@@ -160,7 +156,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Srl(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)(val >> 1);
@@ -174,7 +170,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Swap(Opcode code, GbMemory memory, int step) => BitOpFunc(code, memory, step, (mem, val, dest) =>
         {
             byte retVal = (byte)((val << 4) | (val >> 4));

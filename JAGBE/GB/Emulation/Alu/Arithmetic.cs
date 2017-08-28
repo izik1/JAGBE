@@ -12,7 +12,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1038
@@ -31,7 +31,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
@@ -89,7 +89,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A &= val;
@@ -103,7 +103,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte r = (byte)(mem.R.A - val);
@@ -117,7 +117,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">step</exception>
         public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
@@ -182,7 +182,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="mem">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Dec16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -206,7 +206,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).Set(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlagN(1));
@@ -220,7 +220,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="mem">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Inc16(Opcode op, GbMemory mem, int step)
         {
             if (step == 0)
@@ -244,7 +244,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Inc8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHCarry(1));
@@ -258,7 +258,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A |= val;
@@ -272,7 +272,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1084
@@ -291,11 +291,12 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A - val);
-            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val)).AssignBit(RFlags.CF, s > mem.R.A);
+            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val))
+            .AssignBit(RFlags.CF, s > mem.R.A);
             mem.R.A = s;
         });
 
@@ -306,7 +307,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns></returns>
+        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/>.</returns>
         public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A ^= val;

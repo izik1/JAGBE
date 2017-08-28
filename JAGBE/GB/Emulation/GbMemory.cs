@@ -291,6 +291,11 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        /// <summary>
+        /// Sets the mapped memory using MBC1 specific code.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="value">The value.</param>
         private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
         {
             if (pointer < 0x2000)
@@ -406,10 +411,10 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets value of the joypad.
+        /// Gets the value of the joypad.
         /// </summary>
         /// <param name="p1">The p1.</param>
-        /// <returns></returns>
+        /// <returns>The value of the joypad.</returns>
         private byte GetJoypad(byte p1) =>
             (byte)((!this.Joypad[5] ? (p1 & 0xF) : !this.Joypad[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
@@ -418,7 +423,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="ignoreDmaBlock">if set to <see langword="true"/> ignore dma write restriction.</param>
-        /// <returns></returns>
+        /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
             if (!ignoreDmaBlock && this.lcdMemory.DMA < Cpu.DelayStep * 162)
@@ -485,11 +490,11 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets <paramref name="address"/> from ROM.
+        /// Gets The value of the rom at <paramref name="bank"/> and <paramref name="address"/>.
         /// </summary>
         /// <param name="bank">The ROM bank.</param>
         /// <param name="address">The address.</param>
-        /// <returns></returns>
+        /// <returns>The value of the rom at <paramref name="bank"/> and <paramref name="address"/>.</returns>
         private byte GetRomMemory(int bank, GbUInt16 address)
         {
             if (this.bootMode && bank == 0 && address < 0x100)

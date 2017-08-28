@@ -5,21 +5,50 @@ namespace JAGBE.GB.Emulation
 {
     internal sealed class Instruction
     {
+        /// <summary>
+        /// The <see cref="Opcode"/> array containing the functions ran for CB prefixed instructions.
+        /// </summary>
         private static readonly Opcode[] CbOps = GetCbOps();
 
+        /// <summary>
+        /// An opcode representing invalid instructions.
+        /// </summary>
         private static readonly Opcode InvalidOpcode = new Opcode(0, 0, (o, m, s) =>
         {
             m.Status = CpuState.HUNG;
             return true;
         });
 
+        /// <summary>
+        /// The <see cref="Opcode"/> containing instructions ran for non-CB prefixed instructions.
+        /// </summary>
         private static readonly Opcode[] NmOps = GetNmOps();
+
+        /// <summary>
+        /// This this instance's opcode number.
+        /// </summary>
         private readonly byte opcode;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Instruction"/> class.
+        /// </summary>
+        /// <param name="opcode">The opcode.</param>
         public Instruction(GbUInt8 opcode) => this.opcode = (byte)opcode;
 
+        /// <summary>
+        /// Runs the <see cref="Instruction"/>.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns>
+        /// <see langword="true"/> if the operation has completed, <see langword="false"/> otherwise.
+        /// </returns>
         public bool Run(GbMemory memory, int step) => NmOps[this.opcode].Invoke(memory, step);
 
+        /// <summary>
+        /// Gets the CB prefixed instructions.
+        /// </summary>
+        /// <returns>The CB prefixed instructions.</returns>
         private static Opcode[] GetCbOps()
         {
             Opcode[] ops = new Opcode[0x100];
@@ -45,6 +74,10 @@ namespace JAGBE.GB.Emulation
             return ops;
         }
 
+        /// <summary>
+        /// Gets the normal instructions.
+        /// </summary>
+        /// <returns>The normal instructions.</returns>
         private static Opcode[] GetNmOps()
         {
             Opcode[] ops = new Opcode[0x100];
@@ -261,6 +294,13 @@ namespace JAGBE.GB.Emulation
             return ops;
         }
 
+        /// <summary>
+        /// Runs when a instruction isn't implemented.
+        /// </summary>
+        /// <param name="o">The o.</param>
+        /// <param name="mem">The memory.</param>
+        /// <param name="step">The step.</param>
+        /// <returns><see langword="true"/></returns>
         private static bool Unimplemented(Opcode o, GbMemory mem, int step)
         {
             Logger.LogError("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
