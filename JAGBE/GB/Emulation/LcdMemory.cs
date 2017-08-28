@@ -105,44 +105,19 @@ namespace JAGBE.GB.Emulation
         {
             switch (number)
             {
-                case 0x40:
-                    return this.Lcdc;
-
-                case 0x41:
-                    return (byte)(this.STAT | 0x80);
-
-                case 0x42:
-                    return this.SCY;
-
-                case 0x43:
-                    return this.SCX;
-
-                case 0x44:
-                    return this.LY;
-
-                case 0x45:
-                    return this.LYC;
-
-                case 0x46:
-                    return this.DMAAddress.HighByte;
-
-                case 0x47:
-                    return this.BgPallet;
-
-                case 0x48:
-                    return this.objPallet0;
-
-                case 0x49:
-                    return this.objPallet1;
-
-                case 0x4A:
-                    return this.WY;
-
-                case 0x4B:
-                    return this.WX;
-
-                default:
-                    return 0xFF; // No need to log, all registers are implemented.
+                case 0x40: return this.Lcdc;
+                case 0x41: return this.STAT | 0x80;
+                case 0x42: return this.SCY;
+                case 0x43: return this.SCX;
+                case 0x44: return this.LY;
+                case 0x45: return this.LYC;
+                case 0x46: return this.DMAAddress.HighByte;
+                case 0x47: return this.BgPallet;
+                case 0x48: return this.objPallet0;
+                case 0x49: return this.objPallet1;
+                case 0x4A: return this.WY;
+                case 0x4B: return this.WX;
+                default: return 0xFF;
             }
         }
 

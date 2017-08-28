@@ -40,24 +40,13 @@
 
         internal GbUInt8 GetRegister(byte number)
         {
-            if (number < 4 || number > 7)
-            {
-                return 0xFF;
-            }
-
             switch (number)
             {
-                case 4:
-                    return this.sysTimer.HighByte;
-
-                case 5:
-                    return this.TimaV;
-
-                case 6:
-                    return this.TimaM;
-
-                default:
-                    return this.Tac;
+                case 4: return this.sysTimer.HighByte;
+                case 5: return this.TimaV;
+                case 6: return this.TimaM;
+                case 7: return this.Tac;
+                default: return 0xFF;
             }
         }
 

@@ -174,9 +174,9 @@ namespace JAGBE.GB.Emulation.Alu
         /// </summary>
         /// <param name="dest">The dest.</param>
         /// <param name="src">The source.</param>
-        /// <param name="f">The flags.</param>
+        /// <param name="flags">The flags.</param>
         /// <returns></returns>
-        private static bool GetConditionalJumpState(GbUInt8 dest, GbUInt8 src, GbUInt8 f) =>
-            f[src == 1 ? RFlags.ZF : RFlags.CF] ^ (dest != 0);
+        private static bool GetConditionalJumpState(GbUInt8 dest, GbUInt8 src, GbUInt8 flags) =>
+            flags[src == 1 ? RFlags.ZF : RFlags.CF] ^ (dest != 0);
     }
 }

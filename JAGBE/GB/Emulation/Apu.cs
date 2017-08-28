@@ -65,69 +65,27 @@ namespace JAGBE.GB.Emulation
 
             switch (num)
             {
-                case 0x10:
-                    return this.NR10;
-
-                case 0x11:
-                    return this.NR11 | 0x3F;
-
-                case 0x12:
-                    return this.NR12;
-
-                case 0x13:
-                    return this.NR13 | 0xFF;
-
-                case 0x14:
-                    return this.NR14 | 0x87;
-
-                case 0x16:
-                    return this.NR21 | 0x3F;
-
-                case 0x17:
-                    return this.NR22;
-
-                case 0x18:
-                    return this.NR23 | 0xFF;
-
-                case 0x19:
-                    return this.NR24 | 0x87;
-
-                case 0x1A:
-                    return this.NR30 | 0x7F;
-
-                case 0x1B:
-                    return this.NR31;
-
-                case 0x1C:
-                    return this.NR32 | 0x60;
-
-                case 0x1D:
-                    return this.NR33 | 0xFF;
-
-                case 0x1E:
-                    return this.NR34 | 0x87;
-
-                case 0x20:
-                    return this.NR41 | 0x3F;
-
-                case 0x21:
-                    return this.NR42;
-
-                case 0x22:
-                    return this.NR43;
-
-                case 0x23:
-                    return this.NR44 | 0xBF;
-
-                case 0x24:
-                    return this.NR50;
-
-                case 0x25:
-                    return this.NR51;
-
-                case 0x26:
-                    return (byte)(this.NR52 | 0x70);
-
+                case 0x10: return this.NR10;
+                case 0x11: return this.NR11 | 0x3F;
+                case 0x12: return this.NR12;
+                case 0x13: return this.NR13 | 0xFF;
+                case 0x14: return this.NR14 | 0x87;
+                case 0x16: return this.NR21 | 0x3F;
+                case 0x17: return this.NR22;
+                case 0x18: return this.NR23 | 0xFF;
+                case 0x19: return this.NR24 | 0x87;
+                case 0x1A: return this.NR30 | 0x7F;
+                case 0x1B: return this.NR31;
+                case 0x1C: return this.NR32 | 0x60;
+                case 0x1D: return this.NR33 | 0xFF;
+                case 0x1E: return this.NR34 | 0x87;
+                case 0x20: return this.NR41 | 0x3F;
+                case 0x21: return this.NR42;
+                case 0x22: return this.NR43;
+                case 0x23: return this.NR44 | 0xBF;
+                case 0x24: return this.NR50;
+                case 0x25: return this.NR51;
+                case 0x26: return this.NR52 | 0x70;
                 default:
                     Logger.LogWarning("Possible bad Read from ALU 0x" + num.ToString("X2") + " (reg number)");
                     return 0xFF;
