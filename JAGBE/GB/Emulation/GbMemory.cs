@@ -60,6 +60,9 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal bool IME;
 
+        internal GbUInt8 instrData1;
+        internal GbUInt8 instrData2;
+
         /// <summary>
         /// The LCD memory
         /// </summary>
@@ -189,17 +192,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Updates the key state.
-        /// </summary>
-        internal void UpdateKeys()
-        {
-            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
-            {
-                this.IF |= 0x10;
-            }
-        }
-
-        /// <summary>
         /// Dumps the currently mapped ram.
         /// </summary>
         /// <returns>The currently mapped ram</returns>
@@ -291,32 +283,22 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
-        {
-            if (pointer < 0x2000)
-            {
-                this.ERamEnabled = (value & 0xF) == 0xA;
-            }
-            else if (pointer < 0x4000)
-            {
-                this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
-                    (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
-            }
-            else if (pointer < 0x6000)
-            {
-                this.MappedRamBank = (byte)(value & 3);
-            }
-            else
-            {
-                this.MbcRamMode = ((value & 1) == 1);
-            }
-        }
-
         /// <summary>
         /// Sets the memory at HL to value.
         /// </summary>
         /// <param name="value">The value.</param>
         internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
+
+        /// <summary>
+        /// Updates the key state.
+        /// </summary>
+        internal void UpdateKeys()
+        {
+            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
+            {
+                this.IF |= 0x10;
+            }
+        }
 
         /// <summary>
         /// Determines whether <paramref name="number"/> is an unused register number.
@@ -636,6 +618,27 @@ namespace JAGBE.GB.Emulation
             else // 0xFFFF
             {
                 this.IER = value;
+            }
+        }
+
+        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
+        {
+            if (pointer < 0x2000)
+            {
+                this.ERamEnabled = (value & 0xF) == 0xA;
+            }
+            else if (pointer < 0x4000)
+            {
+                this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
+                    (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
+            }
+            else if (pointer < 0x6000)
+            {
+                this.MappedRamBank = (byte)(value & 3);
+            }
+            else
+            {
+                this.MbcRamMode = ((value & 1) == 1);
             }
         }
     }

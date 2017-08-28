@@ -29,10 +29,10 @@ namespace JAGBE.GB.Emulation
 
             if (step == 1)
             {
-                op.Data1 = mem.LdI8();
+                mem.instrData1 = mem.LdI8();
             }
 
-            return CbOps[op.Data1].Invoke(mem, step - 1);
+            return CbOps[mem.instrData1].Invoke(mem, step - 1);
         }
 
         private static Opcode[] GetCbOps()

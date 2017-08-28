@@ -12,11 +12,11 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    op.Data1 = mem.LdI8(); // Low byte
+                    mem.instrData1 = mem.LdI8(); // Low byte
                     return false;
 
                 case 2:
-                    op.Data2 = mem.LdI8(); // High byte.
+                    mem.instrData1 = mem.LdI8(); // High byte.
                     return false;
 
                 case 3:
@@ -28,7 +28,7 @@ namespace JAGBE.GB.Emulation.Alu
 
                 case 5:
                     mem.Push(mem.R.Pc.LowByte);
-                    mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+                    mem.R.Pc = new GbUInt16(mem.instrData2, mem.instrData1);
                     return true;
 
                 default:
@@ -44,15 +44,15 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    op.Data1 = mem.LdI8(); // Low byte
+                    mem.instrData1 = mem.LdI8(); // Low byte
                     return false;
 
                 case 2:
-                    op.Data2 = mem.LdI8(); // High byte.
+                    mem.instrData2 = mem.LdI8(); // High byte.
                     return op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
 
                 case 3:
-                    mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+                    mem.R.Pc = new GbUInt16(mem.instrData2, mem.instrData1);
                     return true;
 
                 default:
@@ -94,15 +94,15 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    op.Data1 = mem.Pop(); // Low Byte.
+                    mem.instrData1 = mem.Pop(); // Low Byte.
                     return false;
 
                 case 2:
-                    op.Data2 = mem.Pop(); // High Byte.
+                    mem.instrData2 = mem.Pop(); // High Byte.
                     return false;
 
                 case 3:
-                    mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+                    mem.R.Pc = new GbUInt16(mem.instrData2, mem.instrData1);
                     mem.IME |= op.Dest != 0; // Unlike EI IME gets enabled right away.
                     mem.NextIMEValue = mem.IME;
                     return true;
@@ -131,15 +131,15 @@ namespace JAGBE.GB.Emulation.Alu
                     return GetConditionalJumpState(op.Dest, op.Src, mem.R.F);
 
                 case 2:
-                    op.Data1 = mem.Pop(); // Low Byte.
+                    mem.instrData1 = mem.Pop(); // Low Byte.
                     return false;
 
                 case 3:
-                    op.Data2 = mem.Pop(); // High Byte.
+                    mem.instrData2 = mem.Pop(); // High Byte.
                     return false;
 
                 case 4:
-                    mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+                    mem.R.Pc = new GbUInt16(mem.instrData2, mem.instrData1);
                     return true;
 
                 default:

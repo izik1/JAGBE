@@ -67,11 +67,11 @@ namespace JAGBE.GB.Emulation.Alu
                     return false;
 
                 case 1:
-                    op.Data1 = memory.LdI8();
+                    memory.instrData1 = memory.LdI8();
                     return false;
 
                 case 3:
-                    sbyte v = (sbyte)op.Data1;
+                    sbyte v = (sbyte)memory.instrData1;
                     memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : (GbUInt8)0)
                         .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
                     memory.R.Sp += v;

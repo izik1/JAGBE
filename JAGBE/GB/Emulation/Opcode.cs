@@ -4,8 +4,6 @@ namespace JAGBE.GB.Emulation
 {
     internal sealed class Opcode
     {
-        internal GbUInt8 Data1;
-        internal GbUInt8 Data2;
         internal readonly GbUInt8 Dest;
         internal readonly GbUInt8 Src;
 
