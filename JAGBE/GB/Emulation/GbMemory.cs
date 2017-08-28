@@ -443,9 +443,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                // TODO: DISABLED UNTIL BETTER GPU TIMING, this caused a regression.
-                //return (this.lcdMemory.STAT & 0x3) == 3 ? (byte)0xFF : this.VRam[address - 0x8000];
-                return this.VRam[address - 0x8000];
+                return (this.lcdMemory.STAT & 3) == 3 ? (GbUInt8)0xFF : this.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -594,8 +592,7 @@ namespace JAGBE.GB.Emulation
             {
                 if ((this.lcdMemory.STAT & 3) == 3)
                 {
-                    // TODO: DISABLED UNTIL BETTER GPU TIMING, this caused a regression.
-                    //return;
+                    return;
                 }
 
                 this.VRam[pointer - 0x8000] = value;
