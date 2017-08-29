@@ -532,7 +532,11 @@ namespace JAGBE.GB.Emulation
         {
             if (this.ERamEnabled)
             {
-                this.ERam[address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)] = value;
+                int addr = address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0);
+                if (addr < this.ERam.Length)
+                {
+                    this.ERam[addr] = value;
+                }
             }
         }
 

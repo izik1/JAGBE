@@ -498,7 +498,7 @@ namespace JAGBE.GB.Emulation
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((this.WY + this.LY) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(this.WX >> 3);
-            byte y = (byte)((this.WY + this.WY) & 7);
+            byte y = (byte)((this.WY + this.LY) & 7);
             byte x = (byte)(this.WX & 7);
 
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
