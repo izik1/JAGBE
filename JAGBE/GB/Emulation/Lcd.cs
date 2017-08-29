@@ -39,7 +39,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The display memory
         /// </summary>
-        internal int[] displayMemory = new int[Lcd.Width * Lcd.Height];
+        internal int[] displayMemory = new int[Width * Height];
 
         /// <summary>
         /// Should the LCD be forced to skip rendering
@@ -116,6 +116,14 @@ namespace JAGBE.GB.Emulation
                 0xFF306230,
                 0xFF0F380F
         };
+
+        public Lcd()
+        {
+            for (int i = 0; i < this.displayMemory.Length; i++)
+            {
+                this.displayMemory[i] = (int)COLORS[0];
+            }
+        }
 
         public GbUInt8 this[byte index]
         {
@@ -197,12 +205,11 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Converts display memory to a byte representation.
         /// </summary>
-        /// <param name="displayMem">The display memory.</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static byte[] DisplayToBytes(int[] displayMem)
+        public byte[] DisplayToBytes()
         {
-            int displayMemLength = displayMem.Length;
+            int displayMemLength = this.displayMemory.Length;
             if ((displayMemLength & 3) != 0)
             {
                 throw new InvalidOperationException();
@@ -217,7 +224,7 @@ namespace JAGBE.GB.Emulation
                 bool valid = false;
                 for (int k = 0; k < 4; k++)
                 {
-                    if ((int)COLORS[k] == displayMem[i])
+                    if ((int)COLORS[k] == this.displayMemory[i])
                     {
                         data = k;
                         valid = true;

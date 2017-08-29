@@ -84,7 +84,6 @@
     <Compile Include="GB\Emulation\Lcd.cs" />
     <Compile Include="GB\Emulation\GbMemory.cs" />
     <Compile Include="GB\Emulation\Instruction.cs" />
-    <Compile Include="GB\Emulation\LcdMemory.cs" />
     <Compile Include="GB\Emulation\MemoryRange.cs" />
     <Compile Include="GB\Emulation\Opcode.cs" />
     <Compile Include="GB\Emulation\RFlags.cs" />

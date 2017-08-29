@@ -40,6 +40,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private GbMemory memory;
 
+        public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Cpu"/> class.
         /// </summary>

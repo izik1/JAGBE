@@ -29,7 +29,7 @@ namespace JAGBETests.RomTests
                     sw.Start();
                     c.Tick(0x8000);
                     sw.Stop();
-                    shaString = (Convert.ToBase64String(sha.ComputeHash(Lcd.DisplayToBytes(c.DisplayMemory))));
+                    shaString = (Convert.ToBase64String(sha.ComputeHash(c.DisplayMemoryAsBytes())));
                     if (shaString == expectedSha256)
                     {
                         sw.Reset();
