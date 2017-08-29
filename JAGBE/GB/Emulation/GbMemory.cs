@@ -63,7 +63,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The LCD memory
         /// </summary>
-        internal LcdMemory lcdMemory = new LcdMemory();
+        internal Lcd Lcd = new Lcd();
 
         /// <summary>
         /// The MBC mode
@@ -401,7 +401,7 @@ namespace JAGBE.GB.Emulation
 
             if (number < 0x50)
             {
-                return this.lcdMemory[number];
+                return this.Lcd[number];
             }
 
             if (!IsUnusedIoRegister(number))
@@ -428,7 +428,7 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
-            if (!ignoreDmaBlock && this.lcdMemory.DMA < Cpu.DelayStep * 162)
+            if (!ignoreDmaBlock && this.Lcd.DMA < Cpu.DelayStep * 162)
             {
                 if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
                 {
@@ -450,7 +450,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return (this.lcdMemory.STAT & 3) == 3 ? (GbUInt8)0xFF : this.VRam[address - 0x8000];
+                return (this.Lcd.STAT & 3) == 3 ? (GbUInt8)0xFF : this.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -470,7 +470,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return (this.lcdMemory.STAT & 0x2) == 2 ? (byte)0xFF : this.Oam[address - 0xFE00];
+                return (this.Lcd.STAT & 0x2) == 2 ? (byte)0xFF : this.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
@@ -576,7 +576,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer <= 0x4F)
             {
-                this.lcdMemory[(byte)(pointer - 0x40)] = value;
+                this.Lcd[(byte)(pointer - 0x40)] = value;
                 return;
             }
 
@@ -593,7 +593,7 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer <= 0x9FFF)
             {
-                if ((this.lcdMemory.STAT & 3) == 3)
+                if ((this.Lcd.STAT & 3) == 3)
                 {
                     return;
                 }
@@ -614,7 +614,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFE9F)
             {
-                if ((this.lcdMemory.STAT & 2) == 2)
+                if ((this.Lcd.STAT & 2) == 2)
                 {
                     return;
                 }

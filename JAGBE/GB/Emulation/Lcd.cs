@@ -2,7 +2,7 @@
 
 namespace JAGBE.GB.Emulation
 {
-    internal static class Lcd
+    internal sealed class Lcd
     {
         /// <summary>
         /// The height of the Game Boy LCD screen.
@@ -13,6 +13,175 @@ namespace JAGBE.GB.Emulation
         /// The width of the Game Boy LCD screen.
         /// </summary>
         public const int Width = 160;
+
+        /// <summary>
+        /// The pallet of the background
+        /// </summary>
+        public GbUInt8 BgPallet;
+
+        /// <summary>
+        /// The DMA cycle number
+        /// </summary>
+        public int DMA = Cpu.DelayStep * 162;
+
+        /// <summary>
+        /// The DMA address
+        /// </summary>
+        public GbUInt16 DMAAddress;
+
+        /// <summary>
+        /// The DMA value
+        /// </summary>
+        public GbUInt8 DMAValue;
+
+        internal int cy;
+
+        /// <summary>
+        /// The display memory
+        /// </summary>
+        internal int[] displayMemory = new int[Lcd.Width * Lcd.Height];
+
+        /// <summary>
+        /// Should the LCD be forced to skip rendering
+        /// </summary>
+        internal bool ForceNullRender;
+
+        /// <summary>
+        /// Is the LCD requesting an interupt
+        /// </summary>
+        internal bool IRC;
+
+        /// <summary>
+        /// The LCDC register
+        /// </summary>
+        internal GbUInt8 Lcdc;
+
+        /// <summary>
+        /// The Current scan line the lcd is drawing
+        /// </summary>
+        internal GbUInt8 LY;
+
+        /// <summary>
+        /// The number to use when comparing to <see cref="LY"/>
+        /// </summary>
+        internal GbUInt8 LYC;
+
+        /// <summary>
+        /// The first object pallet
+        /// </summary>
+        internal GbUInt8 objPallet0;
+
+        /// <summary>
+        /// The second object pallet
+        /// </summary>
+        internal GbUInt8 objPallet1;
+
+        /// <summary>
+        /// The Previous state of <see cref="IRC"/>
+        /// </summary>
+        internal bool PIRC;
+
+        /// <summary>
+        /// The Scroll X register
+        /// </summary>
+        internal GbUInt8 SCX;
+
+        /// <summary>
+        /// The Scroll Y register
+        /// </summary>
+        internal GbUInt8 SCY;
+
+        /// <summary>
+        /// The STAT register
+        /// </summary>
+        internal GbUInt8 STAT;
+
+        /// <summary>
+        /// The Window W register
+        /// </summary>
+        internal GbUInt8 WX;
+
+        /// <summary>
+        /// The Window Y register
+        /// </summary>
+        internal GbUInt8 WY;
+
+        public GbUInt8 this[byte index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0x40: return this.Lcdc;
+                    case 0x41: return this.STAT | 0x80;
+                    case 0x42: return this.SCY;
+                    case 0x43: return this.SCX;
+                    case 0x44: return this.LY;
+                    case 0x45: return this.LYC;
+                    case 0x46: return this.DMAAddress.HighByte;
+                    case 0x47: return this.BgPallet;
+                    case 0x48: return this.objPallet0;
+                    case 0x49: return this.objPallet1;
+                    case 0x4A: return this.WY;
+                    case 0x4B: return this.WX;
+                    default: return 0xFF;
+                }
+            }
+
+            set
+            {
+                switch (index)
+                {
+                    case 0x0:
+                        this.Lcdc = value;
+                        break;
+
+                    case 0x1:
+                        this.STAT = (byte)(this.STAT | (value & 0x78));
+                        break;
+
+                    case 0x2:
+                        this.SCY = value;
+                        break;
+
+                    case 0x3:
+                        this.SCX = value;
+                        break;
+
+                    case 0x5:
+                        this.LYC = value;
+                        break;
+
+                    case 0x6:
+                        this.DMAAddress = (ushort)(value << 8);
+                        this.DMA = 0;
+                        break;
+
+                    case 0x7:
+                        this.BgPallet = value;
+                        break;
+
+                    case 0x8:
+                        this.objPallet0 = (byte)(value & 0xFC);
+                        break;
+
+                    case 0x9:
+                        this.objPallet1 = (byte)(value & 0xFC);
+                        break;
+
+                    case 0xA:
+                        this.WY = value;
+                        break;
+
+                    case 0xB:
+                        this.WX = value;
+                        break;
+
+                    default:
+                        return;
+                }
+            }
+        }
 
         /// <summary>
         /// The colors that should be displayed.
@@ -70,61 +239,60 @@ namespace JAGBE.GB.Emulation
         /// Ticks the LCD.
         /// </summary>
         /// <param name="mem">The memory.</param>
-        public static void Tick(GbMemory mem)
+        public void Tick(GbMemory mem)
         {
-            LcdMemory lcdMem = mem.lcdMemory;
-            if (!lcdMem.Lcdc[7])
+            if (!this.Lcdc[7])
             {
-                if (lcdMem.LY != 0 || lcdMem.cy != 0 || lcdMem.displayMemory[0] == 0)
+                if (this.LY != 0 || this.cy != 0 || this.displayMemory[0] == 0)
                 {
-                    DisableLcd(lcdMem);
+                    this.Disable();
                 }
 
                 return;
             }
 
-            if (lcdMem.LY < 144)
+            if (this.LY < 144)
             {
-                RenderLine(lcdMem, mem.VRam, mem.Oam);
+                RenderLine(mem.VRam, mem.Oam);
             }
-            else if (lcdMem.LY == 144)
+            else if (this.LY == 144)
             {
-                if (lcdMem.cy == 0)
+                if (this.cy == 0)
                 {
-                    lcdMem.STAT &= 0xFC;
+                    this.STAT &= 0xFC;
                 }
                 else
                 {
-                    if (lcdMem.cy == Cpu.DelayStep)
+                    if (this.cy == Cpu.DelayStep)
                     {
                         mem.IF |= 1;
-                        lcdMem.IRC |= lcdMem.STAT[6] && lcdMem.LYC == 144;
+                        this.IRC |= this.STAT[6] && this.LYC == 144;
                     }
-                    else if (lcdMem.cy == Cpu.DelayStep * 113)
+                    else if (this.cy == Cpu.DelayStep * 113)
                     {
-                        lcdMem.LY++;
-                        lcdMem.cy = -Cpu.DelayStep;
+                        this.LY++;
+                        this.cy = -Cpu.DelayStep;
                     }
                     else
                     {
                         // Left intentionally empty
                     }
-                    lcdMem.STAT = (byte)((lcdMem.STAT & 0xF8) | 1 | (lcdMem.LYC == 144 ? 0x4 : 0));
+                    this.STAT = (byte)((this.STAT & 0xF8) | 1 | (this.LYC == 144 ? 0x4 : 0));
                 }
             }
-            else if (lcdMem.LY < 153)
+            else if (this.LY < 153)
             {
-                if (lcdMem.cy == Cpu.DelayStep)
+                if (this.cy == Cpu.DelayStep)
                 {
-                    if (lcdMem.STAT[6] && lcdMem.LYC == 144)
+                    if (this.STAT[6] && this.LYC == 144)
                     {
-                        lcdMem.IRC = true;
+                        this.IRC = true;
                     }
                 }
-                else if (lcdMem.cy == Cpu.DelayStep * 113)
+                else if (this.cy == Cpu.DelayStep * 113)
                 {
-                    lcdMem.LY++;
-                    lcdMem.cy = -Cpu.DelayStep;
+                    this.LY++;
+                    this.cy = -Cpu.DelayStep;
                 }
                 else
                 {
@@ -133,17 +301,17 @@ namespace JAGBE.GB.Emulation
             }
             else
             {
-                if (lcdMem.cy == Cpu.DelayStep)
+                if (this.cy == Cpu.DelayStep)
                 {
-                    if (lcdMem.STAT[6] && lcdMem.LYC == 144)
+                    if (this.STAT[6] && this.LYC == 144)
                     {
-                        lcdMem.IRC = true;
+                        this.IRC = true;
                     }
                 }
-                else if (lcdMem.cy == Cpu.DelayStep * 113)
+                else if (this.cy == Cpu.DelayStep * 113)
                 {
-                    lcdMem.LY = 0;
-                    lcdMem.cy = -Cpu.DelayStep;
+                    this.LY = 0;
+                    this.cy = -Cpu.DelayStep;
                 }
                 else
                 {
@@ -151,30 +319,30 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            if (lcdMem.IRC)
+            if (this.IRC)
             {
-                if (!lcdMem.PIRC)
+                if (!this.PIRC)
                 {
-                    lcdMem.PIRC = true;
+                    this.PIRC = true;
                     mem.IF |= 2;
                 }
             }
             else
             {
-                lcdMem.PIRC = false;
+                this.PIRC = false;
             }
-            lcdMem.IRC = false;
-            lcdMem.cy += Cpu.DelayStep;
+            this.IRC = false;
+            this.cy += Cpu.DelayStep;
         }
 
-        private static void DisableLcd(LcdMemory mem)
+        private void Disable()
         {
-            mem.PIRC = false;
-            mem.LY = 0;
-            mem.cy = 0;
-            for (int i = 0; i < mem.displayMemory.Length; i++)
+            this.PIRC = false;
+            this.LY = 0;
+            this.cy = 0;
+            for (int i = 0; i < this.displayMemory.Length; i++)
             {
-                mem.displayMemory[i] = (int)COLORS[0];
+                this.displayMemory[i] = (int)COLORS[0];
             }
         }
 
@@ -185,108 +353,107 @@ namespace JAGBE.GB.Emulation
             return (pallet >> (i * 2)) & 3;
         }
 
-        private static void RenderLine(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam)
+        private void RenderLine(GbUInt8[] VRam, GbUInt8[] Oam)
         {
-            if (lcdMem.cy == 0)
+            if (this.cy == 0)
             {
-                lcdMem.STAT &= 0xFC;
+                this.STAT &= 0xFC;
             }
-            else if (lcdMem.cy <= Cpu.DelayStep * 10)
+            else if (this.cy <= Cpu.DelayStep * 10)
             {
-                if (lcdMem.cy == Cpu.DelayStep)
+                if (this.cy == Cpu.DelayStep)
                 {
-                    lcdMem.STAT = ((lcdMem.STAT & 0xFC) | 2);
-                    if (lcdMem.LY != 0 && lcdMem.LYC == lcdMem.LY && (lcdMem.STAT[6]))
+                    this.STAT = ((this.STAT & 0xFC) | 2);
+                    if (this.LY != 0 && this.LYC == this.LY && (this.STAT[6]))
                     {
-                        lcdMem.IRC = true;
+                        this.IRC = true;
                     }
                 }
             }
-            else if (lcdMem.cy == Cpu.DelayStep * 11)
+            else if (this.cy == Cpu.DelayStep * 11)
             {
-                lcdMem.STAT = (byte)((lcdMem.STAT & 0xFC) | 3);
+                this.STAT = (byte)((this.STAT & 0xFC) | 3);
 
-                if (lcdMem.ForceNullRender)
+                if (this.ForceNullRender)
                 {
                     for (int i = 0; i < Width; i++)
                     {
-                        lcdMem.displayMemory[((Height - lcdMem.LY - 1) * Width) + i] = (int)COLORS[0];
+                        this.displayMemory[((Height - this.LY - 1) * Width) + i] = (int)COLORS[0];
                     }
                 }
                 else
                 {
-                    if (lcdMem.Lcdc[0])
+                    if (this.Lcdc[0])
                     {
-                        ScanLine(lcdMem, VRam);
+                        ScanLine(VRam);
                     }
 
-                    if (lcdMem.Lcdc[5])
+                    if (this.Lcdc[5])
                     {
-                        ScanLineWindow(lcdMem, VRam);
+                        ScanLineWindow(VRam);
                     }
 
-                    if (lcdMem.Lcdc[1])
+                    if (this.Lcdc[1])
                     {
-                        ScanLineSprite(lcdMem, VRam, Oam);
+                        ScanLineSprite(VRam, Oam);
                     }
                 }
             }
-            else if (lcdMem.cy < Cpu.DelayStep * 63)
+            else if (this.cy < Cpu.DelayStep * 63)
             {
                 // Add proper pixel-by-pixel emulation here.
             }
-            else if (lcdMem.cy == Cpu.DelayStep * 113)
+            else if (this.cy == Cpu.DelayStep * 113)
             {
-                lcdMem.LY++;
-                lcdMem.cy = -Cpu.DelayStep;
+                this.LY++;
+                this.cy = -Cpu.DelayStep;
             }
             else
             {
                 // Left intentionally empty.
             }
-            if ((lcdMem.cy == 0 && lcdMem.LYC == 0) || (lcdMem.cy != 0 && lcdMem.LYC == lcdMem.LY))
+            if ((this.cy == 0 && this.LYC == 0) || (this.cy != 0 && this.LYC == this.LY))
             {
-                lcdMem.STAT |= 4;
+                this.STAT |= 4;
             }
             else
             {
-                lcdMem.STAT &= 0xFB;
+                this.STAT &= 0xFB;
             }
         }
 
         /// <summary>
         /// Scans a line.
         /// </summary>
-        /// <param name="lcdMem">The LCD memory.</param>
         /// <param name="VRam">The vram.</param>
-        private static void ScanLine(LcdMemory lcdMem, GbUInt8[] VRam)
+        private void ScanLine(GbUInt8[] VRam)
         {
             // Offset from the start of VRAM to the start of the background map.
-            ushort mapOffset = (ushort)(lcdMem.Lcdc[3] ? 0x1C00 : 0x1800);
-            mapOffset += (ushort)((((lcdMem.SCY + lcdMem.LY) & 0xFF) >> 3) * 32);
+            ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
+            mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
 
-            byte lineOffset = (byte)(lcdMem.SCX >> 3);
-            byte y = (byte)((lcdMem.LY + lcdMem.SCY) & 7);
-            byte x = (byte)(lcdMem.SCX & 7);
+            byte lineOffset = (byte)(this.SCX >> 3);
+            byte y = (byte)((this.LY + this.SCY) & 7);
+            byte x = (byte)(this.SCX & 7);
 
-            ushort tileOffset = (ushort)(lcdMem.Lcdc[4] ? 0 : 0x800);
+            ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
             ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
-            if (!lcdMem.Lcdc[4] && tile < 128)
+            if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
             }
 
             for (int i = 0; i < Width; i++)
             {
-                lcdMem.displayMemory[((Height - lcdMem.LY - 1) * Width) + i] =
-                    (int)COLORS[GetColorIndex(lcdMem.BgPallet, VRam, y, x, tileOffset, tile)];
+                this.displayMemory[((Height - this.LY - 1) * Width) + i] =
+                    (int)COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
                 x++;
                 if (x == 8)
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
                     tile = VRam[(ushort)(lineOffset + mapOffset)];
-                    if (!lcdMem.Lcdc[4] && tile < 128)
+                    if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
                     }
@@ -297,13 +464,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans the sprites of a line.
         /// </summary>
-        /// <param name="lcdMem">The LCD memory.</param>
         /// <param name="VRam">The v ram.</param>
         /// <param name="Oam">The oam.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private static void ScanLineSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam)
+        private void ScanLineSprite(GbUInt8[] VRam, GbUInt8[] Oam)
         {
-            if (lcdMem.Lcdc[2])
+            if (this.Lcdc[2])
             {
                 throw new NotSupportedException();
             }
@@ -311,35 +477,34 @@ namespace JAGBE.GB.Emulation
             // FIXME: Doesn't handle overlapping sprites.
             for (int i = 0; i < 40; i++)
             {
-                ScanSprite(lcdMem, VRam, Oam, i);
+                ScanSprite(VRam, Oam, i);
             }
         }
 
         /// <summary>
         /// Scans a sprite.
         /// </summary>
-        /// <param name="lcdMem">The LCD memory.</param>
         /// <param name="VRam">The v ram.</param>
         /// <param name="Oam">The oam.</param>
         /// <param name="spriteNumber">The sprite number.</param>
-        private static void ScanSprite(LcdMemory lcdMem, GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
+        private void ScanSprite(GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
         {
             int oamOffset = spriteNumber * 4;
             byte spriteY = (byte)(Oam[oamOffset] - 16);
             byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
             GbUInt8 tile = Oam[oamOffset + 2];
             GbUInt8 flags = Oam[oamOffset + 3];
-            if (spriteY <= lcdMem.LY && spriteY + 8 > lcdMem.LY)
+            if (spriteY <= this.LY && spriteY + 8 > this.LY)
             {
-                GbUInt8 pallet = flags[4] ? lcdMem.objPallet1 : lcdMem.objPallet0;
-                int displayOffset = ((Height - lcdMem.LY - 1) * Width) + spriteX;
-                byte tileY = (byte)(flags[6] ? (7 - (lcdMem.LY & 7)) : (lcdMem.LY & 7));
+                GbUInt8 pallet = flags[4] ? this.objPallet1 : this.objPallet0;
+                int displayOffset = ((Height - this.LY - 1) * Width) + spriteX;
+                byte tileY = (byte)(flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
-                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || lcdMem.displayMemory[displayOffset + x] == (int)COLORS[0]))
+                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == (int)COLORS[0]))
                     {
-                        lcdMem.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
+                        this.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
                     }
                 }
             }
@@ -348,28 +513,27 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans the window of a line.
         /// </summary>
-        /// <param name="lcdMem">The LCD memory.</param>
         /// <param name="VRam">The v ram.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private static void ScanLineWindow(LcdMemory lcdMem, GbUInt8[] VRam)
+        private void ScanLineWindow(GbUInt8[] VRam)
         {
-            ushort mapOffset = (ushort)(lcdMem.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
-            mapOffset += (ushort)((((lcdMem.WY + lcdMem.LY) & 0xFF) >> 3) * 32);
-            byte lineOffset = (byte)(lcdMem.WX >> 3);
-            byte y = (byte)((lcdMem.WY + lcdMem.WY) & 7);
-            byte x = (byte)(lcdMem.WX & 7);
+            ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
+            mapOffset += (ushort)((((this.WY + this.LY) & 0xFF) >> 3) * 32);
+            byte lineOffset = (byte)(this.WX >> 3);
+            byte y = (byte)((this.WY + this.WY) & 7);
+            byte x = (byte)(this.WX & 7);
 
-            ushort tileOffset = (ushort)(lcdMem.Lcdc[4] ? 0 : 0x800);
+            ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
             ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
-            if (!lcdMem.Lcdc[4] && tile < 128)
+            if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
             }
 
             for (int i = 0; i < Width; i++)
             {
-                lcdMem.displayMemory[((Height - lcdMem.LY - 1) * Width) + i] =
-                    (int)COLORS[GetColorIndex(lcdMem.BgPallet, VRam, y, x, tileOffset, tile)];
+                this.displayMemory[((Height - this.LY - 1) * Width) + i] =
+                    (int)COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
 
                 x++;
                 if (x == 8)
@@ -377,7 +541,7 @@ namespace JAGBE.GB.Emulation
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
                     tile = VRam[(ushort)(lineOffset + mapOffset)];
-                    if (!lcdMem.Lcdc[4] && tile < 128)
+                    if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
                     }
