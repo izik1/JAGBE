@@ -56,11 +56,8 @@ namespace JAGBETests.RomTests.mooneye
         }
 
         [TestMethod]
-        public void DI_timing_GS()
-        {
-            Assert.Inconclusive("No SHA");
-            TestDisplayOut(BasePath + "di_timing_GS.gb", "");
-        }
+        public void DI_timing_GS() =>
+            TestDisplayOut(BasePath + "di_timing-GS.gb", "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=");
 
         [TestMethod]
         public void Div_timing() => TestDisplayOut(BasePath + "div_timing.gb", "gLcCnRta6x+9hIQm+320dn8ErOqS9fFYGCKsAuZXQ2E=");
@@ -90,11 +87,8 @@ namespace JAGBETests.RomTests.mooneye
         }
 
         [TestMethod]
-        public void Halt_ime1_timing2_GS()
-        {
-            Assert.Inconclusive("No SHA");
-            TestDisplayOut(BasePath + "halt_ime1_timing2_GS.gb", "");
-        }
+        public void Halt_ime1_timing2_GS() =>
+            TestDisplayOut(BasePath + "halt_ime1_timing2-GS.gb", "mYRy+tkF2McRZrOD90zONWZv4diwUfG3cuPjvOEHZJM=");
 
         [TestMethod]
         public void IF_IE_registers()

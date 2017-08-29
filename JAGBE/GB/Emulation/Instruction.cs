@@ -197,6 +197,18 @@ namespace JAGBE.GB.Emulation
 
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
+            ops[0x76] = new Opcode(0, 0, (op, mem, step) =>
+            {
+                if (mem.IME || (mem.IF & mem.IER & 0x1F) == 0)
+                {
+                    mem.Status = CpuState.HALT;
+                    return true;
+                }
+
+                mem.HaltBugged = true;
+
+                return true;
+            });
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
             ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
             ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);

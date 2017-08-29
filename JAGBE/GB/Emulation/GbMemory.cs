@@ -170,6 +170,8 @@ namespace JAGBE.GB.Emulation
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
 
+        public bool HaltBugged { get; internal set; }
+
         /// <summary>
         /// Gets value of memory at HL.
         /// </summary>

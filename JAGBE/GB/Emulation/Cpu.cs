@@ -227,6 +227,12 @@ namespace JAGBE.GB.Emulation
 
                 Instruction inst = new Instruction(this.memory.LdI8());
 
+                if (this.memory.HaltBugged)
+                {
+                    this.memory.HaltBugged = false;
+                    this.memory.R.Pc--;
+                }
+
                 int ticks = 0;
                 while (!inst.Run(this.memory, ticks))
                 {

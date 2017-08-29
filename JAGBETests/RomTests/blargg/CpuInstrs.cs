@@ -13,11 +13,7 @@ namespace JAGBETests.RomTests
         public void Cpu_Instrs_01() => TestDisplayOut(baseTestPath + "01-special.gb", "bob4OkiQuQnncCCWmjPnNAth9isO5lXBF9S6lO0vSB4=");
 
         [TestMethod]
-        public void Cpu_Instrs_02()
-        {
-            Assert.Inconclusive("No SHA");
-            TestDisplayOut(baseTestPath + "02-interrupts.gb", "");
-        }
+        public void Cpu_Instrs_02() => TestDisplayOut(baseTestPath + "02-interrupts.gb", "Ww+U1bUXhH1RdDfvKwkTncvCp/fPJXZWZdQ5rDlTgCs=");
 
         [TestMethod]
         public void Cpu_Instrs_03() => TestDisplayOut(baseTestPath + "03-op sp,hl.gb", "CgqhrBepL9+hTWlUBzGjV0ajffCcArgdCEEKaNQ0SIE=");

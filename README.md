@@ -8,7 +8,7 @@ Currently passes the following of blargg's instruction tests:
 |#|name|state|
 |-|-|-|
 |01|special|:white_check_mark:|
-|02|interrupts|:x:|
+|02|interrupts|:white_check_mark:|
 |03|op sp,hl|:white_check_mark:|
 |04|op r,imm|:white_check_mark:|
 |05|op rp|:white_check_mark:|
@@ -41,13 +41,13 @@ MoonEye tests:
 |call_cc_timing2|:x:|B,C,D Incorrect.|
 |call_timing|:x:|Incorrect.|
 |call_timing2|:x:|B,C,D Incorrect.|
-|di_timing-GS|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|di_timing-GS|:white_check_mark:|-|
 |div_timing|:white_check_mark:|-|
 |ei_timing|:white_check_mark:|-|
-|halt_ime0_ei|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
-|halt_ime0_nointr_timing|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
-|halt_ime1_timing|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
-|halt_ime1_timing2-GS|:x:|Crashes, unimplemented opcode 0x76 (HALT)|
+|halt_ime0_ei|:x:|IME=0|
+|halt_ime0_nointr_timing|:x:|D Incorrect.|
+|halt_ime1_timing|:x:|B Incorrect.|
+|halt_ime1_timing2-GS|:white_check_mark:|-|
 |if_ie_registers|:x:|C,E Incorrect.|
 |intr_timing|:x:|E Incorrect.|
 |jp_cc_timing|:x:|Doesn't complete.|
