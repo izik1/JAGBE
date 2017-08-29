@@ -351,7 +351,7 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException">
         /// Thrown when <see cref="MBCMode"/> is invalid
         /// </exception>
-        private GbUInt8 GetERamMemory(ushort address)
+        private GbUInt8 GetERamMemory(GbUInt16 address)
         {
             if (!this.ERamEnabled)
             {
@@ -445,7 +445,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0x8000) // 0x4000-7FFF
             {
-                return GetRomMemory(GetRomBank(), (ushort)(address - 0x4000));
+                return GetRomMemory(GetRomBank(), address - 0x4000);
             }
 
             if (address < 0xA000) // 0x8000-9FFF
@@ -455,7 +455,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xC000) // 0xA000-BFFF
             {
-                return GetERamMemory((ushort)(address - 0xA000));
+                return GetERamMemory(address - 0xA000);
             }
 
             if (address < 0xE000) // 0xC000-DFFF
@@ -465,7 +465,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFE00) // 0xE000-FDFF
             {
-                return address < 0xF000 ? GetERamMemory((ushort)(address - 0xE000)) : this.WRam[address - 0xF000];
+                return address < 0xF000 ? GetERamMemory(address - 0xE000) : this.WRam[address - 0xF000];
             }
 
             if (address < 0xFEA0) // 0xFE00-FE9F
@@ -528,7 +528,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="value">The value.</param>
-        private void SetERam(int address, GbUInt8 value)
+        private void SetERam(GbUInt16 address, GbUInt8 value)
         {
             if (this.ERamEnabled)
             {
@@ -541,7 +541,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetIoRegisters(int pointer, GbUInt8 value)
+        private void SetIoRegisters(GbUInt8 pointer, GbUInt8 value)
         {
             if (pointer == 0)
             {
@@ -564,7 +564,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer == 0xF)
             {
-                this.IF = (byte)(value & 0x1F);
+                this.IF = value & 0x1F;
                 return;
             }
 
@@ -627,7 +627,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFF7F)
             {
-                SetIoRegisters(pointer - 0xFF00, value);
+                SetIoRegisters((GbUInt8)(pointer - 0xFF00), value);
             }
             else if (pointer <= 0xFFFE)
             {
