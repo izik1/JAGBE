@@ -106,6 +106,17 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal GbUInt8 WY;
 
+        /// <summary>
+        /// The colors that should be displayed.
+        /// </summary>
+        private static readonly uint[] COLORS =
+        {
+                0xFF9BBC0F,
+                0xFF8BAC0F,
+                0xFF306230,
+                0xFF0F380F
+        };
+
         public GbUInt8 this[byte index]
         {
             get
@@ -182,17 +193,6 @@ namespace JAGBE.GB.Emulation
                 }
             }
         }
-
-        /// <summary>
-        /// The colors that should be displayed.
-        /// </summary>
-        private static readonly uint[] COLORS =
-        {
-                0xFF9BBC0F,
-                0xFF8BAC0F,
-                0xFF306230,
-                0xFF0F380F
-        };
 
         /// <summary>
         /// Converts display memory to a byte representation.
@@ -335,6 +335,13 @@ namespace JAGBE.GB.Emulation
             this.cy += Cpu.DelayStep;
         }
 
+        private static int GetColorIndex(GbUInt8 pallet, GbUInt8[] VRam, byte y, byte x, ushort tileMapOffset, ushort tileNum)
+        {
+            int i = (VRam[(tileNum * 16) + tileMapOffset + (y * 2)][(byte)(7 - x)] ? 1 : 0);
+            i += (VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1][(byte)(7 - x)] ? 2 : 0);
+            return (pallet >> (i * 2)) & 3;
+        }
+
         private void Disable()
         {
             this.PIRC = false;
@@ -344,13 +351,6 @@ namespace JAGBE.GB.Emulation
             {
                 this.displayMemory[i] = (int)COLORS[0];
             }
-        }
-
-        private static int GetColorIndex(GbUInt8 pallet, GbUInt8[] VRam, byte y, byte x, ushort tileMapOffset, ushort tileNum)
-        {
-            int i = (VRam[(tileNum * 16) + tileMapOffset + (y * 2)][(byte)(7 - x)] ? 1 : 0);
-            i += (VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1][(byte)(7 - x)] ? 2 : 0);
-            return (pallet >> (i * 2)) & 3;
         }
 
         private void RenderLine(GbUInt8[] VRam, GbUInt8[] Oam)
@@ -482,35 +482,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Scans a sprite.
-        /// </summary>
-        /// <param name="VRam">The v ram.</param>
-        /// <param name="Oam">The oam.</param>
-        /// <param name="spriteNumber">The sprite number.</param>
-        private void ScanSprite(GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
-        {
-            int oamOffset = spriteNumber * 4;
-            byte spriteY = (byte)(Oam[oamOffset] - 16);
-            byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
-            GbUInt8 tile = Oam[oamOffset + 2];
-            GbUInt8 flags = Oam[oamOffset + 3];
-            if (spriteY <= this.LY && spriteY + 8 > this.LY)
-            {
-                GbUInt8 pallet = flags[4] ? this.objPallet1 : this.objPallet0;
-                int displayOffset = ((Height - this.LY - 1) * Width) + spriteX;
-                byte tileY = (byte)(flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
-                for (int x = 0; x < 8; x++)
-                {
-                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
-                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == (int)COLORS[0]))
-                    {
-                        this.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Scans the window of a line.
         /// </summary>
         /// <param name="VRam">The v ram.</param>
@@ -544,6 +515,35 @@ namespace JAGBE.GB.Emulation
                     if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Scans a sprite.
+        /// </summary>
+        /// <param name="VRam">The v ram.</param>
+        /// <param name="Oam">The oam.</param>
+        /// <param name="spriteNumber">The sprite number.</param>
+        private void ScanSprite(GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
+        {
+            int oamOffset = spriteNumber * 4;
+            byte spriteY = (byte)(Oam[oamOffset] - 16);
+            byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
+            GbUInt8 tile = Oam[oamOffset + 2];
+            GbUInt8 flags = Oam[oamOffset + 3];
+            if (spriteY <= this.LY && spriteY + 8 > this.LY)
+            {
+                GbUInt8 pallet = flags[4] ? this.objPallet1 : this.objPallet0;
+                int displayOffset = ((Height - this.LY - 1) * Width) + spriteX;
+                byte tileY = (byte)(flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                for (int x = 0; x < 8; x++)
+                {
+                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
+                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == (int)COLORS[0]))
+                    {
+                        this.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
                     }
                 }
             }
