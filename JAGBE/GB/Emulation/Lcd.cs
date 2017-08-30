@@ -352,9 +352,9 @@ namespace JAGBE.GB.Emulation
 
         private static int GetColorIndex(GbUInt8 pallet, GbUInt8[] VRam, byte y, byte x, ushort tileMapOffset, ushort tileNum)
         {
-            int i = (VRam[(tileNum * 16) + tileMapOffset + (y * 2)][(byte)(7 - x)] ? 1 : 0);
-            i += (VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1][(byte)(7 - x)] ? 2 : 0);
-            return (pallet >> (i * 2)) & 3;
+            int i = ((int)VRam[(tileNum * 16) + tileMapOffset + (y * 2)] >> (7 - x) & 1);
+            i += ((int)VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1] >> (7 - x) & 1) * 2;
+            return ((int)pallet >> (i * 2)) & 3;
         }
 
         private void Disable()
