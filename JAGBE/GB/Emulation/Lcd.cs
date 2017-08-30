@@ -292,26 +292,7 @@ namespace JAGBE.GB.Emulation
                     {
                         // Left intentionally empty
                     }
-                    this.STAT = (byte)((this.STAT & 0xF8) | 1 | (this.LYC == 144 ? 0x4 : 0));
-                }
-            }
-            else if (this.LY < 153)
-            {
-                if (this.cy == Cpu.DelayStep)
-                {
-                    if (this.STAT[6] && this.LYC == 144)
-                    {
-                        this.IRC = true;
-                    }
-                }
-                else if (this.cy == Cpu.DelayStep * 113)
-                {
-                    this.LY++;
-                    this.cy = -Cpu.DelayStep;
-                }
-                else
-                {
-                    // Left intentionally empty
+                    this.STAT = (GbUInt8)(((int)this.STAT & 0xF8) | 1 | (this.LYC == 144 ? 0x4 : 0));
                 }
             }
             else
@@ -325,7 +306,7 @@ namespace JAGBE.GB.Emulation
                 }
                 else if (this.cy == Cpu.DelayStep * 113)
                 {
-                    this.LY = 0;
+                    this.LY = (GbUInt8)((this.LY + 1) % 153);
                     this.cy = -Cpu.DelayStep;
                 }
                 else
@@ -370,6 +351,14 @@ namespace JAGBE.GB.Emulation
 
         private void RenderLine(GbUInt8[] VRam, GbUInt8[] Oam)
         {
+            if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
+            {
+                this.STAT |= 4;
+            }
+            else
+            {
+                this.STAT &= 0xFB;
+            }
             if (this.cy == 0)
             {
                 this.STAT &= 0xFC;
@@ -379,7 +368,7 @@ namespace JAGBE.GB.Emulation
                 if (this.cy == Cpu.DelayStep)
                 {
                     this.STAT = ((this.STAT & 0xFC) | 2);
-                    if (this.LY != 0 && this.LYC == this.LY && (this.STAT[6]))
+                    if (this.STAT[6] && this.LY != 0 && this.LYC == this.LY)
                     {
                         this.IRC = true;
                     }
@@ -423,14 +412,6 @@ namespace JAGBE.GB.Emulation
             {
                 // Left intentionally empty.
             }
-            if ((this.cy == 0 && this.LYC == 0) || (this.cy != 0 && this.LYC == this.LY))
-            {
-                this.STAT |= 4;
-            }
-            else
-            {
-                this.STAT &= 0xFB;
-            }
         }
 
         /// <summary>
@@ -463,7 +444,7 @@ namespace JAGBE.GB.Emulation
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = VRam[(ushort)(lineOffset + mapOffset)];
+                    tile = VRam[lineOffset + mapOffset];
                     if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
@@ -506,7 +487,7 @@ namespace JAGBE.GB.Emulation
             byte x = (byte)(this.WX & 7);
 
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
-            ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
+            ushort tile = VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
@@ -522,7 +503,7 @@ namespace JAGBE.GB.Emulation
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = VRam[(ushort)(lineOffset + mapOffset)];
+                    tile = VRam[lineOffset + mapOffset];
                     if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
@@ -552,9 +533,9 @@ namespace JAGBE.GB.Emulation
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
-                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == (int)COLORS[0]))
+                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == WHITE))
                     {
-                        this.displayMemory[displayOffset + x] = (int)COLORS[colorIndex];
+                        this.displayMemory[displayOffset + x] = COLORS[colorIndex];
                     }
                 }
             }
