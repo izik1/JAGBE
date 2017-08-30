@@ -39,7 +39,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The display memory
         /// </summary>
-        internal int[] displayMemory = new int[Width * Height];
+        internal readonly int[] displayMemory = new int[Width * Height];
 
         /// <summary>
         /// Should the LCD be forced to skip rendering
@@ -217,34 +217,16 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException"></exception>
         public byte[] DisplayToBytes()
         {
-            int displayMemLength = this.displayMemory.Length;
-            if ((displayMemLength & 3) != 0)
+            byte[] arr = new byte[this.displayMemory.Length / 4];
+            for (int i = 0; i < this.displayMemory.Length; i++)
             {
-                throw new InvalidOperationException();
-            }
-
-            byte[] arr = new byte[displayMemLength / 4];
-
-            for (int i = 0; i < displayMemLength; i++)
-            {
-                int j = i & 3;
-                int data = 0;
-                bool valid = false;
-                for (int k = 0; k < 4; k++)
+                int data = Array.IndexOf(COLORS, this.displayMemory[i]);
+                if (data < 0)
                 {
-                    if (COLORS[k] == this.displayMemory[i])
-                    {
-                        data = k;
-                        valid = true;
-                    }
+                    throw new InvalidOperationException("Display memory @" + i.ToString() + " is not a supported color");
                 }
 
-                if (!valid)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                arr[i / 4] |= (byte)(data << j);
+                arr[i / 4] |= (byte)(data << (i & 3));
             }
 
             return arr;
