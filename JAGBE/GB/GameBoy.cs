@@ -27,6 +27,6 @@ namespace JAGBE.GB
         /// number of ticks to run.
         /// </summary>
         /// <param name="targetUpdateRate">The target update rate.</param>
-        internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.WriteToConsole ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
+        internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.BreakMode ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
     }
 }

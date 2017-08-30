@@ -65,11 +65,7 @@ namespace JAGBE.GB.Emulation
         /// <value>The display memory.</value>
         public int[] DisplayMemory => this.memory.Lcd.displayMemory;
 
-        /// <summary>
-        /// Gets or sets a value indicating whether debug information is active.
-        /// </summary>
-        /// <value><see langword="true"/> if debug; otherwise, <see langword="false"/>.</value>
-        public bool WriteToConsole { get; set; }
+        public bool BreakMode => breakMode;
 
         /// <summary>
         /// Gets the pc.
@@ -84,6 +80,8 @@ namespace JAGBE.GB.Emulation
         internal byte[] RamDump => this.memory.DumpRam();
 
         public void AddBreakPoint(ushort address) => this.breakPoints.Add(address);
+
+        public void RemoveBreakPoint(ushort address) => this.breakPoints.Remove(address);
 
         /// <summary>
         /// Resets the memory of this instance.

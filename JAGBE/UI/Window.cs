@@ -55,12 +55,16 @@ namespace JAGBE.UI
         /// </summary>
         private byte keys = 0xFF;
 
+        private bool step;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>
         public Window() : this(160, 144)
         {
         }
+
+        private bool paused;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
@@ -111,6 +115,8 @@ namespace JAGBE.UI
 
             if (i < 0)
             {
+                this.paused ^= e.Key == Key.P;
+                this.step |= e.Key == Key.O;
                 return;
             }
 
@@ -182,7 +188,6 @@ namespace JAGBE.UI
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             Texture2D tex = ContentPipe.GenerateRgbaTexture(this.gameBoy.cpu.DisplayMemory, 160, 144);
             GL.BindTexture(TextureTarget.Texture2D, tex.Id);
-
             GL.Begin(PrimitiveType.Quads);
             GL.TexCoord2(0, 1);
             GL.Vertex2(-1, 1);
@@ -203,16 +208,14 @@ namespace JAGBE.UI
         /// <param name="e">Contains information necessary for frame updating.</param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (this.gameBoy.cpu.WriteToConsole)
+            if (this.paused || this.gameBoy.cpu.BreakMode)
             {
-                if (Console.KeyAvailable)
-                {
-                    Console.ReadKey(true);
-                }
-                else
+                if (!this.step)
                 {
                     return;
                 }
+
+                this.step = false;
             }
 
             this.gameBoy.Update((int)this.TargetUpdateFrequency);
