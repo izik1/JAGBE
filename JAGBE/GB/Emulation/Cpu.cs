@@ -65,7 +65,7 @@ namespace JAGBE.GB.Emulation
         /// <value>The display memory.</value>
         public int[] DisplayMemory => this.memory.Lcd.displayMemory;
 
-        public bool BreakMode => breakMode;
+        public bool BreakMode => this.breakMode;
 
         /// <summary>
         /// Gets the pc.

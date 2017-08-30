@@ -107,21 +107,29 @@ namespace JAGBE.GB.Emulation
         internal GbUInt8 WY;
 
         /// <summary>
+        /// The color the Game Boy displays as white.
+        /// </summary>
+        /// <remarks>
+        /// White gets it's own const because it's the only color that is ever directly needed.
+        /// </remarks>
+        private const int WHITE = unchecked((int)0xFF9BBC0F);
+
+        /// <summary>
         /// The colors that should be displayed.
         /// </summary>
-        private static readonly uint[] COLORS =
+        private static readonly int[] COLORS =
         {
-                0xFF9BBC0F,
-                0xFF8BAC0F,
-                0xFF306230,
-                0xFF0F380F
+                WHITE,
+                unchecked((int)0xFF8BAC0F),
+                unchecked((int)0xFF306230),
+                unchecked((int)0xFF0F380F)
         };
 
         public Lcd()
         {
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
-                this.displayMemory[i] = (int)COLORS[0];
+                this.displayMemory[i] = WHITE;
             }
         }
 
@@ -224,7 +232,7 @@ namespace JAGBE.GB.Emulation
                 bool valid = false;
                 for (int k = 0; k < 4; k++)
                 {
-                    if ((int)COLORS[k] == this.displayMemory[i])
+                    if (COLORS[k] == this.displayMemory[i])
                     {
                         data = k;
                         valid = true;
@@ -356,7 +364,7 @@ namespace JAGBE.GB.Emulation
             this.cy = 0;
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
-                this.displayMemory[i] = (int)COLORS[0];
+                this.displayMemory[i] = WHITE;
             }
         }
 
@@ -379,13 +387,13 @@ namespace JAGBE.GB.Emulation
             }
             else if (this.cy == Cpu.DelayStep * 11)
             {
-                this.STAT = (byte)((this.STAT & 0xFC) | 3);
+                this.STAT = (this.STAT & 0xFC) | 0b11;
 
                 if (this.ForceNullRender)
                 {
                     for (int i = 0; i < Width; i++)
                     {
-                        this.displayMemory[((Height - this.LY - 1) * Width) + i] = (int)COLORS[0];
+                        this.displayMemory[((Height - this.LY - 1) * Width) + i] = WHITE;
                     }
                 }
                 else
@@ -405,10 +413,6 @@ namespace JAGBE.GB.Emulation
                         ScanLineSprite(VRam, Oam);
                     }
                 }
-            }
-            else if (this.cy < Cpu.DelayStep * 63)
-            {
-                // Add proper pixel-by-pixel emulation here.
             }
             else if (this.cy == Cpu.DelayStep * 113)
             {
@@ -453,7 +457,7 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                    (int)COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
+                    COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
                 x++;
                 if (x == 8)
                 {
@@ -511,7 +515,7 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                    (int)COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
+                   COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
 
                 x++;
                 if (x == 8)

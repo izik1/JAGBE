@@ -35,7 +35,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="u8">The u8.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator ushort(GbUInt8 u8) => (byte)u8;
+        public static implicit operator ushort(GbUInt8 u8) => u8.value;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="GbUInt8"/> to <see cref="byte"/>.
@@ -56,7 +56,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="u8">The u8.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator GbUInt16(GbUInt8 u8) => new GbUInt16(0, u8.value);
+        public static implicit operator GbUInt16(GbUInt8 u8) => new GbUInt16(u8.value);
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="int"/> to <see cref="GbUInt8"/>.
@@ -64,6 +64,8 @@ namespace JAGBE.GB.Emulation
         /// <param name="i32">The i32.</param>
         /// <returns>The result of the conversion.</returns>
         public static explicit operator GbUInt8(int i32) => (byte)i32;
+
+        public static implicit operator int(GbUInt8 u8) => u8.value;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="GbUInt16"/> to <see cref="GbUInt8"/>.
