@@ -13,8 +13,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckAdc()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x88, 2);
+            GbMemory memory = InitTest(2, 0x88);
             memory.R.A = 254;
             ArithmeticTest(memory, 0, RFlags.ZHCB);
             ArithmeticTest(memory, 3, 0);
@@ -31,8 +30,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckAdd()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x80, 2);
+            GbMemory memory = InitTest(2, 0x80);
             memory.R.A = 254;
             ArithmeticTest(memory, 0, RFlags.ZHCB);
             ArithmeticTest(memory, 2, 0);
@@ -49,8 +47,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckAnd()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0xA0, 2);
+            GbMemory memory = InitTest(2, 0xA0);
             memory.R.A = 2;
             ArithmeticTest(memory, 2, RFlags.HB);
             memory.R.A = 1;
@@ -69,7 +66,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckBit()
         {
-            GbMemory mem = ConfigureMemory(1);
+            GbMemory mem = ConfigureMemory(0);
             Instruction instr = new Instruction(0xCB);
 
             for (int bitNum = 7; bitNum >= 0; bitNum--)
@@ -127,8 +124,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckCcf()
         {
-            GbMemory mem = ConfigureMemory(1);
-            InitNmTest(mem, 0x3F, 0);
+            GbMemory mem = InitTest(0, 0x3F);
             RegTest(mem, 0, RFlags.CB);
             RegTest(mem, 0, 0);
             mem.R.F = RFlags.ZB;
@@ -143,8 +139,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckCp()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0xB8, 2);
+            GbMemory memory = InitTest(2, 0xB8);
             memory.R.A = 2;
             ArithmeticTest(memory, 2, RFlags.ZNB);
             memory.R.A = 0;
@@ -163,8 +158,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckCpl()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x2F, 0);
+            GbMemory memory = InitTest(0, 0x2F);
             for (int i = 0; i < 256; i++)
             {
                 for (int j = 0; j < 16; j++)
@@ -184,8 +178,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckDec8()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x05, 1);
+            GbMemory memory = InitTest(1, 0x05);
             RegTest(memory, 0, RFlags.ZNB);
             RegTest(memory, 255, RFlags.NHB);
             memory.Rom[0] = 0x35;
@@ -200,8 +193,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckInc8()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x04, 255);
+            GbMemory memory = InitTest(0xFF, 0x04);
             RegTest(memory, 0, RFlags.ZHB);
             RegTest(memory, 1, 0);
             memory.Rom[0] = 0x34;
@@ -216,10 +208,7 @@ namespace JAGBETests
         [TestCategory("Branching")]
         public void CheckJpA16()
         {
-            GbMemory memory = ConfigureMemory(0x10);
-            memory.Rom[0] = 0xC3;
-            memory.Rom[1] = 0xC; // Low byte, all that is needed.
-
+            GbMemory memory = ConfigureMemory(0xC3, 0xC, 0);
             BranchTest(memory, 0xC);
             for (int r = 0; r < 2; r++)
             {
@@ -244,7 +233,7 @@ namespace JAGBETests
         [TestCategory("Ld")]
         public void CheckLdR8R8()
         {
-            GbMemory mem = ConfigureMemory(0);
+            GbMemory mem = ConfigureMemory();
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -324,8 +313,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckOr()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0xB0, 0);
+            GbMemory memory = InitTest(0, 0xB0);
             memory.R.A = 0;
             ArithmeticTest(memory, 0, RFlags.ZB);
             memory.R.A = 1;
@@ -344,8 +332,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckRl()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0x10, 0x40);
+            GbMemory memory = InitTest(0x40, 0xCB, 0x10);
             RegTest(memory, 0x80, 0);
             RegTest(memory, 0, RFlags.ZCB);
             RegTest(memory, 1, 0);
@@ -363,8 +350,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckRlc()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0, 0x40);
+            GbMemory memory = InitTest(0x40, 0xCB, 0);
             RegTest(memory, 0x80, 0);
             RegTest(memory, 1, RFlags.CB);
             memory.Rom[1] = 0x06;
@@ -379,8 +365,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckRr()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0x18, 2);
+            GbMemory memory = InitTest(2, 0xCB, 0x18);
             RegTest(memory, 1, 0);
             RegTest(memory, 0, RFlags.ZCB);
             RegTest(memory, 0x80, 0);
@@ -397,8 +382,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckSet()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitCbTest(memory, 0xC0, 0);
+            GbMemory memory = InitTest(0, 0xCB, 0xC0);
             byte v = 1;
             for (int i = 0; i < 8; i++)
             {
@@ -427,9 +411,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckSla()
         {
-            GbMemory mem = ConfigureMemory(2);
-            mem.Rom[0] = 0xCB;
-
+            GbMemory mem = ConfigureMemory(0xCB, 0);
             for (int i = 0; i < 8; i++)
             {
                 mem.Rom[1] = (byte)(0x20 + i);
@@ -460,8 +442,7 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckSub()
         {
-            GbMemory memory = ConfigureMemory(1);
-            InitNmTest(memory, 0x90, 2);
+            GbMemory memory = InitTest(2, 0x90);
             memory.R.A = 2;
             ArithmeticTest(memory, 0, RFlags.ZNB);
             ArithmeticTest(memory, 254, RFlags.NHCB);
@@ -478,10 +459,8 @@ namespace JAGBETests
         [TestCategory("Arithmetic")]
         public void CheckXor()
         {
-            GbMemory memory = ConfigureMemory(2);
-            InitNmTest(memory, 0xA8, 2);
+            GbMemory memory = InitTest(2, 0xA8, 2);
             memory.R.A = 2;
-            memory.Rom[1] = 2;
             ArithmeticTest(memory, 0, RFlags.ZB);
             ArithmeticTest(memory, 2, 0);
             memory.Rom[0] = 0xAE;
@@ -507,11 +486,16 @@ namespace JAGBETests
             mem.R.Pc = 0;
         }
 
-        private static GbMemory ConfigureMemory(int romSize)
+        private static GbMemory ConfigureMemory(params byte[] rom)
         {
+            if (rom == null)
+            {
+                throw new System.ArgumentNullException(nameof(rom));
+            }
+
             GbMemory mem = new GbMemory
             {
-                Rom = new byte[romSize]
+                Rom = rom
             };
             mem.SetMappedMemory(0xFF50, 1); // Force bootmode to be disabled.
             return mem;
@@ -525,21 +509,13 @@ namespace JAGBETests
             mem.R.Pc = 0;
         }
 
-        private static void InitCbTest(GbMemory m, byte inst, byte initVal)
+        private static GbMemory InitTest(byte initVal, params byte[] rom)
         {
-            m.Rom[0] = 0xCB;
-            m.Rom[1] = inst;
+            GbMemory m = ConfigureMemory(rom);
             m.R.B = initVal;
             m.R.Hl = 0xC000;
             m.SetMappedMemoryHl(initVal);
-        }
-
-        private static void InitNmTest(GbMemory m, byte inst, byte initVal)
-        {
-            m.Rom[0] = inst;
-            m.R.B = initVal;
-            m.R.Hl = 0xC000;
-            m.SetMappedMemoryHl(initVal);
+            return m;
         }
 
         private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags) => RegTest(mem, expectedRegData, expectedFlags, 0);
