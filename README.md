@@ -49,7 +49,7 @@ MoonEye tests:
 |halt_ime0_nointr_timing|:x:|D Incorrect.|
 |halt_ime1_timing|:x:|B Incorrect.|
 |halt_ime1_timing2-GS|:white_check_mark:|-|
-|if_ie_registers|:x:|C,E Incorrect.|
+|if_ie_registers|:white_check_mark:|-|
 |intr_timing|:x:|E Incorrect.|
 |jp_cc_timing|:x:|Doesn't complete.|
 |jp_timing|:x:|Doesn't complete.|

@@ -91,11 +91,7 @@ namespace JAGBETests.RomTests.mooneye
             TestDisplayOut(BasePath + "halt_ime1_timing2-GS.gb", "mYRy+tkF2McRZrOD90zONWZv4diwUfG3cuPjvOEHZJM=");
 
         [TestMethod]
-        public void IF_IE_registers()
-        {
-            Assert.Inconclusive("No SHA");
-            TestDisplayOut(BasePath + "if_ie_registers.gb", "");
-        }
+        public void IF_IE_registers() => TestDisplayOut(BasePath + "if_ie_registers.gb", "cMXEWWiLEgUdvTelKty/59AYf5GPI71lp5DpGS45n6c=");
 
         [TestMethod]
         public void Intr_timing()

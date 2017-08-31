@@ -391,7 +391,7 @@ namespace JAGBE.GB.Emulation
 
             if (number == 0xF)
             {
-                return this.IF;
+                return this.IF | 0xE0;
             }
 
             if (number <= 0x3F)
