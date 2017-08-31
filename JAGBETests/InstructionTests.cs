@@ -16,7 +16,7 @@ namespace JAGBETests
                 throw new ArgumentNullException(nameof(testFunc));
             }
 
-            GbMemory mem = ConfigureMemory(0);
+            GbMemory mem = ConfigureMemory(0, 0);
             for (int dest = 0; dest < 8; dest++)
             {
                 for (int src = 0; src < 8; src++)
@@ -128,7 +128,7 @@ namespace JAGBETests
         [TestCategory("Bitwise")]
         public void CheckCcf()
         {
-            GbMemory mem = InitTest(0, 0x3F);
+            GbMemory mem = ConfigureMemory(0x3F);
             RegTest(mem, 0, RFlags.CB);
             RegTest(mem, 0, 0);
             mem.R.F = RFlags.ZB;
@@ -235,31 +235,19 @@ namespace JAGBETests
         /// </summary>
         [TestMethod]
         [TestCategory("Ld")]
-        public void CheckLdR8R8()
+        public void CheckLdR8R8() => TestInstruction((dest, src, val, mem) =>
         {
-            GbMemory mem = ConfigureMemory();
-            for (int i = 0; i < 8; i++)
+            if (dest == 6 || src == 6)
             {
-                for (int j = 0; j < 8; j++)
-                {
-                    if (i == 6 || j == 6)
-                    {
-                        continue;
-                    }
-
-                    GbUInt8 destR = (GbUInt8)i;
-                    GbUInt8 srcR = (GbUInt8)j;
-                    Instruction instr = new Instruction((GbUInt8)(0x40 + (destR * 8) + srcR));
-                    for (int k = 0; k < 256; k++)
-                    {
-                        mem.R.SetR8(destR, (GbUInt8)(255 - k)); // Ensure that dest is always different from source.
-                        mem.R.SetR8(srcR, (GbUInt8)k);
-                        Assert.IsTrue(instr.Run(mem, 0)); // Check timing.
-                        Assert.AreEqual((GbUInt8)k, mem.R.GetR8(destR)); // Check value.
-                    }
-                }
+                return;
             }
-        }
+
+            Instruction instr = new Instruction((GbUInt8)(0x40 + (dest * 8) + src));
+            mem.R.SetR8(dest, (GbUInt8)(255 - val)); // Ensure that dest is always different from source.
+            mem.R.SetR8(src, val);
+            Assert.IsTrue(instr.Run(mem, 0)); // Check timing.
+            Assert.AreEqual(val, mem.R.GetR8(dest)); // Check value.
+        });
 
         /// <summary>
         /// Checks that Ld r,(hl) and Ld (hl),r give the correct output and have the correct timing.
@@ -427,7 +415,6 @@ namespace JAGBETests
                     if (i == 6)
                     {
                         mem.SetMappedMemoryHl((GbUInt8)j);
-                        System.Console.WriteLine(j);
                         HlTest(mem, (byte)(j << 1), expectedFlags);
                     }
                     else
