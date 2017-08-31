@@ -22,8 +22,14 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal const int DelayStep = 4;
 
+        /// <summary>
+        /// Determines weather the cpu is in break mode or not.
+        /// </summary>
         private bool breakMode;
 
+        /// <summary>
+        /// The list of addresses this instance will enter <see cref="breakMode"/> at.
+        /// </summary>
         private readonly HashSet<ushort> breakPoints = new HashSet<ushort>();
 
         /// <summary>
@@ -31,6 +37,10 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private int delay;
 
+        /// <summary>
+        /// Gets the status of this instance.
+        /// </summary>
+        /// <value>The status.</value>
         public CpuState Status => this.memory.Status;
 
         private bool hung;
@@ -40,6 +50,10 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private GbMemory memory;
 
+        /// <summary>
+        /// Returns the LCD's display memory as bytes.
+        /// </summary>
+        /// <returns>The LCD's display memory as bytes.</returns>
         public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
 
         /// <summary>
@@ -65,6 +79,10 @@ namespace JAGBE.GB.Emulation
         /// <value>The display memory.</value>
         public int[] DisplayMemory => this.memory.Lcd.displayMemory;
 
+        /// <summary>
+        /// Gets a value indicating whether the cpu is in breakmode or not.
+        /// </summary>
+        /// <value><see langword="true"/> if the cpu is in breakmode; otherwise, <see langword="false"/>.</value>
         public bool BreakMode => this.breakMode;
 
         /// <summary>
@@ -79,8 +97,16 @@ namespace JAGBE.GB.Emulation
         /// <value>The ram dump.</value>
         internal byte[] RamDump => this.memory.DumpRam();
 
+        /// <summary>
+        /// Adds a break point at <paramref name="address"/>.
+        /// </summary>
+        /// <param name="address">The address.</param>
         public void AddBreakPoint(ushort address) => this.breakPoints.Add(address);
 
+        /// <summary>
+        /// Removes the break point at <paramref name="address"/>.
+        /// </summary>
+        /// <param name="address">The address.</param>
         public void RemoveBreakPoint(ushort address) => this.breakPoints.Remove(address);
 
         /// <summary>
@@ -311,6 +337,9 @@ namespace JAGBE.GB.Emulation
             throw new ArgumentOutOfRangeException(nameof(step));
         }
 
+        /// <summary>
+        /// Ticks the dma.
+        /// </summary>
         private void TickDma()
         {
             Lcd lcd = this.memory.Lcd;

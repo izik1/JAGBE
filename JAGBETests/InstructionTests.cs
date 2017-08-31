@@ -1,11 +1,34 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using JAGBE.GB.Emulation;
+using System;
 
 namespace JAGBETests
 {
     [TestClass]
     public class InstructionTests
     {
+        private delegate void InstructionTest(int dest, int src, byte val, GbMemory mem);
+
+        private void TestInstruction(InstructionTest testFunc)
+        {
+            if (testFunc == null)
+            {
+                throw new ArgumentNullException(nameof(testFunc));
+            }
+
+            GbMemory mem = ConfigureMemory(0);
+            for (int dest = 0; dest < 8; dest++)
+            {
+                for (int src = 0; src < 8; src++)
+                {
+                    for (int val = 0; val < 256; val++)
+                    {
+                        testFunc(dest, src, (byte)val, mem);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Checks that the ADC instruction gives the correct output.
         /// </summary>
@@ -64,58 +87,39 @@ namespace JAGBETests
         /// </summary>
         [TestMethod]
         [TestCategory("Bitwise")]
-        public void CheckBit()
+        public void CheckBit() => TestInstruction((bitNum, reg, val, mem) =>
         {
-            GbMemory mem = ConfigureMemory(0);
+            mem.R.Hl = 0xC000;
             Instruction instr = new Instruction(0xCB);
-
-            for (int bitNum = 7; bitNum >= 0; bitNum--)
+            GbUInt8 cachedVal = val;
+            byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
+            mem.Rom[0] = (byte)(0x40 + (bitNum * 8) + reg);
+            int i = 1;
+            if (reg == 6)
             {
-                for (int reg = 7; reg >= 0; reg--)
-                {
-                    if (reg == 6)
-                    {
-                        continue;
-                    }
-
-                    for (int val = 255; val >= 0; val--)
-                    {
-                        byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
-                        mem.Rom[0] = (byte)(0x40 + (bitNum * 8) + reg);
-                        GbUInt8 cachedVal = (GbUInt8)val;
-                        mem.R.SetR8(reg, cachedVal);
-                        for (int fVal = 15; fVal >= 0; fVal--)
-                        {
-                            mem.R.F = (GbUInt8)(fVal << 4);
-                            Assert.IsTrue(instr.Run(mem, 1));
-                            Assert.AreEqual(cachedVal, mem.R.GetR8(reg)); // The register shouldn't change.
-                            Assert.AreEqual(RFlags.HB | ((fVal & 1) == 0 ? (GbUInt8)0 : RFlags.CB) | expectedZFlag, mem.R.F);
-                            mem.R.Pc = 0;
-                        }
-                    }
-                }
-
-                mem.R.Hl = 0xC000;
-                for (int val = 255; val >= 0; val--)
-                {
-                    byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
-                    mem.Rom[0] = (byte)(0x46 + (bitNum * 8));
-                    GbUInt8 cachedVal = (GbUInt8)val;
-                    mem.SetMappedMemoryHl(cachedVal);
-                    for (int fVal = 15; fVal >= 0; fVal--)
-                    {
-                        mem.R.F = (GbUInt8)(fVal << 4);
-                        GbUInt8 initFlags = mem.R.F;
-                        Assert.IsFalse(instr.Run(mem, 1));
-                        Assert.AreEqual(initFlags, mem.R.F);
-                        Assert.IsTrue(instr.Run(mem, 2));
-                        Assert.AreEqual((GbUInt8)val, mem.GetMappedMemoryHl()); // The value shouldn't change.
-                        Assert.AreEqual(RFlags.HB | ((fVal & 1) == 0 ? (GbUInt8)0 : RFlags.CB) | expectedZFlag, mem.R.F);
-                        mem.R.Pc = 0;
-                    }
-                }
+                mem.SetMappedMemoryHl(cachedVal);
+                i++;
             }
-        }
+            else
+            {
+                mem.R.SetR8(reg, cachedVal);
+            }
+            for (int fVal = 15; fVal >= 0; fVal--)
+            {
+                mem.R.F = (GbUInt8)(fVal << 4);
+                GbUInt8 initFlags = mem.R.F;
+                if (reg == 6)
+                {
+                    Assert.IsFalse(instr.Run(mem, 1));
+                    Assert.AreEqual(initFlags, mem.R.F);
+                }
+
+                Assert.IsTrue(instr.Run(mem, i));
+                Assert.AreEqual(cachedVal, reg == 6 ? mem.GetMappedMemoryHl() : mem.R.GetR8(reg)); // The value shouldn't change.
+                Assert.AreEqual(RFlags.HB | ((fVal & 1) << RFlags.CF) | expectedZFlag, mem.R.F);
+                mem.R.Pc = 0;
+            }
+        });
 
         /// <summary>
         /// Checks that the Complement Carry flag instruction gives the correct output.
@@ -490,7 +494,7 @@ namespace JAGBETests
         {
             if (rom == null)
             {
-                throw new System.ArgumentNullException(nameof(rom));
+                throw new ArgumentNullException(nameof(rom));
             }
 
             GbMemory mem = new GbMemory
@@ -518,7 +522,8 @@ namespace JAGBETests
             return m;
         }
 
-        private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags) => RegTest(mem, expectedRegData, expectedFlags, 0);
+        private static void RegTest(GbMemory mem, byte expectedRegData, byte expectedFlags) =>
+            RegTest(mem, expectedRegData, expectedFlags, 0);
 
         private static void RegTest(GbMemory mem, GbUInt8 expectedRegData, byte expectedFlags, int reg)
         {

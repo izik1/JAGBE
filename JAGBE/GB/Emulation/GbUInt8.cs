@@ -65,6 +65,11 @@ namespace JAGBE.GB.Emulation
         /// <returns>The result of the conversion.</returns>
         public static explicit operator GbUInt8(int i32) => (byte)i32;
 
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="GbUInt8"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="u8">The u8.</param>
+        /// <returns>The result of the conversion.</returns>
         public static implicit operator int(GbUInt8 u8) => u8.value;
 
         /// <summary>

@@ -2,6 +2,9 @@
 
 namespace JAGBE.GB.Emulation
 {
+    /// <summary>
+    /// Home of the LCD subsystem.
+    /// </summary>
     internal sealed class Lcd
     {
         /// <summary>
@@ -125,6 +128,9 @@ namespace JAGBE.GB.Emulation
                 unchecked((int)0xFF0F380F)
         };
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Lcd"/> class.
+        /// </summary>
         public Lcd()
         {
             for (int i = 0; i < this.displayMemory.Length; i++)
@@ -133,6 +139,12 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
+        /// </summary>
+        /// <value>The <see cref="GbUInt8"/>.</value>
+        /// <param name="index">The index.</param>
+        /// <returns>the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.</returns>
         public GbUInt8 this[byte index]
         {
             get
@@ -213,7 +225,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Converts display memory to a byte representation.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><see cref="displayMemory"/> as a byte array.</returns>
         /// <exception cref="InvalidOperationException"></exception>
         public byte[] DisplayToBytes()
         {
@@ -313,6 +325,16 @@ namespace JAGBE.GB.Emulation
             this.cy += Cpu.DelayStep;
         }
 
+        /// <summary>
+        /// Gets the index of the color.
+        /// </summary>
+        /// <param name="pallet">The pallet.</param>
+        /// <param name="VRam">The v ram.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="tileMapOffset">The tile map offset.</param>
+        /// <param name="tileNum">The tile number.</param>
+        /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
         private static int GetColorIndex(GbUInt8 pallet, GbUInt8[] VRam, byte y, byte x, ushort tileMapOffset, ushort tileNum)
         {
             int i = ((int)VRam[(tileNum * 16) + tileMapOffset + (y * 2)] >> (7 - x) & 1);
@@ -320,6 +342,9 @@ namespace JAGBE.GB.Emulation
             return ((int)pallet >> (i * 2)) & 3;
         }
 
+        /// <summary>
+        /// Turns off the lcd.
+        /// </summary>
         private void Disable()
         {
             this.PIRC = false;
@@ -331,6 +356,11 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        /// <summary>
+        /// Renders a line.
+        /// </summary>
+        /// <param name="VRam">The v ram.</param>
+        /// <param name="Oam">The oam.</param>
         private void RenderLine(GbUInt8[] VRam, GbUInt8[] Oam)
         {
             if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
