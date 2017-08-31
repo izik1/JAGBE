@@ -300,7 +300,7 @@ namespace JAGBE.GB.Emulation
                 }
                 else if (this.cy == Cpu.DelayStep * 113)
                 {
-                    this.LY = (GbUInt8)((this.LY + 1) % 153);
+                    this.LY = (GbUInt8)((this.LY + 1) % 154);
                     this.cy = -Cpu.DelayStep;
                 }
                 else
