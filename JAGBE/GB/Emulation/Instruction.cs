@@ -3,7 +3,7 @@ using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation
 {
-    internal sealed class Instruction
+    internal static class Instruction
     {
         /// <summary>
         /// The <see cref="Opcode"/> array containing the functions ran for CB prefixed instructions.
@@ -25,25 +25,15 @@ namespace JAGBE.GB.Emulation
         private static readonly Opcode[] NmOps = GetNmOps();
 
         /// <summary>
-        /// This this instance's opcode number.
-        /// </summary>
-        private readonly byte opcode;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Instruction"/> class.
-        /// </summary>
-        /// <param name="opcode">The opcode.</param>
-        public Instruction(GbUInt8 opcode) => this.opcode = (byte)opcode;
-
-        /// <summary>
-        /// Runs the <see cref="Instruction"/>.
+        /// Runs an instruction with the <see cref="Opcode"/> number <paramref name="opcode"/>.
         /// </summary>
         /// <param name="memory">The memory.</param>
         /// <param name="step">The step.</param>
+        /// <param name="opcode">The opcode.</param>
         /// <returns>
         /// <see langword="true"/> if the operation has completed, <see langword="false"/> otherwise.
         /// </returns>
-        public bool Run(GbMemory memory, int step) => NmOps[this.opcode].Invoke(memory, step);
+        public static bool Run(GbMemory memory, byte opcode, int step) => NmOps[opcode].Invoke(memory, step);
 
         /// <summary>
         /// Gets the CB prefixed instructions.

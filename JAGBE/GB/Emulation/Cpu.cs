@@ -251,7 +251,7 @@ namespace JAGBE.GB.Emulation
 
                 prevPc = this.Pc;
 
-                Instruction inst = new Instruction(this.memory.LdI8());
+                byte opcode = (byte)this.memory.LdI8();
 
                 if (this.memory.HaltBugged)
                 {
@@ -260,7 +260,7 @@ namespace JAGBE.GB.Emulation
                 }
 
                 int ticks = 0;
-                while (!inst.Run(this.memory, ticks))
+                while (!Instruction.Run(this.memory, opcode, ticks))
                 {
                     ticks++;
                     TickIoDevices();

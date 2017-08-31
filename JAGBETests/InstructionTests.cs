@@ -90,7 +90,6 @@ namespace JAGBETests
         public void CheckBit() => TestInstruction((bitNum, reg, val, mem) =>
         {
             mem.R.Hl = 0xC000;
-            Instruction instr = new Instruction(0xCB);
             GbUInt8 cachedVal = val;
             byte expectedZFlag = (byte)((val & (1 << bitNum)) == 0 ? RFlags.ZB : 0);
             mem.Rom[0] = (byte)(0x40 + (bitNum * 8) + reg);
@@ -110,11 +109,11 @@ namespace JAGBETests
                 GbUInt8 initFlags = mem.R.F;
                 if (reg == 6)
                 {
-                    Assert.IsFalse(instr.Run(mem, 1));
+                    Assert.IsFalse(Instruction.Run(mem, 0xCB, 1));
                     Assert.AreEqual(initFlags, mem.R.F);
                 }
 
-                Assert.IsTrue(instr.Run(mem, i));
+                Assert.IsTrue(Instruction.Run(mem, 0xCB, i));
                 Assert.AreEqual(cachedVal, reg == 6 ? mem.GetMappedMemoryHl() : mem.R.GetR8(reg)); // The value shouldn't change.
                 Assert.AreEqual(RFlags.HB | ((fVal & 1) << RFlags.CF) | expectedZFlag, mem.R.F);
                 mem.R.Pc = 0;
@@ -242,10 +241,10 @@ namespace JAGBETests
                 return;
             }
 
-            Instruction instr = new Instruction((GbUInt8)(0x40 + (dest * 8) + src));
+            byte opcode = ((byte)(0x40 + (dest * 8) + src));
             mem.R.SetR8(dest, (GbUInt8)(255 - val)); // Ensure that dest is always different from source.
             mem.R.SetR8(src, val);
-            Assert.IsTrue(instr.Run(mem, 0)); // Check timing.
+            Assert.IsTrue(Instruction.Run(mem, opcode, 0)); // Check timing.
             Assert.AreEqual(val, mem.R.GetR8(dest)); // Check value.
         });
 
@@ -264,13 +263,13 @@ namespace JAGBETests
                 {
                     if (i != 6)
                     {
-                        Instruction inst = new Instruction((GbUInt8)(0x46 + (i * 8)));
-                        Assert.IsFalse(inst.Run(mem, 0));
-                        Assert.IsTrue(inst.Run(mem, 1));
+                        byte opcode = (byte)(0x46 + (i * 8));
+                        Assert.IsFalse(Instruction.Run(mem, opcode, 0));
+                        Assert.IsTrue(Instruction.Run(mem, opcode, 1));
 
-                        inst = new Instruction((GbUInt8)(0x70 + i));
-                        Assert.IsFalse(inst.Run(mem, 0));
-                        Assert.IsTrue(inst.Run(mem, 1));
+                        opcode = (byte)(0x70 + i);
+                        Assert.IsFalse(Instruction.Run(mem, opcode, 0));
+                        Assert.IsTrue(Instruction.Run(mem, opcode, 1));
                     }
 
                     continue;
@@ -281,18 +280,18 @@ namespace JAGBETests
                     GbUInt8 overriddenVal = (GbUInt8)(255 - j);
                     mem.R.SetR8(i, overriddenVal);
                     mem.SetMappedMemoryHl((GbUInt8)j);
-                    Instruction inst = new Instruction((GbUInt8)(0x46 + (i * 8)));
-                    Assert.IsFalse(inst.Run(mem, 0));
+                    byte opcode = (byte)((GbUInt8)(0x46 + (i * 8)));
+                    Assert.IsFalse(Instruction.Run(mem, opcode, 0));
                     Assert.AreEqual(overriddenVal, mem.R.GetR8(i));
-                    Assert.IsTrue(inst.Run(mem, 1));
+                    Assert.IsTrue(Instruction.Run(mem, opcode, 1));
                     Assert.AreEqual((GbUInt8)j, mem.R.GetR8(i));
 
                     mem.R.SetR8(i, (GbUInt8)j);
                     mem.SetMappedMemoryHl((GbUInt8)(255 - j));
-                    inst = new Instruction((GbUInt8)(0x70 + i));
-                    Assert.IsFalse(inst.Run(mem, 0));
+                    opcode = (byte)((GbUInt8)(0x70 + i));
+                    Assert.IsFalse(Instruction.Run(mem, opcode, 0));
                     Assert.AreEqual(overriddenVal, mem.GetMappedMemoryHl());
-                    Assert.IsTrue(inst.Run(mem, 1));
+                    Assert.IsTrue(Instruction.Run(mem, opcode, 1));
                     Assert.AreEqual((GbUInt8)j, mem.GetMappedMemoryHl());
                 }
             }
@@ -520,12 +519,12 @@ namespace JAGBETests
             mem.R.Pc = 0;
         }
 
-        private static void RunInst(GbMemory mem) => RunInst(mem, new Instruction(mem.LdI8()));
+        private static void RunInst(GbMemory mem) => RunInst(mem, (byte)mem.LdI8());
 
-        private static void RunInst(GbMemory mem, Instruction inst)
+        private static void RunInst(GbMemory mem, byte opcode)
         {
             int step = 0;
-            while (!inst.Run(mem, step))
+            while (!Instruction.Run(mem, opcode, step))
             {
                 step++;
             }
