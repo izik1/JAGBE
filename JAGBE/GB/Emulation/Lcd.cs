@@ -176,7 +176,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x1:
-                        this.STAT = (byte)(this.STAT | (value & 0x78));
+                        this.STAT |= (value & 0x78);
                         break;
 
                     case 0x2:
@@ -192,7 +192,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x6:
-                        this.DMAAddress = (ushort)(value << 8);
+                        this.DMAAddress = (GbUInt16)(value << 8);
                         this.DMA = 0;
                         break;
 
@@ -201,11 +201,11 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x8:
-                        this.objPallet0 = (byte)(value & 0xFC);
+                        this.objPallet0 = value & 0xFC;
                         break;
 
                     case 0x9:
-                        this.objPallet1 = (byte)(value & 0xFC);
+                        this.objPallet1 = value & 0xFC;
                         break;
 
                     case 0xA:

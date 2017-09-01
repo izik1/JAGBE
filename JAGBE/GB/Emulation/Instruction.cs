@@ -187,7 +187,7 @@ namespace JAGBE.GB.Emulation
 
                 throw new ArgumentOutOfRangeException(nameof(step));
             });
-            ops[0x76] = new Opcode(0, 0, (op, mem, step) =>
+            ops[0x76] = new Opcode(0, 0, (op, mem, step) => // HALT
             {
                 if (mem.IME || (mem.IF & mem.IER & 0x1F) == 0)
                 {
