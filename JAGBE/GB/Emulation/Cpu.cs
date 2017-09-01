@@ -165,12 +165,6 @@ namespace JAGBE.GB.Emulation
             // runs every cpu tick) they would fall behind whenever the cpu runs an instruction that
             // takes > DelayStep cycles.
             int syncDelay = this.delay;
-            void TickIoDevices()
-            {
-                this.memory.Lcd.Tick(this.memory);
-                this.memory.Update();
-                syncDelay += DelayStep;
-            }
 
             GbUInt16 prevPc = 0;
 
@@ -200,8 +194,7 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
-                TickIoDevices();
-
+                TickIoDevices(ref syncDelay);
                 if (this.memory.Status == CpuState.ERROR)
                 {
                     this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
@@ -250,9 +243,7 @@ namespace JAGBE.GB.Emulation
                 }
 
                 prevPc = this.Pc;
-
                 byte opcode = (byte)this.memory.LdI8();
-
                 if (this.memory.HaltBugged)
                 {
                     this.memory.HaltBugged = false;
@@ -263,7 +254,7 @@ namespace JAGBE.GB.Emulation
                 while (!Instruction.Run(this.memory, opcode, ticks))
                 {
                     ticks++;
-                    TickIoDevices();
+                    TickIoDevices(ref syncDelay);
                     TickDma();
                     this.delay += DelayStep;
                 }
@@ -273,9 +264,16 @@ namespace JAGBE.GB.Emulation
 
             while (syncDelay < 0)
             {
-                TickIoDevices();
+                TickIoDevices(ref syncDelay);
                 TickDma();
             }
+        }
+
+        private void TickIoDevices(ref int syncDelay)
+        {
+            this.memory.Lcd.Tick(this.memory);
+            this.memory.Update();
+            syncDelay += DelayStep;
         }
 
         /// <summary>

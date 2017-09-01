@@ -154,7 +154,7 @@ namespace JAGBE.GB.Emulation
                         return;
 
                     case 0x23:
-                        this.NR44 = (value & 0xC0);
+                        this.NR44 = value & 0xC0;
                         return;
 
                     case 0x24:
