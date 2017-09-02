@@ -16,15 +16,15 @@ namespace JAGBETests.RomTests.blargg
         private const string memTiming2Path = baseTestPath + "mem_timing-2/rom_singles/";
 
         [TestMethod]
-        public void Mem_timing2_1() =>
-            TestDisplayOut(memTiming2Path + "01-read_timing.gb", "v16iKyqfBrhuzDeygQ6cyUSMEytauKnmdfehnL+RwC8=", true);
+        public void Mem_timing2_1() => TestDisplayOut(memTiming2Path + "01-read_timing.gb",
+                "v16iKyqfBrhuzDeygQ6cyUSMEytauKnmdfehnL+RwC8=", true, "sjoFBu3vwDklM/CzJ4UgKWnMb6ZTE4lhmMdL6CjEtGE=");
 
         [TestMethod]
-        public void Mem_timing2_2() =>
-            TestDisplayOut(memTiming2Path + "02-write_timing.gb", "98cPLkBHhtuw8PcvXTumtyZUplFF5kf/2WSnTDFR42M=", true);
+        public void Mem_timing2_2() => TestDisplayOut(memTiming2Path + "02-write_timing.gb",
+                "98cPLkBHhtuw8PcvXTumtyZUplFF5kf/2WSnTDFR42M=", true, "1zeW0Hqvhe1lJPNT4Dty2+IKSNSY81KRTs+jO1pbihg=");
 
         [TestMethod]
-        public void Mem_timing2_3() =>
-            TestDisplayOut(memTiming2Path + "03-modify_timing.gb", "FHcBI+nQVf9VA7lGDsDVrmXxVYb+gkjBOjbyYTFCE/k=", true);
+        public void Mem_timing2_3() => TestDisplayOut(memTiming2Path + "03-modify_timing.gb",
+                "FHcBI+nQVf9VA7lGDsDVrmXxVYb+gkjBOjbyYTFCE/k=", true, "Us9xIpS9n54kZbH9rvnvIo64nMDhGqJL14hgmfpU9f0=");
     }
 }
