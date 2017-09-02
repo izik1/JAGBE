@@ -22,7 +22,7 @@ namespace JAGBETests.RomTests
         {
             if (!passes && failShas.Length == 0)
             {
-                Assert.Inconclusive("Test isn't supposed to pass.");
+                Assert.Inconclusive("Test isn't supposed to pass and there are no SHA's to test.");
             }
 
             Stopwatch sw = new Stopwatch();
@@ -40,13 +40,25 @@ namespace JAGBETests.RomTests
                     // Check for error just in case something caught the exception.
                     Assert.IsFalse(c.Status == CpuState.HUNG || c.Status == CpuState.ERROR);
 
-                    if (shaString == expectedSha256)
+                    if (passes)
                     {
-                        sw.Reset();
-                        break;
-                    }
+                        if (shaString == expectedSha256)
+                        {
+                            sw.Reset();
+                            break;
+                        }
 
-                    Assert.IsFalse(failShas.Contains(shaString));
+                        Assert.IsFalse(failShas.Contains(shaString), "Hit fail SHA256 (Was supposed to pass)");
+                    }
+                    else
+                    {
+                        Assert.IsFalse(shaString == expectedSha256, "Test is supposted to fail but it 'passes'.");
+
+                        if (failShas.Contains(shaString))
+                        {
+                            return; // 'Pass', as this is a expected result.
+                        }
+                    }
                 }
             }
 
