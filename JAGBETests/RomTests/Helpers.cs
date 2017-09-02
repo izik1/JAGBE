@@ -20,6 +20,11 @@ namespace JAGBETests.RomTests
 
         internal static void TestDisplayOut(string romPath, string expectedSha256, bool passes, params string[] failShas)
         {
+            if (failShas == null)
+            {
+                throw new ArgumentNullException(nameof(failShas));
+            }
+
             if (!passes && failShas.Length == 0)
             {
                 Assert.Inconclusive("Test isn't supposed to pass and there are no SHA's to test.");
