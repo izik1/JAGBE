@@ -58,6 +58,7 @@
     <Compile Include="RomTests\blargg\Timing.cs" />
     <Compile Include="RomTests\Helpers.cs" />
     <Compile Include="RomTests\mooneye\Acceptance.cs" />
+    <Compile Include="RomTests\mooneye\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
