@@ -30,7 +30,7 @@ Memory Timing:
 |name|state|
 |-|-|
 |instr_timing|:white_check_mark:|
-|halt_bug|:x:|
+|halt_bug|:white_check_mark:|
 
 MoonEye tests:
 
