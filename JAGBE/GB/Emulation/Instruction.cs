@@ -297,17 +297,14 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Runs when a instruction isn't implemented.
+        /// Runs when an instruction isn't implemented.
         /// </summary>
         /// <param name="o">The o.</param>
         /// <param name="mem">The memory.</param>
         /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/></returns>
-        private static bool Unimplemented(Opcode o, GbMemory mem, int step)
-        {
-            Logger.LogError("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
-            mem.Status = CpuState.ERROR;
-            return true;
-        }
+        /// <returns>-</returns>
+        /// <exception cref="InvalidOperationException">Always.</exception>
+        private static bool Unimplemented(Opcode o, GbMemory mem, int step) =>
+            throw new InvalidOperationException("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
     }
 }

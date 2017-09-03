@@ -43,7 +43,7 @@ namespace JAGBETests.RomTests
                     shaString = (Convert.ToBase64String(sha.ComputeHash(c.DisplayMemoryAsBytes())));
 
                     // Check for error just in case something caught the exception.
-                    Assert.IsFalse(c.Status == CpuState.HUNG || c.Status == CpuState.ERROR);
+                    Assert.IsFalse(c.Status == CpuState.HUNG);
 
                     if (passes)
                     {

@@ -24,10 +24,5 @@
         /// The <see cref="Cpu"/> has hung.
         /// </summary>
         HUNG = 3,
-
-        /// <summary>
-        /// Something has gone terribly wrong (opcode not implemented?)
-        /// </summary>
-        ERROR = 4,
     }
 }

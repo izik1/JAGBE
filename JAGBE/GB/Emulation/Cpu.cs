@@ -183,14 +183,6 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
-                if (this.memory.Status == CpuState.ERROR)
-                {
-                    this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
-                    Logger.LogError((prevPc).ToString("X4") + ": " + this.memory.GetMappedMemory(prevPc).ToString("X2") +
-                        " (" + Disassembler.DisassembleInstruction(this.memory) + ") --ERR");
-                    throw new InvalidOperationException(); // ..Because an exception just gets thrown
-                }
-
                 if (this.memory.Status == CpuState.HUNG)
                 {
                     if (!this.hung)
