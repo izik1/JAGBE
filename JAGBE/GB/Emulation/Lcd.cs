@@ -589,10 +589,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="VRam">The v ram.</param>
         /// <param name="sprite">The sprite.</param>
-        /// <param name="checkVisibility">
-        /// if set to <see langword="false"/> don't actually write the sprite.
-        /// </param>
-        /// <returns><see langword="true"/> if the sprite would be able to draw.</returns>
         private void ScanSprite(GbUInt8[] VRam, Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
