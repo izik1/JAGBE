@@ -177,15 +177,18 @@ namespace JAGBE.GB.Emulation
                     {
                         step++;
                         this.delay += DelayStep;
+                        TickIoDevices(ref syncDelay);
+                        TickDma();
+                        this.memory.IME = this.memory.NextIMEValue;
                     }
                 }
 
                 this.memory.IME = this.memory.NextIMEValue;
-
                 if (this.memory.Status == CpuState.STOP)
                 {
                     this.memory.UpdateKeys();
                     this.delay += DelayStep;
+                    syncDelay += DelayStep;
                     if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
                     {
                         this.memory.Status = CpuState.OKAY;
@@ -195,6 +198,7 @@ namespace JAGBE.GB.Emulation
                 }
 
                 TickIoDevices(ref syncDelay);
+                TickDma();
                 if (this.memory.Status == CpuState.ERROR)
                 {
                     this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
@@ -222,13 +226,9 @@ namespace JAGBE.GB.Emulation
                     {
                         this.memory.Status = CpuState.OKAY;
                     }
-                    else
-                    {
-                        continue;
-                    }
-                }
 
-                TickDma();
+                    continue;
+                }
 
                 if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
                 {
@@ -262,10 +262,9 @@ namespace JAGBE.GB.Emulation
                 this.delay += DelayStep;
             }
 
-            while (syncDelay < 0)
+            if (syncDelay != this.delay)
             {
-                TickIoDevices(ref syncDelay);
-                TickDma();
+                Logger.LogWarning("Left sync delay unsynced sync: " + syncDelay.ToString() + ", this.delay: " + this.delay.ToString());
             }
         }
 
@@ -350,7 +349,7 @@ namespace JAGBE.GB.Emulation
                         this.memory.Oam[(lcd.DMA / DelayStep) - 2] = lcd.DMAValue;
                     }
 
-                    lcd.DMAValue = this.memory.GetMappedMemoryDma(this.memory.Lcd.DMAAddress);
+                    lcd.DMAValue = this.memory.GetMappedMemoryDma(lcd.DMAAddress);
                     lcd.DMAAddress++;
                 }
 

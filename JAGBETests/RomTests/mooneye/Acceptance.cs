@@ -35,7 +35,7 @@ namespace JAGBETests.RomTests.mooneye
 
         [TestMethod]
         public void DI_timing_GS() => TestDisplayOut(BasePath + "di_timing-GS.gb",
-                "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true, "Z/A8HucoeyOxrdLafSqS+mpn5CkHhdA4FHDukzLRiX8=");
+                "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", false, "Z/A8HucoeyOxrdLafSqS+mpn5CkHhdA4FHDukzLRiX8=");
 
         [TestMethod]
         public void Div_timing() => TestDisplayOut(BasePath + "div_timing.gb", "gLcCnRta6x+9hIQm+320dn8ErOqS9fFYGCKsAuZXQ2E=", true);
@@ -45,7 +45,7 @@ namespace JAGBETests.RomTests.mooneye
 
         [TestMethod]
         public void Halt_ime0_ei() => TestDisplayOut(BasePath + "halt_ime0_ei.gb",
-                "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", false, "AnWWPp+xnxUr2GjoSXOUdV7oZ5EPH4savUqemGjbhOY=");
+                "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true, "AnWWPp+xnxUr2GjoSXOUdV7oZ5EPH4savUqemGjbhOY=");
 
         [TestMethod]
         public void Halt_ime0_nointr_timing() => TestDisplayOut(BasePath + "halt_ime0_nointr_timing.gb",
@@ -53,11 +53,11 @@ namespace JAGBETests.RomTests.mooneye
 
         [TestMethod]
         public void Halt_ime1_timing() => TestDisplayOut(BasePath + "halt_ime1_timing.gb",
-                "r5y/HXCLUcM4l2QrFNIScGp9L44Xa5Xdp2odZOyW3Js=", false, "cy7J8YaX4Ko0nepL7j8zgVcqHiIbG31/wEDdIgF28RQ=");
+                "r5y/HXCLUcM4l2QrFNIScGp9L44Xa5Xdp2odZOyW3Js=", true, "cy7J8YaX4Ko0nepL7j8zgVcqHiIbG31/wEDdIgF28RQ=");
 
         [TestMethod]
         public void Halt_ime1_timing2_GS() => TestDisplayOut(BasePath + "halt_ime1_timing2-GS.gb",
-                "mYRy+tkF2McRZrOD90zONWZv4diwUfG3cuPjvOEHZJM=", true, "Z/A8HucoeyOxrdLafSqS+mpn5CkHhdA4FHDukzLRiX8=");
+                "mYRy+tkF2McRZrOD90zONWZv4diwUfG3cuPjvOEHZJM=", false, "Z/A8HucoeyOxrdLafSqS+mpn5CkHhdA4FHDukzLRiX8=");
 
         [TestMethod]
         public void IF_IE_registers() =>
