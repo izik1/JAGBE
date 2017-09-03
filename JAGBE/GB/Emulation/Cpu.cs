@@ -170,20 +170,6 @@ namespace JAGBE.GB.Emulation
 
             while (this.delay < 0)
             {
-                if (this.memory.IME)
-                {
-                    int step = 0;
-                    while (!HandleInterupts(step))
-                    {
-                        step++;
-                        this.delay += DelayStep;
-                        TickIoDevices(ref syncDelay);
-                        TickDma();
-                        this.memory.IME = this.memory.NextIMEValue;
-                    }
-                }
-
-                this.memory.IME = this.memory.NextIMEValue;
                 if (this.memory.Status == CpuState.STOP)
                 {
                     this.memory.UpdateKeys();
@@ -197,8 +183,6 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
-                TickIoDevices(ref syncDelay);
-                TickDma();
                 if (this.memory.Status == CpuState.ERROR)
                 {
                     this.memory.R.Pc = prevPc; // Don't need to save a temp to be able to restore the pc to...
@@ -219,6 +203,7 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
+                TickIoDevices(ref syncDelay);
                 if (this.memory.Status == CpuState.HALT)
                 {
                     this.delay += DelayStep;
@@ -229,6 +214,20 @@ namespace JAGBE.GB.Emulation
 
                     continue;
                 }
+
+                if (this.memory.IME)
+                {
+                    int step = 0;
+                    while (!HandleInterupts(step))
+                    {
+                        step++;
+                        this.delay += DelayStep;
+                        TickIoDevices(ref syncDelay);
+                        this.memory.IME = this.memory.NextIMEValue;
+                    }
+                }
+
+                this.memory.IME = this.memory.NextIMEValue;
 
                 if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
                 {
@@ -255,7 +254,6 @@ namespace JAGBE.GB.Emulation
                 {
                     ticks++;
                     TickIoDevices(ref syncDelay);
-                    TickDma();
                     this.delay += DelayStep;
                 }
 
@@ -272,6 +270,7 @@ namespace JAGBE.GB.Emulation
         {
             this.memory.Lcd.Tick(this.memory);
             this.memory.Update();
+            TickDma();
             syncDelay += DelayStep;
         }
 

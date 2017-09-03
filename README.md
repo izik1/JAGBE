@@ -45,10 +45,10 @@ MoonEye tests:
 |di_timing-GS|:white_check_mark:|-|
 |div_timing|:white_check_mark:|-|
 |ei_timing|:white_check_mark:|-|
-|halt_ime0_ei|:x:|IME=0|
+|halt_ime0_ei|:white_check_mark:|-|
 |halt_ime0_nointr_timing|:x:|D Incorrect.|
-|halt_ime1_timing|:x:|B Incorrect.|
-|halt_ime1_timing2-GS|:white_check_mark:|-|
+|halt_ime1_timing|:white_check_mark:|-|
+|halt_ime1_timing2-GS|:x:|E Incorrect.|
 |if_ie_registers|:white_check_mark:|-|
 |intr_timing|:x:|E Incorrect.|
 |jp_cc_timing|:x:|Doesn't complete.|
