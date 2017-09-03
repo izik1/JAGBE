@@ -311,11 +311,11 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer < 0x6000)
             {
-                this.MappedRamBank = (byte)(value & 3);
+                this.MappedRamBank = value & 3;
             }
             else
             {
-                this.MbcRamMode = ((value & 1) == 1);
+                this.MbcRamMode = (((int)value & 1) == 1);
             }
         }
 
@@ -358,9 +358,10 @@ namespace JAGBE.GB.Emulation
                 return 0xFF;
             }
 
-            if (this.MBCMode == MemoryBankController.None)
+            if (this.MBCMode == MemoryBankController.None || this.MBCMode == MemoryBankController.MBC1)
             {
-                return this.ERam[address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)];
+                int index = address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0);
+                return index < this.ERam.Length ? this.ERam[index] : (GbUInt8)0xFF;
             }
 
             throw new InvalidOperationException("Unsuported or unimplemented " + nameof(MemoryBankController));

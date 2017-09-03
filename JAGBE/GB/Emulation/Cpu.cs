@@ -118,27 +118,44 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException"></exception>
         public void Reset(byte[] rom, byte[] bootRom, IInputHandler inputHandler)
         {
-            byte ramBanks = rom[0x149];
-            if (ramBanks > 2)
+            int ramSize;
+            switch (rom[0x149])
             {
-                throw new InvalidOperationException();
-            }
+                case 1:
+                    ramSize = 0x800; // 2KB
+                    break;
 
-            if (ramBanks == 2)
-            {
-                ramBanks *= 4;
+                case 2:
+                    ramSize = MemoryRange.ERAMBANKSIZE;
+                    break;
+
+                case 3:
+                    ramSize = MemoryRange.ERAMBANKSIZE * 4;
+                    break;
+
+                case 4:
+                    ramSize = MemoryRange.ERAMBANKSIZE * 16;
+                    break;
+
+                case 5:
+                    ramSize = MemoryRange.ERAMBANKSIZE * 8;
+                    break;
+
+                default:
+                    ramSize = 0;
+                    break;
             }
 
             byte mbcMode = rom[0x147];
             if (mbcMode > 3)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("Unimplemented MBC mode " + mbcMode.ToString("X2"));
             }
 
             this.memory = new GbMemory(inputHandler)
             {
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // set the rom size to what the cartrage says.
-                ERam = new GbUInt8[MemoryRange.ERAMBANKSIZE * ramBanks],
+                ERam = new GbUInt8[ramSize],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             }; // Override the memory.
 
@@ -155,7 +172,6 @@ namespace JAGBE.GB.Emulation
         /// Runs <paramref name="cycles"/> number of clock ticks
         /// </summary>
         /// <param name="cycles">The number of clock ticks (NOT INSTRUCTIONS) to run</param>
-        /// <exception cref="InvalidOperationException"></exception>
         public void Tick(int cycles)
         {
             this.delay -= cycles;
@@ -165,9 +181,6 @@ namespace JAGBE.GB.Emulation
             // runs every cpu tick) they would fall behind whenever the cpu runs an instruction that
             // takes > DelayStep cycles.
             int syncDelay = this.delay;
-
-            GbUInt16 prevPc = 0;
-
             while (this.delay < 0)
             {
                 if (this.memory.Status == CpuState.STOP)
@@ -233,7 +246,6 @@ namespace JAGBE.GB.Emulation
                     Logger.LogVerbose(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
                 }
 
-                prevPc = this.Pc;
                 byte opcode = (byte)this.memory.LdI8();
                 if (this.memory.HaltBugged)
                 {
