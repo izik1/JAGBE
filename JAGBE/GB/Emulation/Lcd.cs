@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JAGBE.GB.Emulation
 {
@@ -127,6 +128,8 @@ namespace JAGBE.GB.Emulation
                 unchecked((int)0xFF306230),
                 unchecked((int)0xFF0F380F)
         };
+
+        private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.
@@ -342,6 +345,9 @@ namespace JAGBE.GB.Emulation
             return ((int)pallet >> (i * 2)) & 3;
         }
 
+        private static bool IsSpritePixelVisible(int x, int colorIndex, bool priority, int dispMemAtOffset) =>
+            x < Width && colorIndex != 0 && (priority || dispMemAtOffset == WHITE);
+
         /// <summary>
         /// Turns off the lcd.
         /// </summary>
@@ -354,6 +360,47 @@ namespace JAGBE.GB.Emulation
             {
                 this.displayMemory[i] = WHITE;
             }
+        }
+
+        private bool DrawSprite(GbUInt8[] VRam)
+        {
+            if (this.visibleSprites.Count > 0)
+            {
+                int indexOfBestSprite = 0;
+                for (int j = this.visibleSprites.Count - 1; j >= 0; j--)
+                {
+                    if (this.visibleSprites[j].X > this.visibleSprites[indexOfBestSprite].X)
+                    {
+                        indexOfBestSprite = j;
+                    }
+                }
+
+                ScanSprite(VRam, this.visibleSprites[indexOfBestSprite]);
+                this.visibleSprites.RemoveAt(indexOfBestSprite);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsSpriteVisible(Sprite sprite, GbUInt8[] VRam)
+        {
+            if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
+            {
+                GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
+                int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
+                byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                for (int x = 0; x < 8; x++)
+                {
+                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -478,10 +525,23 @@ namespace JAGBE.GB.Emulation
                 throw new NotSupportedException();
             }
 
-            // FIXME: Doesn't handle overlapping sprites.
-            for (int i = 0; i < 40; i++)
+            int spritesDrawn = 0;
+            for (int offset = 0; offset < 40 * 4 && spritesDrawn < 10; offset += 4)
             {
-                ScanSprite(VRam, Oam, i);
+                Sprite sprite = new Sprite((byte)(Oam[offset] - 16), (byte)(Oam[offset + 1] - 8), Oam[offset + 2], Oam[offset + 3]);
+                if (IsSpriteVisible(sprite, VRam))
+                {
+                    this.visibleSprites.Add(sprite);
+                    spritesDrawn++;
+                }
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (!DrawSprite(VRam))
+                {
+                    return;
+                }
             }
         }
 
@@ -528,24 +588,22 @@ namespace JAGBE.GB.Emulation
         /// Scans a sprite.
         /// </summary>
         /// <param name="VRam">The v ram.</param>
-        /// <param name="Oam">The oam.</param>
-        /// <param name="spriteNumber">The sprite number.</param>
-        private void ScanSprite(GbUInt8[] VRam, GbUInt8[] Oam, int spriteNumber)
+        /// <param name="sprite">The sprite.</param>
+        /// <param name="checkVisibility">
+        /// if set to <see langword="false"/> don't actually write the sprite.
+        /// </param>
+        /// <returns><see langword="true"/> if the sprite would be able to draw.</returns>
+        private void ScanSprite(GbUInt8[] VRam, Sprite sprite)
         {
-            int oamOffset = spriteNumber * 4;
-            byte spriteY = (byte)(Oam[oamOffset] - 16);
-            byte spriteX = (byte)(Oam[oamOffset + 1] - 8);
-            GbUInt8 tile = Oam[oamOffset + 2];
-            GbUInt8 flags = Oam[oamOffset + 3];
-            if (spriteY <= this.LY && spriteY + 8 > this.LY)
+            if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                GbUInt8 pallet = flags[4] ? this.objPallet1 : this.objPallet0;
-                int displayOffset = ((Height - this.LY - 1) * Width) + spriteX;
-                byte tileY = (byte)(flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
+                int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
+                byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(flags[5] ? (7 - x) : x), 0, tile);
-                    if (spriteX + x < Width && colorIndex != 0 && (!flags[7] || this.displayMemory[displayOffset + x] == WHITE))
+                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];
                     }

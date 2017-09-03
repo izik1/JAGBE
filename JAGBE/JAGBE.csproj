@@ -87,6 +87,7 @@
     <Compile Include="GB\Emulation\MemoryRange.cs" />
     <Compile Include="GB\Emulation\Opcode.cs" />
     <Compile Include="GB\Emulation\RFlags.cs" />
+    <Compile Include="GB\Emulation\Sprite.cs" />
     <Compile Include="GB\Emulation\Timer.cs" />
     <Compile Include="GB\Emulation\GBRegisters.cs" />
     <Compile Include="GB\Emulation\OpcodeFunc.cs" />
