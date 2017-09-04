@@ -1,5 +1,4 @@
 ﻿using System;
-using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation
 {
@@ -71,12 +70,6 @@ namespace JAGBE.GB.Emulation
         private static Opcode[] GetNmOps()
         {
             Opcode[] ops = new Opcode[0x100];
-
-            for (int i = 0; i < 0x100; i++)
-            {
-                ops[i] = new Opcode((byte)i, 0, Unimplemented);
-            }
-
             for (int i = 0; i < 0x40; i++)
             {
                 if (i != 0x36)
@@ -295,16 +288,5 @@ namespace JAGBE.GB.Emulation
             ops[0xFE] = new Opcode(7, 8, Alu.Arithmetic.Cp);
             return ops;
         }
-
-        /// <summary>
-        /// Runs when an instruction isn't implemented.
-        /// </summary>
-        /// <param name="o">The o.</param>
-        /// <param name="mem">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns>-</returns>
-        /// <exception cref="InvalidOperationException">Always.</exception>
-        private static bool Unimplemented(Opcode o, GbMemory mem, int step) =>
-            throw new InvalidOperationException("Unimplemented opcode 0x" + (o.Src > 0 ? "CB" : "") + o.Dest.ToString("X2"));
     }
 }

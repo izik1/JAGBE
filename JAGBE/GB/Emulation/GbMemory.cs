@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
 
@@ -217,22 +216,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Dumps the registers.
-        /// </summary>
-        /// <returns>The registers as a string.</returns>
-        internal string DumpRegisters()
-        {
-            StringBuilder builder = new StringBuilder(37);
-            builder.AppendLine("Dumping Registers");
-            builder.AppendLine(this.R.Af.ToString("X4"));
-            builder.AppendLine(this.R.Bc.ToString("X4"));
-            builder.AppendLine(this.R.De.ToString("X4"));
-            builder.AppendLine(this.R.Hl.ToString("X4"));
-            builder.Append(this.R.Sp.ToString("X4"));
-            return builder.ToString();
-        }
-
-        /// <summary>
         /// Gets the memory at <paramref name="address"/>.
         /// </summary>
         /// <param name="address"></param>
@@ -306,8 +289,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer < 0x4000)
             {
-                this.MappedRomBank = (byte)((this.MappedRomBank & 0xE0) +
-                    (value & 0x10) + (byte)((value & 0xF) + ((value & 0xF) == 0 ? 1 : 0)));
+                this.MappedRomBank = ((int)value & 0x1F) + (((int)value & 0xF) == 0 ? 1 : 0);
             }
             else if (pointer < 0x6000)
             {
@@ -381,7 +363,7 @@ namespace JAGBE.GB.Emulation
 
             if (number < 3)
             {
-                Logger.LogInfo("Serial read failed");
+                // TODO: implement proper serial read/writes.
                 return 0xFF;
             }
 
@@ -556,8 +538,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer < 3)
             {
-                // FIXME:
-                //Logger.LogInfo("Serial write failed");
+                // TODO: implement proper serial read/writes.
                 return;
             }
 
