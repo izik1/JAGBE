@@ -51,9 +51,9 @@ namespace JAGBE.GB.Emulation
         private GbMemory memory;
 
         /// <summary>
-        /// Returns the LCD's display memory as bytes.
+        /// Gets the LCD's display memory a <see cref="byte"/>[].
         /// </summary>
-        /// <returns>The LCD's display memory as bytes.</returns>
+        /// <returns>The LCD's display memory as a <see cref="byte"/>[].</returns>
         public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
 
         /// <summary>
