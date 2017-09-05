@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace JAGBE.GB.Emulation
 {
@@ -108,6 +109,7 @@ namespace JAGBE.GB.Emulation
         /// <returns></returns>
         public bool this[byte u8]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if (u8 > 7)
@@ -115,7 +117,7 @@ namespace JAGBE.GB.Emulation
                     throw new ArgumentOutOfRangeException(nameof(u8));
                 }
 
-                return ((this >> u8) & 1) == 1;
+                return (((int)this >> u8) & 1) == 1;
             }
         }
 
@@ -217,7 +219,7 @@ namespace JAGBE.GB.Emulation
         /// <returns>
         /// a byte where bit <paramref name="bit"/> is set to 1 and everything else is the same.
         /// </returns>
-        public GbUInt8 Set(GbUInt8 bit) => (byte)(this | (1 << bit));
+        public GbUInt8 Set(GbUInt8 bit) => (GbUInt8)(this | (1 << bit));
 
         /// <summary>
         /// Returns the fully qualified type name of this instance.
@@ -272,7 +274,7 @@ namespace JAGBE.GB.Emulation
         /// causes 2 nibbles to be &lt; 0x0 causes a half carry. (borrow)
         /// </remarks>
         /// <returns>The result of the operation</returns>
-        internal bool GetHFlagN(GbUInt8 u8) => (this & 0xF) - (u8 & 0xF) < 0;
+        internal bool GetHFlagN(GbUInt8 u8) => ((int)this & 0xF) < ((int)u8 & 0xF);
 
         /// <summary>
         /// Resets the specified <paramref name="bit"/>.

@@ -136,6 +136,9 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private byte prevKeys = 0xFF;
 
+        /// <summary>
+        /// The timer
+        /// </summary>
         private readonly Timer timer = new Timer();
 
         /// <summary>
@@ -169,7 +172,7 @@ namespace JAGBE.GB.Emulation
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
 
-        public bool HaltBugged { get; internal set; }
+        internal bool HaltBugged { get; set; }
 
         /// <summary>
         /// Gets value of memory at HL.
@@ -183,6 +186,9 @@ namespace JAGBE.GB.Emulation
         /// <returns></returns>
         public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
 
+        /// <summary>
+        /// Updates this instance.
+        /// </summary>
         public void Update()
         {
             this.timer.Update(this);

@@ -227,7 +227,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
         public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
         {
-            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).Set(RFlags.NF).AssignBit(RFlags.HF, val.GetHFlagN(1));
+            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, val.GetHFlagN(1)) | RFlags.NB;
             return (GbUInt8)(val - 1);
         });
 
@@ -248,7 +248,7 @@ namespace JAGBE.GB.Emulation.Alu
 
             if (step == 1)
             {
-                mem.R.SetR16(op.Dest, (GbUInt16)(mem.R.GetR16(op.Dest, false) + 1), false);
+                mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1, false);
                 return true;
             }
 

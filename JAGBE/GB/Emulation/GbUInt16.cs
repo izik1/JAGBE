@@ -130,7 +130,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static int operator +(GbUInt16 left, int right) => (GbUInt16)(left.value + right);
+        public static int operator +(GbUInt16 left, int right) => left.value + right;
 
         /// <summary>
         /// Implements the operator +.
@@ -138,7 +138,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="left">The left hand side.</param>
         /// <param name="right">The right hand side.</param>
         /// <returns>The result of the operator.</returns>
-        public static int operator +(int left, GbUInt16 right) => (GbUInt16)(left + right.value);
+        public static int operator +(int left, GbUInt16 right) => left + right.value;
 
         /// <summary>
         /// Implements the operator ++.
