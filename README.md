@@ -48,6 +48,17 @@ MoonEye acceptance tests:
 |di_timing-GS|:white_check_mark:|-|
 |div_timing|:white_check_mark:|-|
 |ei_timing|:white_check_mark:|-|
+|gpu/hblank_ly_scx_timing-GS|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/intr_1_2_timing-GS|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/intr_2_0_timing|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/intr_2_mode0_timing|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/intr_2_mode0_timing_sprites|:x:|Doesn't complete. (blank screen)|
+|gpu/intr_2_mode3_timing|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/intr_2_oam_ok_timing|:x:|Doesn't complete. (Nintendo Logo)|
+|gpu/lcdon_timing-dmgABCXmgbS|:x:|Expected $01 got $00.|
+|gpu/lcdon_write_timing-GS|:x:|Expected $81 got $00.|
+|gpu/stat_irq_blocking|:x:|Fail: mode=1 intr.|
+|gpu/vblank_stat_intr-GS|:x:|Doesn't complete. (Nintendo Logo)|
 |halt_ime0_ei|:white_check_mark:|-|
 |halt_ime0_nointr_timing|:x:|D Incorrect.|
 |halt_ime1_timing|:white_check_mark:|-|

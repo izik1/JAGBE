@@ -26,6 +26,46 @@ namespace JAGBETests.RomTests.mooneye
                 TestDisplayOut(Path + "unused_hwio-GS.gb", "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true);
         }
 
+        [TestClass]
+        [TestCategory("mooneye-gb_hwtests/acceptance/gpu")]
+        public class Gpu
+        {
+            private const string Path = BasePath + "gpu/";
+
+            [TestMethod]
+            public void Hblank_ly_scx_timing_GS() => TestDisplayOut(Path + "hblank_ly_scx_timing-GS.gb", "", false);
+
+            [TestMethod]
+            public void Intr_1_2_timing_GS() => TestDisplayOut(Path + "intr_1_2_timing-GS.gb", "", false);
+
+            [TestMethod]
+            public void Intr_2_0_timing() => TestDisplayOut(Path + "intr_2_0_timing.gb", "", false);
+
+            [TestMethod]
+            public void Intr_2_mode0_timing() => TestDisplayOut(Path + "intr_2_mode0_timing.gb", "", false);
+
+            [TestMethod]
+            public void Intr_2_mode0_timing_sprites() => TestDisplayOut(Path + "intr_2_mode0_timing_sprites.gb", "", false);
+
+            [TestMethod]
+            public void Intr_2_mode3_timing() => TestDisplayOut(Path + "intr_2_mode3_timing.gb", "", false);
+
+            [TestMethod]
+            public void Intr_2_oam_ok_timing() => TestDisplayOut(Path + "intr_2_oam_ok_timing.gb", "", false);
+
+            [TestMethod]
+            public void Lcdon_timing_dmgABCXmgbS() => TestDisplayOut(Path + "lcdon_timing-dmgABCXmgbS.gb", "", false);
+
+            [TestMethod]
+            public void Lcdon_write_timing_GS() => TestDisplayOut(Path + "lcdon_write_timing-GS.gb", "", false);
+
+            [TestMethod]
+            public void Stat_irq_blocking() => TestDisplayOut(Path + "stat_irq_blocking.gb", "", false);
+
+            [TestMethod]
+            public void Vblank_stat_intr_GS() => TestDisplayOut(Path + "vblank_stat_intr-GS.gb", "", false);
+        }
+
         [TestMethod]
         public void Add_sp_e_timing() => TestDisplayOut(BasePath + "add_sp_e_timing.gb", "", false);
 
