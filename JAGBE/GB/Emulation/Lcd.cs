@@ -11,17 +11,17 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The height of the Game Boy LCD screen.
         /// </summary>
-        public const int Height = 144;
+        private const int Height = 144;
 
         /// <summary>
         /// The width of the Game Boy LCD screen.
         /// </summary>
-        public const int Width = 160;
+        private const int Width = 160;
 
         /// <summary>
         /// The pallet of the background
         /// </summary>
-        public GbUInt8 BgPallet;
+        private GbUInt8 BgPallet;
 
         /// <summary>
         /// The DMA cycle number
@@ -38,7 +38,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         public GbUInt8 DMAValue;
 
-        internal int cy;
+        private int cy;
 
         /// <summary>
         /// The display memory
@@ -53,47 +53,47 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Is the LCD requesting an interupt
         /// </summary>
-        internal bool IRC;
+        private bool IRC;
 
         /// <summary>
         /// The LCDC register
         /// </summary>
-        internal GbUInt8 Lcdc;
+        private GbUInt8 Lcdc;
 
         /// <summary>
         /// The Current scan line the lcd is drawing
         /// </summary>
-        internal GbUInt8 LY;
+        private GbUInt8 LY;
 
         /// <summary>
         /// The number to use when comparing to <see cref="LY"/>
         /// </summary>
-        internal GbUInt8 LYC;
+        private GbUInt8 LYC;
 
         /// <summary>
         /// The first object pallet
         /// </summary>
-        internal GbUInt8 objPallet0;
+        private GbUInt8 objPallet0;
 
         /// <summary>
         /// The second object pallet
         /// </summary>
-        internal GbUInt8 objPallet1;
+        private GbUInt8 objPallet1;
 
         /// <summary>
         /// The Previous state of <see cref="IRC"/>
         /// </summary>
-        internal bool PIRC;
+        private bool PIRC;
 
         /// <summary>
         /// The Scroll X register
         /// </summary>
-        internal GbUInt8 SCX;
+        private GbUInt8 SCX;
 
         /// <summary>
         /// The Scroll Y register
         /// </summary>
-        internal GbUInt8 SCY;
+        private GbUInt8 SCY;
 
         /// <summary>
         /// The STAT register
@@ -103,12 +103,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Window W register
         /// </summary>
-        internal GbUInt8 WX;
+        private GbUInt8 WX;
 
         /// <summary>
         /// The Window Y register
         /// </summary>
-        internal GbUInt8 WY;
+        private GbUInt8 WY;
 
         /// <summary>
         /// The color the Game Boy displays as white.
@@ -179,7 +179,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x1:
-                        this.STAT |= (value & 0x78);
+                        this.STAT = (value & 0x78) | (this.STAT & 3);
                         break;
 
                     case 0x2:
@@ -279,6 +279,7 @@ namespace JAGBE.GB.Emulation
                     {
                         mem.IF |= 1;
                         this.IRC |= this.STAT[6] && this.LYC == 144;
+                        this.STAT |= 1;
                     }
                     else if (this.cy == Cpu.DelayStep * 113)
                     {
@@ -289,17 +290,22 @@ namespace JAGBE.GB.Emulation
                     {
                         // Left intentionally empty
                     }
-                    this.STAT = (GbUInt8)(((int)this.STAT & 0xF8) | 1 | (this.LYC == 144 ? 0x4 : 0));
+
+                    if (this.LYC == 144)
+                    {
+                        this.STAT |= 4;
+                    }
+                    else
+                    {
+                        this.STAT &= 0xFB;
+                    }
                 }
             }
             else
             {
                 if (this.cy == Cpu.DelayStep)
                 {
-                    if (this.STAT[6] && this.LYC == 144)
-                    {
-                        this.IRC = true;
-                    }
+                    this.IRC |= this.STAT[6] && this.LYC == 144;
                 }
                 else if (this.cy == Cpu.DelayStep * 113)
                 {
@@ -312,13 +318,9 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            if (this.IRC)
+            if (this.IRC && !this.PIRC)
             {
-                if (!this.PIRC)
-                {
-                    this.PIRC = true;
-                    mem.IF |= 2;
-                }
+                mem.IF |= 2;
             }
             else
             {
@@ -418,6 +420,7 @@ namespace JAGBE.GB.Emulation
             {
                 this.STAT &= 0xFB;
             }
+
             if (this.cy == 0)
             {
                 this.STAT &= 0xFC;
@@ -426,25 +429,14 @@ namespace JAGBE.GB.Emulation
             {
                 if (this.cy == Cpu.DelayStep)
                 {
-                    this.STAT = ((this.STAT & 0xFC) | 2);
-                    if (this.STAT[6] && this.LY != 0 && this.LYC == this.LY)
-                    {
-                        this.IRC = true;
-                    }
+                    this.STAT |= 2;
+                    this.IRC |= this.STAT[6] && this.LY != 0 && this.LYC == this.LY;
                 }
             }
             else if (this.cy == Cpu.DelayStep * 11)
             {
-                this.STAT = (this.STAT & 0xFC) | 0b11;
-
-                if (this.ForceNullRender)
-                {
-                    for (int i = 0; i < Width; i++)
-                    {
-                        this.displayMemory[((Height - this.LY - 1) * Width) + i] = WHITE;
-                    }
-                }
-                else
+                this.STAT |= 3;
+                if (!this.ForceNullRender)
                 {
                     if (this.Lcdc[0])
                     {
@@ -526,7 +518,7 @@ namespace JAGBE.GB.Emulation
             }
 
             int spritesDrawn = 0;
-            for (int offset = 0; offset < 40 * 4 && spritesDrawn < 10; offset += 4)
+            for (int offset = 0; offset < 160 && spritesDrawn < 10; offset += 4)
             {
                 Sprite sprite = new Sprite((byte)(Oam[offset] - 16), (byte)(Oam[offset + 1] - 8), Oam[offset + 2], Oam[offset + 3]);
                 if (IsSpriteVisible(sprite, VRam))
