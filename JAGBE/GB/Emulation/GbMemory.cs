@@ -145,8 +145,10 @@ namespace JAGBE.GB.Emulation
         /// Initializes a new instance of the <see cref="GbMemory"/> class with the given <paramref name="inputHandler"/>.
         /// </summary>
         /// <param name="inputHandler">The input handler.</param>
-        internal GbMemory(IInputHandler inputHandler) // Null is valid
+        internal GbMemory(IInputHandler inputHandler)
         {
+            // Null is valid input to this constructor since this just subscribes itself to the event
+            // handler if it exists.
             if (inputHandler != null)
             {
                 inputHandler.OnInput += this.OnInput;
@@ -314,24 +316,6 @@ namespace JAGBE.GB.Emulation
         internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
 
         /// <summary>
-        /// Determines whether <paramref name="number"/> is an unused register number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <returns>
-        /// <see langword="true"/> if <paramref name="number"/> is an unused register number;
-        /// otherwise, <see langword="false"/>.
-        /// </returns>
-        private static bool IsUnusedIoRegister(byte number)
-        {
-            if (number == 3 || number == 0x15 || number == 0x1F)
-            {
-                return true;
-            }
-
-            return (number > 0x7 && number < 0x0F) || number >= 0x50;
-        }
-
-        /// <summary>
         /// Gets data from ERAM.
         /// </summary>
         /// <param name="address">The address.</param>
@@ -369,8 +353,7 @@ namespace JAGBE.GB.Emulation
 
             if (number < 3)
             {
-                // TODO: implement proper serial read/writes.
-                return 0xFF;
+                return 0xFF; // TODO: implement proper serial read/writes.
             }
 
             if (number < 0xF)
@@ -391,11 +374,6 @@ namespace JAGBE.GB.Emulation
             if (number < 0x50)
             {
                 return this.Lcd[number];
-            }
-
-            if (!IsUnusedIoRegister(number))
-            {
-                Logger.LogInfo("Possible bad read from 0xFF" + number.ToString("X2") + " (IO)");
             }
 
             return 0xFF;

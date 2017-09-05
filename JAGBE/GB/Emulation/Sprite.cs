@@ -27,14 +27,14 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Initializes a new instance of the <see cref="Sprite"/> struct.
         /// </summary>
-        /// <param name="y">The y.</param>
         /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
         /// <param name="tile">The tile.</param>
         /// <param name="flags">The flags.</param>
-        public Sprite(byte y, byte x, GbUInt8 tile, GbUInt8 flags)
+        public Sprite(byte x, byte y, GbUInt8 tile, GbUInt8 flags)
         {
-            this.Y = y;
             this.X = x;
+            this.Y = y;
             this.Tile = tile;
             this.Flags = flags;
         }

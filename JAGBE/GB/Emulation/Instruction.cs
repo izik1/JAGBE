@@ -189,7 +189,6 @@ namespace JAGBE.GB.Emulation
                 }
 
                 mem.HaltBugged = true;
-
                 return true;
             });
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);

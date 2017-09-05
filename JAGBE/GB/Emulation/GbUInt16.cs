@@ -94,13 +94,6 @@ namespace JAGBE.GB.Emulation
         public static bool operator !=(GbUInt16 left, GbUInt16 right) => !left.Equals(right);
 
         /// <summary>
-        /// Implements the operator ~.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the operator.</returns>
-        public static GbUInt16 operator ~(GbUInt16 value) => (GbUInt16)~value.value;
-
-        /// <summary>
         /// Implements the operator +.
         /// </summary>
         /// <param name="left">The left hand side.</param>
@@ -182,7 +175,7 @@ namespace JAGBE.GB.Emulation
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures
         /// like a hash table.
         /// </returns>
-        public override int GetHashCode() => this.value.GetHashCode();
+        public override int GetHashCode() => this.value;
 
         /// <summary>
         /// Returns a <see cref="string"/> that represents this instance.

@@ -165,8 +165,8 @@ namespace JAGBETests.RomTests.mooneye
         public void Ret_timing() => TestDisplayOut(BasePath + "ret_timing.gb", "", false);
 
         [TestMethod]
-        public void Reti_intr_timing() =>
-            TestDisplayOut(BasePath + "reti_intr_timing.gb", "Rue6zf+aapVRSCfsX7QHbX/V/RiDO1BrLV2bC3uqN2A=", true);
+        public void Reti_intr_timing() => TestDisplayOut(BasePath + "reti_intr_timing.gb",
+            "Rue6zf+aapVRSCfsX7QHbX/V/RiDO1BrLV2bC3uqN2A=", true, "0Rxvj4GIraCBrhTHT81g0NSw8p+BDYUnNpIrc7CmpNE=");
 
         [TestMethod]
         public void Reti_timing() => TestDisplayOut(BasePath + "reti_timing.gb", "", false);
