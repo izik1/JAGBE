@@ -43,7 +43,7 @@ namespace JAGBE.GB.Emulation
 
                 switch (index)
                 {
-                    case 0x10: return this.NR10;
+                    case 0x10: return this.NR10 | 0x80;
                     case 0x11: return this.NR11 | 0x3F;
                     case 0x12: return this.NR12;
                     case 0x13: return this.NR13 | 0xFF;
@@ -54,10 +54,10 @@ namespace JAGBE.GB.Emulation
                     case 0x19: return this.NR24 | 0x87;
                     case 0x1A: return this.NR30 | 0x7F;
                     case 0x1B: return this.NR31;
-                    case 0x1C: return this.NR32 | 0x60;
+                    case 0x1C: return this.NR32 | 0x9F;
                     case 0x1D: return this.NR33 | 0xFF;
                     case 0x1E: return this.NR34 | 0x87;
-                    case 0x20: return this.NR41 | 0x3F;
+                    case 0x20: return this.NR41 | 0xC0;
                     case 0x21: return this.NR42;
                     case 0x22: return this.NR43;
                     case 0x23: return this.NR44 | 0xBF;
@@ -86,7 +86,7 @@ namespace JAGBE.GB.Emulation
                 switch (index)
                 {
                     case 0x10:
-                        this.NR10 = value;
+                        this.NR10 = value & 0x7F;
                         return;
 
                     case 0x11:

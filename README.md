@@ -32,11 +32,14 @@ Memory Timing:
 |instr_timing|:white_check_mark:|
 |halt_bug|:white_check_mark:|
 
-MoonEye tests:
+MoonEye acceptance tests:
 
 |test|state|comment|
 |-|-|-|
 |add_sp_e_timing|:x:|Doesn't complete.|
+|bits/mem_oam|:white_check_mark:|-|
+|bits/reg_f|:white_check_mark:|-|
+|bits/unused_hwio-GS|:white_check_mark:|-|
 |boot_regs-dmgABCX|:white_check_mark:|-|
 |call_cc_timing|:x:|Doesn't complete.|
 |call_cc_timing2|:x:|B,C,D Incorrect.|

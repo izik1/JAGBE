@@ -9,6 +9,23 @@ namespace JAGBETests.RomTests.mooneye
     {
         internal const string BasePath = "mooneye-gb_hwtests/acceptance/";
 
+        [TestClass]
+        [TestCategory("mooneye-gb_hwtests/acceptance/bits")]
+        public class Bits
+        {
+            private const string Path = BasePath + "bits/";
+
+            [TestMethod]
+            public void Mem_oam() => TestDisplayOut(Path + "mem_oam.gb", "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true);
+
+            [TestMethod]
+            public void Reg_f() => TestDisplayOut(Path + "reg_f.gb", "e5ZHp7lmvW48r7yPFAFCwB/wgr2708QEWeCsBOeH4KQ=", true);
+
+            [TestMethod]
+            public void Unused_hwio_GS() =>
+                TestDisplayOut(Path + "unused_hwio-GS.gb", "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true);
+        }
+
         [TestMethod]
         public void Add_sp_e_timing() => TestDisplayOut(BasePath + "add_sp_e_timing.gb", "", false);
 

@@ -47,7 +47,7 @@
                     case 4: return this.sysTimer.HighByte;
                     case 5: return this.TimaV;
                     case 6: return this.TimaM;
-                    case 7: return this.Tac;
+                    case 7: return this.Tac | 0xFC;
                     default: return 0xFF;
                 }
             }
