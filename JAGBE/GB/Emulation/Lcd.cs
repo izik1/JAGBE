@@ -520,7 +520,9 @@ namespace JAGBE.GB.Emulation
             int spritesDrawn = 0;
             for (int offset = 0; offset < 160 && spritesDrawn < 10; offset += 4)
             {
-                Sprite sprite = new Sprite((byte)(Oam[offset] - 16), (byte)(Oam[offset + 1] - 8), Oam[offset + 2], Oam[offset + 3]);
+                // OAM goes Y,X,Tile,Flags.
+                Sprite sprite = new Sprite((byte)(Oam[offset + 1] - 8), (byte)(Oam[offset] - 16), Oam[offset + 2], Oam[offset + 3]);
+
                 if (IsSpriteVisible(sprite, VRam))
                 {
                     this.visibleSprites.Add(sprite);
