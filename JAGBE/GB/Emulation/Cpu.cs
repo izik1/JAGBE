@@ -12,6 +12,12 @@ namespace JAGBE.GB.Emulation
     internal sealed class Cpu
     {
         /// <summary>
+        /// The This is to sync the cpu (with variable clock length instructions) to the GPU, APU
+        /// DMA, Timer, etc which always take the same amount of time.
+        /// </summary>
+        private int syncDelay;
+
+        /// <summary>
         /// The clock speed in hz
         /// </summary>
         /// <value>4194304</value>
@@ -175,19 +181,14 @@ namespace JAGBE.GB.Emulation
         public void Tick(int cycles)
         {
             this.delay -= cycles;
-
-            // This is to sync the cpu (with variable clock length instructions) to the GPU and APU
-            // which always take the same amount of time. In the previous implementation (gpu/apu
-            // runs every cpu tick) they would fall behind whenever the cpu runs an instruction that
-            // takes > DelayStep cycles.
-            int syncDelay = this.delay;
+            this.syncDelay = this.delay;
             while (this.delay < 0)
             {
                 if (this.memory.Status == CpuState.STOP)
                 {
                     this.memory.UpdateKeys();
                     this.delay += DelayStep;
-                    syncDelay += DelayStep;
+                    this.syncDelay += DelayStep;
                     if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
                     {
                         this.memory.Status = CpuState.OKAY;
@@ -208,7 +209,7 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
-                TickIoDevices(ref syncDelay);
+                TickIoDevices();
                 if (this.memory.Status == CpuState.HALT)
                 {
                     this.delay += DelayStep;
@@ -220,18 +221,7 @@ namespace JAGBE.GB.Emulation
                     continue;
                 }
 
-                if (this.memory.IME)
-                {
-                    int step = 0;
-                    while (!HandleInterupts(step))
-                    {
-                        step++;
-                        this.delay += DelayStep;
-                        TickIoDevices(ref syncDelay);
-                        this.memory.IME = this.memory.NextIMEValue;
-                    }
-                }
-
+                HandleInterupts();
                 this.memory.IME = this.memory.NextIMEValue;
 
                 if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
@@ -257,25 +247,25 @@ namespace JAGBE.GB.Emulation
                 while (!Instruction.Run(this.memory, opcode, ticks))
                 {
                     ticks++;
-                    TickIoDevices(ref syncDelay);
+                    TickIoDevices();
                     this.delay += DelayStep;
                 }
 
                 this.delay += DelayStep;
             }
 
-            if (syncDelay != this.delay)
+            if (this.syncDelay != this.delay)
             {
-                Logger.LogWarning("Left sync delay unsynced sync: " + syncDelay.ToString() + ", this.delay: " + this.delay.ToString());
+                Logger.LogWarning("Left sync delay unsynced sync: " + this.syncDelay.ToString() + ", this.delay: " + this.delay.ToString());
             }
         }
 
-        private void TickIoDevices(ref int syncDelay)
+        private void TickIoDevices()
         {
             this.memory.Lcd.Tick(this.memory);
             this.memory.Update();
             TickDma();
-            syncDelay += DelayStep;
+            this.syncDelay += DelayStep;
         }
 
         /// <summary>
@@ -291,50 +281,38 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Handles the interupts.
         /// </summary>
-        /// <param name="step"></param>
-        private bool HandleInterupts(int step)
+        private void HandleInterupts()
         {
-            if (step == 0)
+            if (!this.memory.IME || (this.memory.IER & this.memory.IF & 0x1F) == 0)
             {
-                return (this.memory.IER & this.memory.IF & 0x1F) == 0;
+                return;
             }
 
-            if (step == 1)
+            void subStep()
             {
-                return false;
+                this.delay += DelayStep;
+                TickIoDevices();
+                this.memory.IME = this.memory.NextIMEValue;
             }
 
-            if (step == 2)
+            subStep();
+            subStep();
+            this.memory.Push(this.memory.R.Pc.HighByte);
+            subStep();
+            this.memory.Push(this.memory.R.Pc.LowByte);
+            subStep();
+            byte b = (byte)(this.memory.IER & this.memory.IF & 0x1F);
+            for (int i = 0; i < 5; i++)
             {
-                this.memory.Push(this.memory.R.Pc.HighByte);
-                return false;
-            }
-
-            if (step == 3)
-            {
-                this.memory.Push(this.memory.R.Pc.LowByte);
-                return false;
-            }
-
-            if (step == 4)
-            {
-                byte b = (byte)(this.memory.IER & this.memory.IF & 0x1F);
-                for (int i = 0; i < 5; i++)
+                if (b.GetBit((byte)i))
                 {
-                    if (b.GetBit((byte)i))
-                    {
-                        this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
-                        this.memory.IF &= (byte)(~(1 << i));
-                        this.memory.IME = false;
-                        this.memory.NextIMEValue = false;
-                        return true;
-                    }
+                    this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
+                    this.memory.IF &= (byte)(~(1 << i));
+                    this.memory.IME = false;
+                    this.memory.NextIMEValue = false;
+                    return;
                 }
-
-                throw new InvalidOperationException();
             }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
         }
 
         /// <summary>
