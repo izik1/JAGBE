@@ -92,7 +92,7 @@
 
             this.sysTimer += (GbUInt16)Cpu.DelayStep;
             bool b = this.Tac[2] &&
-                (this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)];
+                (this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)((((int)this.Tac & 3) * 2) + 1)];
             if (this.PrevTimerIn && !b)
             {
                 bool bt = this.ScheduleTimaInterupt;

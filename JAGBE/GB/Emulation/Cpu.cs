@@ -186,7 +186,7 @@ namespace JAGBE.GB.Emulation
             {
                 if (this.memory.Status == CpuState.STOP)
                 {
-                    this.memory.UpdateKeys();
+                    this.memory.joypad.Update(this.memory);
                     this.delay += DelayStep;
                     this.syncDelay += DelayStep;
                     if ((this.memory.IF & this.memory.IER & 0x1F) > 0)

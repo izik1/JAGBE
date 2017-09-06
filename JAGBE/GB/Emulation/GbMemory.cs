@@ -107,16 +107,6 @@ namespace JAGBE.GB.Emulation
         private bool ERamEnabled;
 
         /// <summary>
-        /// The joypad
-        /// </summary>
-        private GbUInt8 Joypad;
-
-        /// <summary>
-        /// The keys of the joypad
-        /// </summary>
-        private byte keys = 0xFF;
-
-        /// <summary>
         /// The mapped ram bank
         /// </summary>
         private int MappedRamBank;
@@ -132,11 +122,6 @@ namespace JAGBE.GB.Emulation
         private bool MbcRamMode;
 
         /// <summary>
-        /// The previous state of <see cref="keys"/>
-        /// </summary>
-        private byte prevKeys = 0xFF;
-
-        /// <summary>
         /// The timer
         /// </summary>
         private readonly Timer timer = new Timer();
@@ -145,15 +130,7 @@ namespace JAGBE.GB.Emulation
         /// Initializes a new instance of the <see cref="GbMemory"/> class with the given <paramref name="inputHandler"/>.
         /// </summary>
         /// <param name="inputHandler">The input handler.</param>
-        internal GbMemory(IInputHandler inputHandler)
-        {
-            // Null is valid input to this constructor since this just subscribes itself to the event
-            // handler if it exists.
-            if (inputHandler != null)
-            {
-                inputHandler.OnInput += this.OnInput;
-            }
-        }
+        internal GbMemory(IInputHandler inputHandler) => this.joypad = new Joypad(inputHandler);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbMemory"/> class.
@@ -176,6 +153,8 @@ namespace JAGBE.GB.Emulation
 
         internal bool HaltBugged { get; set; }
 
+        internal readonly Joypad joypad;
+
         /// <summary>
         /// Gets value of memory at HL.
         /// </summary>
@@ -194,18 +173,7 @@ namespace JAGBE.GB.Emulation
         public void Update()
         {
             this.timer.Update(this);
-            UpdateKeys();
-        }
-
-        /// <summary>
-        /// Updates the key state.
-        /// </summary>
-        internal void UpdateKeys()
-        {
-            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
-            {
-                this.IF |= 0x10;
-            }
+            this.joypad.Update(this);
         }
 
         /// <summary>
@@ -348,7 +316,7 @@ namespace JAGBE.GB.Emulation
         {
             if (number == 0x00)
             {
-                return GetJoypad(this.keys);
+                return this.joypad.Pad;
             }
 
             if (number < 3)
@@ -378,14 +346,6 @@ namespace JAGBE.GB.Emulation
 
             return 0xFF;
         }
-
-        /// <summary>
-        /// Gets the value of the joypad.
-        /// </summary>
-        /// <param name="p1">The p1.</param>
-        /// <returns>The value of the joypad.</returns>
-        private byte GetJoypad(byte p1) =>
-            (byte)((!this.Joypad[5] ? (p1 & 0xF) : !this.Joypad[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
         /// <summary>
         /// Gets the mapped memory.
@@ -480,17 +440,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Called when input is recieved.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="InputEventArgs"/> instance containing the event data.</param>
-        private void OnInput(object sender, InputEventArgs e)
-        {
-            this.prevKeys = this.keys;
-            this.keys = e.value;
-        }
-
-        /// <summary>
         /// Sets <see cref="ERam"/> at <paramref name="address"/> to <paramref name="value"/>.
         /// </summary>
         /// <param name="address">The address.</param>
@@ -516,7 +465,7 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer == 0)
             {
-                this.Joypad = (value & 0x30);
+                this.joypad.Status = (value & 0x30);
                 return;
             }
 

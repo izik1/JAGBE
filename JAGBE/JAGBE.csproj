@@ -81,6 +81,7 @@
     <Compile Include="GB\Emulation\Alu\Branching.cs" />
     <Compile Include="GB\Emulation\Alu\Loading.cs" />
     <Compile Include="GB\Emulation\Alu\Ops.cs" />
+    <Compile Include="GB\Emulation\Joypad.cs" />
     <Compile Include="GB\Emulation\Lcd.cs" />
     <Compile Include="GB\Emulation\GbMemory.cs" />
     <Compile Include="GB\Emulation\Instruction.cs" />
