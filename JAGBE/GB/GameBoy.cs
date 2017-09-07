@@ -11,7 +11,7 @@ namespace JAGBE.GB
         /// <summary>
         /// The cpu
         /// </summary>
-        internal Cpu cpu;
+        internal readonly Cpu cpu;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GameBoy"/> class.

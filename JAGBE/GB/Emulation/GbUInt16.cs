@@ -8,13 +8,6 @@ namespace JAGBE.GB.Emulation
     public struct GbUInt16 : IEquatable<GbUInt16>, IFormattable
     {
         /// <summary>
-        /// determines weather adding <paramref name="val"/> to this instance would produce a half carry.
-        /// </summary>
-        /// <param name="val">The second value.</param>
-        /// <returns></returns>
-        public bool GetHalfCarry(GbUInt16 val) => (((this & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000;
-
-        /// <summary>
         /// Performs an implicit conversion from <see cref="GbUInt16"/> to <see cref="int"/>.
         /// </summary>
         /// <param name="u16">The u16.</param>
@@ -167,6 +160,13 @@ namespace JAGBE.GB.Emulation
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
         public bool Equals(GbUInt16 other) => this.value == other.value;
+
+        /// <summary>
+        /// determines weather adding <paramref name="val"/> to this instance would produce a half carry.
+        /// </summary>
+        /// <param name="val">The second value.</param>
+        /// <returns></returns>
+        public bool GetHalfCarry(GbUInt16 val) => (((this & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000;
 
         /// <summary>
         /// Returns a hash code for this instance.

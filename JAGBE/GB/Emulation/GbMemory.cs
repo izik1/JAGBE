@@ -59,6 +59,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal bool IME;
 
+        internal readonly Joypad joypad;
+
         /// <summary>
         /// The LCD memory
         /// </summary>
@@ -145,15 +147,13 @@ namespace JAGBE.GB.Emulation
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.timer.SysTimer;
 
+        internal bool HaltBugged { get; set; }
+
         /// <summary>
         /// Gets the instance's registers.
         /// </summary>
         /// <value>The instance's registers.</value>
         internal GbRegisters R { get; } = new GbRegisters();
-
-        internal bool HaltBugged { get; set; }
-
-        internal readonly Joypad joypad;
 
         /// <summary>
         /// Gets value of memory at HL.
@@ -249,31 +249,6 @@ namespace JAGBE.GB.Emulation
             else
             {
                 SetMappedMemoryCommon(pointer, value);
-            }
-        }
-
-        /// <summary>
-        /// Sets the mapped memory using MBC1 specific code.
-        /// </summary>
-        /// <param name="pointer">The pointer.</param>
-        /// <param name="value">The value.</param>
-        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
-        {
-            if (pointer < 0x2000)
-            {
-                this.ERamEnabled = (value & 0xF) == 0xA;
-            }
-            else if (pointer < 0x4000)
-            {
-                this.MappedRomBank = ((int)value & 0x1F) + (((int)value & 0xF) == 0 ? 1 : 0);
-            }
-            else if (pointer < 0x6000)
-            {
-                this.MappedRamBank = value & 3;
-            }
-            else
-            {
-                this.MbcRamMode = (((int)value & 1) == 1);
             }
         }
 
@@ -555,6 +530,31 @@ namespace JAGBE.GB.Emulation
             else // 0xFFFF
             {
                 this.IER = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets the mapped memory using MBC1 specific code.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="value">The value.</param>
+        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
+        {
+            if (pointer < 0x2000)
+            {
+                this.ERamEnabled = (value & 0xF) == 0xA;
+            }
+            else if (pointer < 0x4000)
+            {
+                this.MappedRomBank = ((int)value & 0x1F) + (((int)value & 0xF) == 0 ? 1 : 0);
+            }
+            else if (pointer < 0x6000)
+            {
+                this.MappedRamBank = value & 3;
+            }
+            else
+            {
+                this.MbcRamMode = (((int)value & 1) == 1);
             }
         }
     }

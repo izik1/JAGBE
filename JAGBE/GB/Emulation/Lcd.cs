@@ -9,21 +9,6 @@ namespace JAGBE.GB.Emulation
     internal sealed class Lcd
     {
         /// <summary>
-        /// The height of the Game Boy LCD screen.
-        /// </summary>
-        private const int Height = 144;
-
-        /// <summary>
-        /// The width of the Game Boy LCD screen.
-        /// </summary>
-        private const int Width = 160;
-
-        /// <summary>
-        /// The pallet of the background
-        /// </summary>
-        private GbUInt8 BgPallet;
-
-        /// <summary>
         /// The DMA cycle number
         /// </summary>
         public int DMA = Cpu.DelayStep * 162;
@@ -38,8 +23,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         public GbUInt8 DMAValue;
 
-        private int cy;
-
         /// <summary>
         /// The display memory
         /// </summary>
@@ -49,6 +32,47 @@ namespace JAGBE.GB.Emulation
         /// Should the LCD be forced to skip rendering
         /// </summary>
         internal bool ForceNullRender;
+
+        /// <summary>
+        /// The STAT register
+        /// </summary>
+        internal GbUInt8 STAT;
+
+        /// <summary>
+        /// The height of the Game Boy LCD screen.
+        /// </summary>
+        private const int Height = 144;
+
+        /// <summary>
+        /// The color the Game Boy displays as white.
+        /// </summary>
+        /// <remarks>
+        /// White gets it's own const because it's the only color that is ever directly needed.
+        /// </remarks>
+        private const int WHITE = unchecked((int)0xFF9BBC0F);
+
+        /// <summary>
+        /// The width of the Game Boy LCD screen.
+        /// </summary>
+        private const int Width = 160;
+
+        /// <summary>
+        /// The colors that should be displayed.
+        /// </summary>
+        private static readonly int[] COLORS =
+        {
+                WHITE,
+                unchecked((int)0xFF8BAC0F),
+                unchecked((int)0xFF306230),
+                unchecked((int)0xFF0F380F)
+        };
+
+        /// <summary>
+        /// The pallet of the background
+        /// </summary>
+        private GbUInt8 BgPallet;
+
+        private int cy;
 
         /// <summary>
         /// Is the LCD requesting an interupt
@@ -95,10 +119,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private GbUInt8 SCY;
 
-        /// <summary>
-        /// The STAT register
-        /// </summary>
-        internal GbUInt8 STAT;
+        private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
         /// <summary>
         /// The Window W register
@@ -109,27 +130,6 @@ namespace JAGBE.GB.Emulation
         /// The Window Y register
         /// </summary>
         private GbUInt8 WY;
-
-        /// <summary>
-        /// The color the Game Boy displays as white.
-        /// </summary>
-        /// <remarks>
-        /// White gets it's own const because it's the only color that is ever directly needed.
-        /// </remarks>
-        private const int WHITE = unchecked((int)0xFF9BBC0F);
-
-        /// <summary>
-        /// The colors that should be displayed.
-        /// </summary>
-        private static readonly int[] COLORS =
-        {
-                WHITE,
-                unchecked((int)0xFF8BAC0F),
-                unchecked((int)0xFF306230),
-                unchecked((int)0xFF0F380F)
-        };
-
-        private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.

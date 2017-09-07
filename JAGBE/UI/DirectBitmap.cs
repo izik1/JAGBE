@@ -12,6 +12,20 @@ namespace JAGBE.UI
     internal sealed class DirectBitmap : IDisposable
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="DirectBitmap"/> class.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public DirectBitmap(int width, int height)
+        {
+            this.Width = width;
+            this.Height = height;
+            this.Bits = new int[width * height];
+            this.BitsHandle = GCHandle.Alloc(this.Bits, GCHandleType.Pinned);
+            this.Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, this.BitsHandle.AddrOfPinnedObject());
+        }
+
+        /// <summary>
         /// Gets the bitmap.
         /// </summary>
         /// <value>The bitmap.</value>
@@ -46,21 +60,6 @@ namespace JAGBE.UI
         /// </summary>
         /// <value>The bits handle.</value>
         private GCHandle BitsHandle { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DirectBitmap"/> class.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="height">The height.</param>
-        public DirectBitmap(int width, int height)
-        {
-            this.Width = width;
-            this.Height = height;
-            this.Bits = new int[width * height];
-            this.BitsHandle = GCHandle.Alloc(this.Bits, GCHandleType.Pinned);
-            this.Bitmap = new Bitmap(width, height, width * 4,
-                PixelFormat.Format32bppPArgb, this.BitsHandle.AddrOfPinnedObject());
-        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting

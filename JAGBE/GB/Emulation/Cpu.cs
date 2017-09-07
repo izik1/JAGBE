@@ -12,12 +12,6 @@ namespace JAGBE.GB.Emulation
     internal sealed class Cpu
     {
         /// <summary>
-        /// The This is to sync the cpu (with variable clock length instructions) to the GPU, APU
-        /// DMA, Timer, etc which always take the same amount of time.
-        /// </summary>
-        private int syncDelay;
-
-        /// <summary>
         /// The clock speed in hz
         /// </summary>
         /// <value>4194304</value>
@@ -43,12 +37,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private int delay;
 
-        /// <summary>
-        /// Gets the status of this instance.
-        /// </summary>
-        /// <value>The status.</value>
-        public CpuState Status => this.memory.Status;
-
         private bool hung;
 
         /// <summary>
@@ -57,10 +45,10 @@ namespace JAGBE.GB.Emulation
         private GbMemory memory;
 
         /// <summary>
-        /// Gets the LCD's display memory a <see cref="byte"/>[].
+        /// The This is to sync the cpu (with variable clock length instructions) to the GPU, APU
+        /// DMA, Timer, etc which always take the same amount of time.
         /// </summary>
-        /// <returns>The LCD's display memory as a <see cref="byte"/>[].</returns>
-        public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
+        private int syncDelay;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Cpu"/> class.
@@ -80,16 +68,22 @@ namespace JAGBE.GB.Emulation
         public Cpu(GbMemory memory) => this.memory = memory;
 
         /// <summary>
+        /// Gets a value indicating whether the cpu is in breakmode or not.
+        /// </summary>
+        /// <value><see langword="true"/> if the cpu is in breakmode; otherwise, <see langword="false"/>.</value>
+        public bool BreakMode => this.breakMode;
+
+        /// <summary>
         /// Gets the display memory.
         /// </summary>
         /// <value>The display memory.</value>
         public int[] DisplayMemory => this.memory.Lcd.displayMemory;
 
         /// <summary>
-        /// Gets a value indicating whether the cpu is in breakmode or not.
+        /// Gets the status of this instance.
         /// </summary>
-        /// <value><see langword="true"/> if the cpu is in breakmode; otherwise, <see langword="false"/>.</value>
-        public bool BreakMode => this.breakMode;
+        /// <value>The status.</value>
+        public CpuState Status => this.memory.Status;
 
         /// <summary>
         /// Gets the pc.
@@ -108,6 +102,12 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         public void AddBreakPoint(ushort address) => this.breakPoints.Add(address);
+
+        /// <summary>
+        /// Gets the LCD's display memory a <see cref="byte"/>[].
+        /// </summary>
+        /// <returns>The LCD's display memory as a <see cref="byte"/>[].</returns>
+        public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
 
         /// <summary>
         /// Removes the break point at <paramref name="address"/>.
@@ -260,14 +260,6 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        private void TickIoDevices()
-        {
-            this.memory.Lcd.Tick(this.memory);
-            this.memory.Update();
-            TickDma();
-            this.syncDelay += DelayStep;
-        }
-
         /// <summary>
         /// Disables the LCD renderer.
         /// </summary>
@@ -336,6 +328,14 @@ namespace JAGBE.GB.Emulation
 
                 lcd.DMA += DelayStep;
             }
+        }
+
+        private void TickIoDevices()
+        {
+            this.memory.Lcd.Tick(this.memory);
+            this.memory.Update();
+            TickDma();
+            this.syncDelay += DelayStep;
         }
     }
 }

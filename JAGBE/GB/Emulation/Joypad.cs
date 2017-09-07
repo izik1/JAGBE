@@ -5,9 +5,9 @@ namespace JAGBE.GB.Emulation
     internal sealed class Joypad
     {
         /// <summary>
-        /// The previous state of <see cref="keys"/>
+        /// The joypad status register.
         /// </summary>
-        private byte prevKeys = 0xFF;
+        internal GbUInt8 Status;
 
         /// <summary>
         /// The keys of the joypad
@@ -15,31 +15,9 @@ namespace JAGBE.GB.Emulation
         private byte keys = 0xFF;
 
         /// <summary>
-        /// The joypad status register.
+        /// The previous state of <see cref="keys"/>
         /// </summary>
-        internal GbUInt8 Status;
-
-        /// <summary>
-        /// Gets the value of the joypad.
-        /// </summary>
-        /// <param name="p1">The p1.</param>
-        /// <returns>The value of the joypad.</returns>
-        private byte GetJoypad(byte p1) =>
-            (byte)((!this.Status[5] ? (p1 & 0xF) : !this.Status[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
-
-        /// <summary>
-        /// Updates the key state.
-        /// </summary>
-        /// <param name="memory">The memory.</param>
-        internal void Update(GbMemory memory)
-        {
-            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
-            {
-                memory.IF |= 0x10;
-            }
-        }
-
-        internal byte Pad => GetJoypad(this.keys);
+        private byte prevKeys = 0xFF;
 
         internal Joypad() : this(null)
         {
@@ -54,6 +32,28 @@ namespace JAGBE.GB.Emulation
                 inputHandler.OnInput += this.OnInput;
             }
         }
+
+        internal byte Pad => GetJoypad(this.keys);
+
+        /// <summary>
+        /// Updates the key state.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        internal void Update(GbMemory memory)
+        {
+            if (((GetJoypad(this.prevKeys) & 0xF) == 0xF) && (GetJoypad(this.keys) & 0xF) != 0xF)
+            {
+                memory.IF |= 0x10;
+            }
+        }
+
+        /// <summary>
+        /// Gets the value of the joypad.
+        /// </summary>
+        /// <param name="p1">The p1.</param>
+        /// <returns>The value of the joypad.</returns>
+        private byte GetJoypad(byte p1) =>
+            (byte)((!this.Status[5] ? (p1 & 0xF) : !this.Status[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
         /// <summary>
         /// Called when input is recieved.

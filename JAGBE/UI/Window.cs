@@ -55,6 +55,8 @@ namespace JAGBE.UI
         /// </summary>
         private byte keys = 0xFF;
 
+        private bool paused;
+
         private bool step;
 
         /// <summary>
@@ -63,8 +65,6 @@ namespace JAGBE.UI
         public Window() : this(160, 144)
         {
         }
-
-        private bool paused;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.

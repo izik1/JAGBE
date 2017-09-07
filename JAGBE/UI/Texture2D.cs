@@ -8,24 +8,6 @@ namespace JAGBE.UI
     internal struct Texture2D : IEquatable<Texture2D>
     {
         /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        /// <value>The identifier.</value>
-        public int Id { get; }
-
-        /// <summary>
-        /// Gets the width.
-        /// </summary>
-        /// <value>The width.</value>
-        public int Width { get; }
-
-        /// <summary>
-        /// Gets the height.
-        /// </summary>
-        /// <value>The height.</value>
-        public int Height { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Texture2D"/> struct.
         /// </summary>
         /// <param name="id">The identifier.</param>
@@ -39,6 +21,24 @@ namespace JAGBE.UI
         }
 
         /// <summary>
+        /// Gets the height.
+        /// </summary>
+        /// <value>The height.</value>
+        public int Height { get; }
+
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>The identifier.</value>
+        public int Id { get; }
+
+        /// <summary>
+        /// Gets the width.
+        /// </summary>
+        /// <value>The width.</value>
+        public int Width { get; }
+
+        /// <summary>
         /// Determines whether the specified <see cref="object"/>, is equal to this instance.
         /// </summary>
         /// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
@@ -49,15 +49,6 @@ namespace JAGBE.UI
         public override bool Equals(object obj) => obj is Texture2D && Equals((Texture2D)obj);
 
         /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures
-        /// like a hash table.
-        /// </returns>
-        public override int GetHashCode() => base.GetHashCode(); //FIXME: implement better
-
-        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -66,5 +57,14 @@ namespace JAGBE.UI
         /// parameter; otherwise, <see langword="false"/>.
         /// </returns>
         public bool Equals(Texture2D other) => other.Id == this.Id && other.Width == this.Width && other.Height == this.Height;
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures
+        /// like a hash table.
+        /// </returns>
+        public override int GetHashCode() => base.GetHashCode(); //FIXME: implement better
     }
 }
