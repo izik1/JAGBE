@@ -10,7 +10,9 @@
         /// <summary>
         /// Is a TIMA Interupt scheduled?
         /// </summary>
-        private bool ScheduleTimaInterupt;
+        private bool TimaOverflow;
+
+        private bool PrevTimaOverflow;
 
         /// <summary>
         /// The system timer.
@@ -25,12 +27,12 @@
         /// <summary>
         /// The TIMA Modulo Register
         /// </summary>
-        private GbUInt8 TimaM;
+        private GbUInt8 Tma;
 
         /// <summary>
         /// The TIMA Value Register.
         /// </summary>
-        private GbUInt8 TimaV;
+        private GbUInt8 Tima;
 
         /// <summary>
         /// Gets the system timer.
@@ -45,9 +47,9 @@
                 switch (index)
                 {
                     case 4: return this.sysTimer.HighByte;
-                    case 5: return this.TimaV;
-                    case 6: return this.TimaM;
-                    case 7: return this.Tac | 0xFC;
+                    case 5: return this.Tima;
+                    case 6: return this.Tma;
+                    case 7: return this.Tac | 0xF8;
                     default: return 0xFF;
                 }
             }
@@ -61,15 +63,16 @@
                         return;
 
                     case 5:
-                        this.TimaV = value;
+                        this.TimaOverflow = false;
+                        this.Tima = value;
                         return;
 
                     case 6:
-                        this.TimaM = value;
+                        this.Tma = value;
                         return;
 
                     case 7:
-                        this.Tac = (value & 3);
+                        this.Tac = (value & 7);
                         return;
 
                     default:
@@ -84,22 +87,24 @@
         /// <param name="memory">The memory.</param>
         internal void Update(GbMemory memory)
         {
-            if (this.ScheduleTimaInterupt)
+            if (this.PrevTimaOverflow)
             {
                 memory.IF |= 4;
-                this.TimaV = this.TimaM;
+                this.Tima = this.Tma;
             }
 
+            this.PrevTimaOverflow = this.TimaOverflow;
+            this.TimaOverflow = false;
             this.sysTimer += (GbUInt16)Cpu.DelayStep;
+
             bool b = this.Tac[2] &&
-                (this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)((((int)this.Tac & 3) * 2) + 1)];
+                ((this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)((((int)this.Tac & 3) * 2) + 1)]);
             if (this.PrevTimerIn && !b)
             {
-                bool bt = this.ScheduleTimaInterupt;
-                this.ScheduleTimaInterupt = this.TimaV == 0xFF;
-                if (!bt)
+                this.TimaOverflow = this.Tima == 0xFF;
+                if (!this.PrevTimaOverflow)
                 {
-                    this.TimaV++;
+                    this.Tima++;
                 }
             }
 

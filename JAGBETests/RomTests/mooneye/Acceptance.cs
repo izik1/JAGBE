@@ -70,7 +70,8 @@ namespace JAGBETests.RomTests.mooneye
         public void Add_sp_e_timing() => TestDisplayOut(BasePath + "add_sp_e_timing.gb", "", false);
 
         [TestMethod]
-        public void Boot_hwio_dmgABCXmgb() => TestDisplayOut(BasePath + "boot_hwio-dmgABCXmgb.gb", "", false);
+        public void Boot_hwio_dmgABCXmgb() =>
+            TestDisplayOut(BasePath + "boot_hwio-dmgABCXmgb.gb", "", false, "ENFHl86MMZbEQYluddLwwHZCaKb1tSDmRjWr8Dtc9Uc=");
 
         [TestMethod]
         public void Boot_regs_dmgABCX() =>

@@ -80,15 +80,15 @@ MoonEye acceptance tests:
 |reti_timing|:x:|Doesn't complete.|
 |rst_timing|:x:|B Incorrect.|
 |timer/div_write|:white_check_mark:|-|
-|timer/rapid_toggle|:x:| |
-|timer/tim00|:x:|E Incorrect.|
-|timer/tim00_div_trigger|:x:|E Incorrect.|
+|timer/rapid_toggle|:x:|C Incorrect.|
+|timer/tim00|:white_check_mark:|-|
+|timer/tim00_div_trigger|:white_check_mark:|-|
 |timer/tim01|:white_check_mark:|-|
 |timer/tim01_div_trigger|:white_check_mark:|-|
 |timer/tim10|:white_check_mark:|-|
 |timer/tim10_div_trigger|:white_check_mark:|-|
 |timer/tim11|:white_check_mark:|-|
 |timer/tim11_div_trigger|:white_check_mark:|-|
-|timer/tima_reload|:x:|B,C,H,L Incorrect.|
-|timer/tima_write_reloading|:x:|E,L Incorrect.|
-|timer/tma_write_reloading|:x:|C,L Incorrect.|
+|timer/tima_reload|:x:|B,C Incorrect.|
+|timer/tima_write_reloading|:white_check_mark:|-|
+|timer/tma_write_reloading|:white_check_mark:|-|
