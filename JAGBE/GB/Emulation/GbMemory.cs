@@ -77,19 +77,9 @@ namespace JAGBE.GB.Emulation
         internal bool NextIMEValue;
 
         /// <summary>
-        /// The Object Atribute Memory.
-        /// </summary>
-        internal readonly GbUInt8[] Oam = new GbUInt8[MemoryRange.OAMSIZE];
-
-        /// <summary>
         /// The status of the cpu
         /// </summary>
         internal CpuState Status;
-
-        /// <summary>
-        /// The Video Ram.
-        /// </summary>
-        internal readonly GbUInt8[] VRam = new GbUInt8[MemoryRange.VRAMBANKSIZE * 2];
 
         /// <summary>
         /// The Work Ram.
@@ -352,7 +342,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return (this.Lcd.STAT & 3) == 3 ? (GbUInt8)0xFF : this.VRam[address - 0x8000];
+                return (this.Lcd.STAT & 3) == 3 ? (GbUInt8)0xFF : this.Lcd.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -372,7 +362,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return (this.Lcd.STAT & 0x2) == 2 ? (byte)0xFF : this.Oam[address - 0xFE00];
+                return (this.Lcd.STAT & 0x2) == 2 ? (byte)0xFF : this.Lcd.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
@@ -492,7 +482,7 @@ namespace JAGBE.GB.Emulation
                     return;
                 }
 
-                this.VRam[pointer - 0x8000] = value;
+                this.Lcd.VRam[pointer - 0x8000] = value;
             }
             else if (pointer <= 0xBFFF)
             {
@@ -513,7 +503,7 @@ namespace JAGBE.GB.Emulation
                     return;
                 }
 
-                this.Oam[pointer - 0xFE00] = value;
+                this.Lcd.Oam[pointer - 0xFE00] = value;
             }
             else if (pointer <= 0xFEFF)
             {

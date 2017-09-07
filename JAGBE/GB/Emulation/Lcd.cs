@@ -34,9 +34,19 @@ namespace JAGBE.GB.Emulation
         internal bool ForceNullRender;
 
         /// <summary>
+        /// The Object Atribute Memory.
+        /// </summary>
+        internal readonly GbUInt8[] Oam = new GbUInt8[MemoryRange.OAMSIZE];
+
+        /// <summary>
         /// The STAT register
         /// </summary>
         internal GbUInt8 STAT;
+
+        /// <summary>
+        /// The Video Ram.
+        /// </summary>
+        internal readonly GbUInt8[] VRam = new GbUInt8[MemoryRange.VRAMBANKSIZE * 2];
 
         /// <summary>
         /// The height of the Game Boy LCD screen.
@@ -265,7 +275,7 @@ namespace JAGBE.GB.Emulation
 
             if (this.LY < 144)
             {
-                RenderLine(mem.VRam, mem.Oam);
+                RenderLine();
             }
             else if (this.LY == 144)
             {
@@ -330,22 +340,11 @@ namespace JAGBE.GB.Emulation
             this.cy += Cpu.DelayStep;
         }
 
-        /// <summary>
-        /// Gets the index of the color.
-        /// </summary>
-        /// <param name="pallet">The pallet.</param>
-        /// <param name="VRam">The v ram.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="x">The x.</param>
-        /// <param name="tileMapOffset">The tile map offset.</param>
-        /// <param name="tileNum">The tile number.</param>
-        /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
-        private static int GetColorIndex(GbUInt8 pallet, GbUInt8[] VRam, byte y, byte x, ushort tileMapOffset, ushort tileNum)
-        {
-            int i = ((int)VRam[(tileNum * 16) + tileMapOffset + (y * 2)] >> (7 - x) & 1);
-            i += ((int)VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1] >> (7 - x) & 1) * 2;
-            return ((int)pallet >> (i * 2)) & 3;
-        }
+        internal Sprite ReadSprite(int offset) => new Sprite(
+            (byte)(this.Oam[offset + 1] - 8),
+            (byte)(this.Oam[offset] - 16),
+            this.Oam[offset + 2],
+            this.Oam[offset + 3]);
 
         private static bool IsSpritePixelVisible(int x, int colorIndex, bool priority, int dispMemAtOffset) =>
             x < Width && colorIndex != 0 && (priority || dispMemAtOffset == WHITE);
@@ -364,7 +363,7 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        private bool DrawSprite(GbUInt8[] VRam)
+        private bool DrawSprite()
         {
             if (this.visibleSprites.Count > 0)
             {
@@ -377,7 +376,7 @@ namespace JAGBE.GB.Emulation
                     }
                 }
 
-                ScanSprite(VRam, this.visibleSprites[indexOfBestSprite]);
+                ScanSprite(this.visibleSprites[indexOfBestSprite]);
                 this.visibleSprites.RemoveAt(indexOfBestSprite);
                 return true;
             }
@@ -385,7 +384,23 @@ namespace JAGBE.GB.Emulation
             return false;
         }
 
-        private bool IsSpriteVisible(Sprite sprite, GbUInt8[] VRam)
+        /// <summary>
+        /// Gets the index of the color.
+        /// </summary>
+        /// <param name="pallet">The pallet.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="tileMapOffset">The tile map offset.</param>
+        /// <param name="tileNum">The tile number.</param>
+        /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
+        private int GetColorIndex(GbUInt8 pallet, byte y, byte x, ushort tileMapOffset, ushort tileNum)
+        {
+            int i = ((int)this.VRam[(tileNum * 16) + tileMapOffset + (y * 2)] >> (7 - x) & 1);
+            i += ((int)this.VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1] >> (7 - x) & 1) * 2;
+            return ((int)pallet >> (i * 2)) & 3;
+        }
+
+        private bool IsSpriteVisible(Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
@@ -394,7 +409,7 @@ namespace JAGBE.GB.Emulation
                 byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
                     if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         return true;
@@ -408,9 +423,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Renders a line.
         /// </summary>
-        /// <param name="VRam">The v ram.</param>
-        /// <param name="Oam">The oam.</param>
-        private void RenderLine(GbUInt8[] VRam, GbUInt8[] Oam)
+        private void RenderLine()
         {
             if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
             {
@@ -440,17 +453,17 @@ namespace JAGBE.GB.Emulation
                 {
                     if (this.Lcdc[0])
                     {
-                        ScanLine(VRam);
+                        ScanLine();
                     }
 
                     if (this.Lcdc[5])
                     {
-                        ScanLineWindow(VRam);
+                        ScanLineWindow();
                     }
 
                     if (this.Lcdc[1])
                     {
-                        ScanLineSprite(VRam, Oam);
+                        ScanLineSprite();
                     }
                 }
             }
@@ -468,8 +481,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans a line.
         /// </summary>
-        /// <param name="VRam">The vram.</param>
-        private void ScanLine(GbUInt8[] VRam)
+        private void ScanLine()
         {
             // Offset from the start of VRAM to the start of the background map.
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
@@ -480,7 +492,7 @@ namespace JAGBE.GB.Emulation
             byte x = (byte)(this.SCX & 7);
 
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
-            ushort tile = VRam[(ushort)(lineOffset + mapOffset)];
+            ushort tile = this.VRam[(ushort)(lineOffset + mapOffset)];
             if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
@@ -489,13 +501,13 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                    COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
+                    COLORS[GetColorIndex(this.BgPallet, y, x, tileOffset, tile)];
                 x++;
                 if (x == 8)
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = VRam[lineOffset + mapOffset];
+                    tile = this.VRam[lineOffset + mapOffset];
                     if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
@@ -507,10 +519,8 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans the sprites of a line.
         /// </summary>
-        /// <param name="VRam">The v ram.</param>
-        /// <param name="Oam">The oam.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void ScanLineSprite(GbUInt8[] VRam, GbUInt8[] Oam)
+        private void ScanLineSprite()
         {
             if (this.Lcdc[2])
             {
@@ -520,10 +530,8 @@ namespace JAGBE.GB.Emulation
             int spritesDrawn = 0;
             for (int offset = 0; offset < 160 && spritesDrawn < 10; offset += 4)
             {
-                // OAM goes Y,X,Tile,Flags.
-                Sprite sprite = new Sprite((byte)(Oam[offset + 1] - 8), (byte)(Oam[offset] - 16), Oam[offset + 2], Oam[offset + 3]);
-
-                if (IsSpriteVisible(sprite, VRam))
+                Sprite sprite = ReadSprite(offset);
+                if (IsSpriteVisible(sprite))
                 {
                     this.visibleSprites.Add(sprite);
                     spritesDrawn++;
@@ -532,7 +540,7 @@ namespace JAGBE.GB.Emulation
 
             for (int i = 0; i < 10; i++)
             {
-                if (!DrawSprite(VRam))
+                if (!DrawSprite())
                 {
                     return;
                 }
@@ -542,9 +550,8 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans the window of a line.
         /// </summary>
-        /// <param name="VRam">The v ram.</param>
         /// <exception cref="NotSupportedException"></exception>
-        private void ScanLineWindow(GbUInt8[] VRam)
+        private void ScanLineWindow()
         {
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((this.WY + this.LY) & 0xFF) >> 3) * 32);
@@ -553,7 +560,7 @@ namespace JAGBE.GB.Emulation
             byte x = (byte)(this.WX & 7);
 
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
-            ushort tile = VRam[lineOffset + mapOffset];
+            ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
@@ -562,14 +569,14 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                   COLORS[GetColorIndex(this.BgPallet, VRam, y, x, tileOffset, tile)];
+                   COLORS[GetColorIndex(this.BgPallet, y, x, tileOffset, tile)];
 
                 x++;
                 if (x == 8)
                 {
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
-                    tile = VRam[lineOffset + mapOffset];
+                    tile = this.VRam[lineOffset + mapOffset];
                     if (!this.Lcdc[4] && tile < 128)
                     {
                         tile += 256;
@@ -581,9 +588,8 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans a sprite.
         /// </summary>
-        /// <param name="VRam">The v ram.</param>
         /// <param name="sprite">The sprite.</param>
-        private void ScanSprite(GbUInt8[] VRam, Sprite sprite)
+        private void ScanSprite(Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
@@ -592,7 +598,7 @@ namespace JAGBE.GB.Emulation
                 byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, VRam, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
                     if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];

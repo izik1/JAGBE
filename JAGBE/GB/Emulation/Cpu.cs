@@ -319,7 +319,7 @@ namespace JAGBE.GB.Emulation
                 {
                     if (lcd.DMA > DelayStep)
                     {
-                        this.memory.Oam[(lcd.DMA / DelayStep) - 2] = lcd.DMAValue;
+                        lcd.Oam[(lcd.DMA / DelayStep) - 2] = lcd.DMAValue;
                     }
 
                     lcd.DMAValue = this.memory.GetMappedMemoryDma(lcd.DMAAddress);
