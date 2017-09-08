@@ -59,6 +59,7 @@
     <Compile Include="RomTests\blargg\Various.cs" />
     <Compile Include="RomTests\Helpers.cs" />
     <Compile Include="RomTests\mooneye\Acceptance.cs" />
+    <Compile Include="RomTests\mooneye\EmulatorOnly.cs" />
     <Compile Include="RomTests\mooneye\Timer.cs" />
   </ItemGroup>
   <ItemGroup>

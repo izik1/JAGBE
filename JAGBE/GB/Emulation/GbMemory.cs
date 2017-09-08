@@ -39,6 +39,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal GbUInt8[] ERam;
 
+        internal int RomBanks;
+
         /// <summary>
         /// The High Ram (stack)
         /// </summary>
@@ -155,7 +157,12 @@ namespace JAGBE.GB.Emulation
         /// Gets active rom bank.
         /// </summary>
         /// <returns></returns>
-        public int GetRomBank() => (byte)(this.MappedRomBank | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+        public int GetRomBank()
+        {
+            int j = this.MappedRomBank & 0x1F;
+            int i = (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+            return i;
+        }
 
         /// <summary>
         /// Updates this instance.
@@ -266,8 +273,7 @@ namespace JAGBE.GB.Emulation
 
             if (this.MBCMode == MemoryBankController.None || this.MBCMode == MemoryBankController.MBC1)
             {
-                int index = address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0);
-                return index < this.ERam.Length ? this.ERam[index] : (GbUInt8)0xFF;
+                return this.ERam[(address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)) % this.ERam.Length];
             }
 
             throw new InvalidOperationException("Unsuported or unimplemented " + nameof(MemoryBankController));
@@ -399,6 +405,7 @@ namespace JAGBE.GB.Emulation
 
             if (this.Rom == null || (address + (bank * MemoryRange.ROMBANKSIZE) >= this.Rom.Length))
             {
+                Logger.LogWarning("Out of range read, bank: " + bank.ToString());
                 return 0xFF;
             }
 
@@ -414,11 +421,7 @@ namespace JAGBE.GB.Emulation
         {
             if (this.ERamEnabled)
             {
-                int addr = address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0);
-                if (addr < this.ERam.Length)
-                {
-                    this.ERam[addr] = value;
-                }
+                this.ERam[(address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)) % this.ERam.Length] = value;
             }
         }
 
@@ -537,7 +540,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer < 0x4000)
             {
-                this.MappedRomBank = ((int)value & 0x1F) + (((int)value & 0xF) == 0 ? 1 : 0);
+                this.MappedRomBank = value;
             }
             else if (pointer < 0x6000)
             {

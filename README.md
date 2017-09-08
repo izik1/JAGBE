@@ -92,3 +92,17 @@ MoonEye acceptance tests:
 |timer/tima_reload|:x:|B,C Incorrect.|
 |timer/tima_write_reloading|:white_check_mark:||
 |timer/tma_write_reloading|:white_check_mark:||
+
+mooneye mbc1 tests:
+
+|Name|Status|
+|-|-|
+|multicart_rom_8Mb|:x:|
+|ram_64Kb|:white_check_mark:|
+|ram_256Kb|:white_check_mark:|
+|rom_1Mb|:white_check_mark:|
+|rom_2Mb|:white_check_mark:|
+|rom_4Mb|:white_check_mark:|
+|rom_8Mb|:x:|
+|rom_16Mb|:x:|
+|rom_512Kb|:white_check_mark:|

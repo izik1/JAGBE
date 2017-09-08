@@ -124,8 +124,12 @@ namespace JAGBE.GB.Emulation
                 throw new InvalidOperationException("Unimplemented MBC mode " + mbcMode.ToString("X2"));
             }
 
+            Logger.LogInfo("MBCTYPE:" + rom[0x147].ToString("X2"));
+            Logger.LogInfo("ROMSIZE:" + rom[0x148].ToString("X2"));
+            Logger.LogInfo("RAMSIZE:" + rom[0x149].ToString("X2"));
             this.memory = new GbMemory(inputHandler)
             {
+                RomBanks = 2 << rom[0x148],
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // Set the rom size to what the cartrage says.
                 ERam = new GbUInt8[Cart.GetRamSize(rom[0x149])],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1

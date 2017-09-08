@@ -106,9 +106,9 @@ namespace JAGBETests
             for (int fVal = 15; fVal >= 0; fVal--)
             {
                 mem.R.F = (GbUInt8)(fVal << 4);
-                GbUInt8 initFlags = mem.R.F;
                 if (reg == 6)
                 {
+                    GbUInt8 initFlags = mem.R.F;
                     Assert.IsFalse(Instruction.Run(mem, 0xCB, 1));
                     Assert.AreEqual(initFlags, mem.R.F);
                 }
