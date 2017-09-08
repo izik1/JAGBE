@@ -55,6 +55,8 @@ namespace JAGBE.UI
         /// </summary>
         private byte keys = 0xFF;
 
+        private DirectBitmap lcdMap;
+
         private bool paused;
 
         private bool step;
@@ -172,11 +174,10 @@ namespace JAGBE.UI
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
-
             GL.Enable(EnableCap.Texture2D);
+            this.lcdMap = new DirectBitmap(160, 144, this.gameBoy.cpu.DisplayMemory);
         }
 
         /// <summary>
@@ -186,7 +187,7 @@ namespace JAGBE.UI
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            Texture2D tex = ContentPipe.GenerateRgbaTexture(this.gameBoy.cpu.DisplayMemory, 160, 144);
+            Texture2D tex = ContentPipe.GenerateTexture(this.lcdMap.Bitmap, 160, 144);
             GL.BindTexture(TextureTarget.Texture2D, tex.Id);
             GL.Begin(PrimitiveType.Quads);
             GL.TexCoord2(0, 1);

@@ -321,7 +321,7 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
-            if (!ignoreDmaBlock && this.Lcd.DMA < 162)
+            if (!ignoreDmaBlock && this.Lcd.Dma < 162)
             {
                 if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
                 {

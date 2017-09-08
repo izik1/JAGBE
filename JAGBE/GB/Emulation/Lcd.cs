@@ -9,21 +9,6 @@ namespace JAGBE.GB.Emulation
     internal sealed class Lcd
     {
         /// <summary>
-        /// The DMA cycle number
-        /// </summary>
-        public int DMA = Cpu.DelayStep * 162;
-
-        /// <summary>
-        /// The DMA address
-        /// </summary>
-        public GbUInt16 DMAAddress;
-
-        /// <summary>
-        /// The DMA value
-        /// </summary>
-        public GbUInt8 DMAValue;
-
-        /// <summary>
         /// The display memory
         /// </summary>
         internal readonly int[] displayMemory = new int[Width * Height];
@@ -83,6 +68,16 @@ namespace JAGBE.GB.Emulation
         private GbUInt8 BgPallet;
 
         private int cy;
+
+        /// <summary>
+        /// The DMA address
+        /// </summary>
+        private GbUInt16 DMAAddress;
+
+        /// <summary>
+        /// The DMA value
+        /// </summary>
+        private GbUInt8 DMAValue;
 
         /// <summary>
         /// Is the LCD requesting an interupt
@@ -153,6 +148,11 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
+        /// The DMA cycle number
+        /// </summary>
+        internal int Dma { get; private set; } = Cpu.DelayStep * 162;
+
+        /// <summary>
         /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
         /// </summary>
         /// <value>The <see cref="GbUInt8"/>.</value>
@@ -176,7 +176,7 @@ namespace JAGBE.GB.Emulation
                     case 0x49: return this.objPallet1;
                     case 0x4A: return this.WY;
                     case 0x4B: return this.WX;
-                    default: return 0xFF;
+                    default: return GbUInt8.MaxValue;
                 }
             }
 
@@ -206,7 +206,7 @@ namespace JAGBE.GB.Emulation
 
                     case 0x6:
                         this.DMAAddress = (GbUInt16)(value << 8);
-                        this.DMA = 0;
+                        this.Dma = 0;
                         break;
 
                     case 0x7:
@@ -408,7 +408,7 @@ namespace JAGBE.GB.Emulation
             {
                 GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
-                byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                byte tileY = (byte)(sprite.Flags[6] ? (7 - ((int)this.LY & 7)) : ((int)this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
@@ -427,7 +427,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void RenderLine()
         {
-            if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
+            if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == GbUInt8.MinValue))
             {
                 this.STAT |= 4;
             }
@@ -488,13 +488,11 @@ namespace JAGBE.GB.Emulation
             // Offset from the start of VRAM to the start of the background map.
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
             mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
-
-            byte lineOffset = (byte)(this.SCX >> 3);
+            byte lineOffset = (byte)((int)this.SCX >> 3);
             byte y = (byte)((this.LY + this.SCY) & 7);
-            byte x = (byte)(this.SCX & 7);
-
+            byte x = (byte)((int)this.SCX & 7);
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
-            ushort tile = this.VRam[(ushort)(lineOffset + mapOffset)];
+            ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
@@ -557,10 +555,9 @@ namespace JAGBE.GB.Emulation
         {
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((this.WY + this.LY) & 0xFF) >> 3) * 32);
-            byte lineOffset = (byte)(this.WX >> 3);
+            byte lineOffset = (byte)((int)this.WX >> 3);
             byte y = (byte)((this.WY + this.LY) & 7);
-            byte x = (byte)(this.WX & 7);
-
+            byte x = (byte)((int)this.WX & 7);
             ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
             ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
@@ -611,20 +608,20 @@ namespace JAGBE.GB.Emulation
 
         private void TickDma(GbMemory memory)
         {
-            if (this.DMA < 162)
+            if (this.Dma < 162)
             {
-                if (this.DMA != 0)
+                if (this.Dma != 0)
                 {
-                    if (this.DMA > 1)
+                    if (this.Dma > 1)
                     {
-                        this.Oam[this.DMA - 2] = this.DMAValue;
+                        this.Oam[this.Dma - 2] = this.DMAValue;
                     }
 
                     this.DMAValue = memory.GetMappedMemoryDma(this.DMAAddress);
                     this.DMAAddress++;
                 }
 
-                this.DMA++;
+                this.Dma++;
             }
         }
     }

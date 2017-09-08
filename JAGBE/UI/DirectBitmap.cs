@@ -16,11 +16,25 @@ namespace JAGBE.UI
         /// </summary>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public DirectBitmap(int width, int height)
+        public DirectBitmap(int width, int height) : this(width, height, new int[width * height])
         {
+        }
+
+        public DirectBitmap(int width, int height, int[] bits)
+        {
+            if (bits == null)
+            {
+                throw new ArgumentNullException(nameof(bits));
+            }
+
+            if (bits.Length != width * height)
+            {
+                throw new ArgumentException(nameof(bits) + ".length must equal " + nameof(width) + " * " + nameof(height));
+            }
+
             this.Width = width;
             this.Height = height;
-            this.Bits = new int[width * height];
+            this.Bits = bits;
             this.BitsHandle = GCHandle.Alloc(this.Bits, GCHandleType.Pinned);
             this.Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, this.BitsHandle.AddrOfPinnedObject());
         }

@@ -23,9 +23,8 @@ namespace JAGBE.UI
         /// </returns>
         public static Texture2D GenerateRgbaTexture(int[] src, int width, int height)
         {
-            using (DirectBitmap bitmap = new DirectBitmap(width, height))
+            using (DirectBitmap bitmap = new DirectBitmap(width, height, src))
             {
-                Buffer.BlockCopy(src, 0, bitmap.Bits, 0, width * height * 4);
                 return GenerateTexture(bitmap.Bitmap, width, height);
             }
         }
