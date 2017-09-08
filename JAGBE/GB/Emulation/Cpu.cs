@@ -124,34 +124,6 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException"></exception>
         public void Reset(byte[] rom, byte[] bootRom, IInputHandler inputHandler)
         {
-            int ramSize;
-            switch (rom[0x149])
-            {
-                case 1:
-                    ramSize = 0x800; // 2KB
-                    break;
-
-                case 2:
-                    ramSize = MemoryRange.ERAMBANKSIZE;
-                    break;
-
-                case 3:
-                    ramSize = MemoryRange.ERAMBANKSIZE * 4;
-                    break;
-
-                case 4:
-                    ramSize = MemoryRange.ERAMBANKSIZE * 16;
-                    break;
-
-                case 5:
-                    ramSize = MemoryRange.ERAMBANKSIZE * 8;
-                    break;
-
-                default:
-                    ramSize = 0;
-                    break;
-            }
-
             byte mbcMode = rom[0x147];
             if (mbcMode > 3)
             {
@@ -160,24 +132,18 @@ namespace JAGBE.GB.Emulation
 
             this.memory = new GbMemory(inputHandler)
             {
-                Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // set the rom size to what the cartrage says.
-                ERam = new GbUInt8[ramSize],
+                Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // Set the rom size to what the cartrage says.
+                ERam = new GbUInt8[Cart.GetRamSize(rom[0x149])],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
-            }; // Override the memory.
+            };
 
-            Array.Copy(bootRom, this.memory.BootRom, 256);
-
-            Buffer.BlockCopy(rom, 0, this.memory.Rom, 0, rom.Length); // Buffer copy because I guess it might be faster?
-            for (int i = rom.Length; i < this.memory.Rom.Length; i++)
-            {
-                this.memory.Rom[i] = 0xFF;
-            }
+            Cart.CopyRom(bootRom, rom, this.memory);
         }
 
         /// <summary>
-        /// Runs <paramref name="cycles"/> number of clock ticks
+        /// Runs <paramref name="cycles"/> number of clock ticks.
         /// </summary>
-        /// <param name="cycles">The number of clock ticks (NOT INSTRUCTIONS) to run</param>
+        /// <param name="cycles">The number of clock ticks (NOT INSTRUCTIONS) to run.</param>
         public void Tick(int cycles)
         {
             this.delay -= cycles;
@@ -186,69 +152,26 @@ namespace JAGBE.GB.Emulation
             {
                 if (this.memory.Status == CpuState.STOP)
                 {
-                    this.memory.joypad.Update(this.memory);
-                    this.delay += DelayStep;
-                    this.syncDelay += DelayStep;
-                    if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
-                    {
-                        this.memory.Status = CpuState.OKAY;
-                    }
-
+                    HandleStopMode();
                     continue;
                 }
 
                 if (this.memory.Status == CpuState.HUNG)
                 {
-                    if (!this.hung)
-                    {
-                        Logger.LogWarning("Cpu has hung.");
-                        this.hung = true;
-                    }
-
-                    this.delay += DelayStep;
-                    continue;
+                    HandleHungMode();
+                    return; // Return right away to avoid busy looping as much as possible in the core of the emulator.
                 }
 
                 TickIoDevices();
                 if (this.memory.Status == CpuState.HALT)
                 {
-                    this.delay += DelayStep;
-                    if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
-                    {
-                        this.memory.Status = CpuState.OKAY;
-                    }
-
+                    HandleHaltMode();
                     continue;
                 }
 
                 HandleInterupts();
-                this.memory.IME = this.memory.NextIMEValue;
-                if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
-                {
-                    this.breakMode = true;
-                    Logger.LogInfo("hit breakpoint $" + this.Pc.ToString("X4"));
-                    Logger.Instance.SetMinLogLevel(0);
-                }
-
-                if (this.breakMode)
-                {
-                    Logger.LogVerbose(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
-                }
-
-                byte opcode = (byte)this.memory.LdI8();
-                if (this.memory.HaltBugged)
-                {
-                    this.memory.HaltBugged = false;
-                    this.memory.R.Pc--;
-                }
-
-                int ticks = 0;
-                while (!Instruction.Run(this.memory, opcode, ticks++))
-                {
-                    TickIoDevices();
-                }
-
-                this.delay += (ticks * DelayStep);
+                HandleBreakPoints();
+                RunInstruction();
             }
 
             if (this.syncDelay != this.delay)
@@ -266,6 +189,42 @@ namespace JAGBE.GB.Emulation
         /// Enables the LCD renderer.
         /// </summary>
         internal void EnableLcdRenderer() => this.memory.Lcd.ForceNullRender = false;
+
+        private void HandleBreakPoints()
+        {
+            if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
+            {
+                this.breakMode = true;
+                Logger.LogInfo("hit breakpoint $" + this.Pc.ToString("X4"));
+                Logger.Instance.SetMinLogLevel(0);
+            }
+
+            if (this.breakMode)
+            {
+                Logger.LogVerbose(this.memory.R.Pc.ToString("X4") + ": " + Disassembler.DisassembleInstruction(this.memory));
+            }
+        }
+
+        private void HandleHaltMode()
+        {
+            this.delay += DelayStep;
+            if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
+            {
+                this.memory.Status = CpuState.OKAY;
+            }
+        }
+
+        private void HandleHungMode()
+        {
+            if (!this.hung)
+            {
+                Logger.LogWarning("Cpu has hung.");
+                this.hung = true;
+            }
+
+            this.delay = 0;
+            this.syncDelay = 0;
+        }
 
         /// <summary>
         /// Handles the interupts.
@@ -302,6 +261,35 @@ namespace JAGBE.GB.Emulation
                     return;
                 }
             }
+        }
+
+        private void HandleStopMode()
+        {
+            this.memory.joypad.Update(this.memory);
+            this.delay += DelayStep;
+            this.syncDelay += DelayStep;
+            if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
+            {
+                this.memory.Status = CpuState.OKAY;
+            }
+        }
+
+        private void RunInstruction()
+        {
+            byte opcode = (byte)this.memory.LdI8();
+            if (this.memory.HaltBugged)
+            {
+                this.memory.HaltBugged = false;
+                this.memory.R.Pc--;
+            }
+
+            int ticks = 0;
+            while (!Instruction.Run(this.memory, opcode, ticks++))
+            {
+                TickIoDevices();
+            }
+
+            this.delay += (ticks * DelayStep);
         }
 
         private void TickIoDevices()

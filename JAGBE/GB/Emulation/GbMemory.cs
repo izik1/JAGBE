@@ -200,13 +200,13 @@ namespace JAGBE.GB.Emulation
         /// Loads a 8-bit value and increments the pc.
         /// </summary>
         /// <returns></returns>
-        internal GbUInt8 LdI8() => GetMappedMemory(this.R.Pc++);
+        internal GbUInt8 LdI8() => GetMappedMemory(this.R.Pc++, false);
 
         /// <summary>
         /// Pops a 8-bit value from the stack.
         /// </summary>
         /// <returns></returns>
-        internal GbUInt8 Pop() => GetMappedMemory(this.R.Sp++);
+        internal GbUInt8 Pop() => GetMappedMemory(this.R.Sp++, false);
 
         /// <summary>
         /// Pushes the specified <paramref name="value"/> onto the stack.
