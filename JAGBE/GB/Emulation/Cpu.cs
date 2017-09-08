@@ -45,12 +45,6 @@ namespace JAGBE.GB.Emulation
         private GbMemory memory;
 
         /// <summary>
-        /// The This is to sync the cpu (with variable clock length instructions) to the GPU, APU
-        /// DMA, Timer, etc which always take the same amount of time.
-        /// </summary>
-        private int syncDelay;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Cpu"/> class.
         /// </summary>
         /// <param name="bootRom">The boot rom.</param>
@@ -147,37 +141,29 @@ namespace JAGBE.GB.Emulation
         public void Tick(int cycles)
         {
             this.delay -= cycles;
-            this.syncDelay = this.delay;
             while (this.delay < 0)
             {
-                if (this.memory.Status == CpuState.STOP)
+                switch (this.memory.Status)
                 {
-                    HandleStopMode();
-                    continue;
+                    case CpuState.OKAY:
+                        HandleOkayMode();
+                        continue;
+
+                    case CpuState.HALT:
+                        HandleHaltMode();
+                        continue;
+
+                    case CpuState.STOP:
+                        HandleStopMode();
+                        continue;
+
+                    case CpuState.HUNG:
+                        HandleHungMode();
+                        continue;
+
+                    default:
+                        throw new InvalidOperationException("Cpu is in an invalid state.");
                 }
-
-                if (this.memory.Status == CpuState.HUNG)
-                {
-                    HandleHungMode();
-                    return; // Return right away to avoid busy looping as much as possible in the core of the emulator.
-                }
-
-                TickIoDevices();
-                if (this.memory.Status == CpuState.HALT)
-                {
-                    HandleHaltMode();
-                    continue;
-                }
-
-                HandleInterupts();
-                this.memory.IME = this.memory.NextIMEValue;
-                HandleBreakPoints();
-                RunInstruction();
-            }
-
-            if (this.syncDelay != this.delay)
-            {
-                Logger.LogWarning("Left sync delay unsynced sync: " + this.syncDelay.ToString() + ", this.delay: " + this.delay.ToString());
             }
         }
 
@@ -208,6 +194,7 @@ namespace JAGBE.GB.Emulation
 
         private void HandleHaltMode()
         {
+            this.memory.Update();
             this.delay += DelayStep;
             if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
             {
@@ -224,7 +211,6 @@ namespace JAGBE.GB.Emulation
             }
 
             this.delay = 0;
-            this.syncDelay = 0;
         }
 
         /// <summary>
@@ -234,13 +220,14 @@ namespace JAGBE.GB.Emulation
         {
             if (!this.memory.IME || (this.memory.IER & this.memory.IF & 0x1F) == 0)
             {
+                this.memory.IME = this.memory.NextIMEValue;
                 return;
             }
 
             void subStep()
             {
                 this.delay += DelayStep;
-                TickIoDevices();
+                this.memory.Update();
                 this.memory.IME = this.memory.NextIMEValue;
             }
 
@@ -257,47 +244,29 @@ namespace JAGBE.GB.Emulation
                 {
                     this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
                     this.memory.IF &= (byte)(~(1 << i));
+                    this.memory.IME = false;
                     this.memory.NextIMEValue = false;
                     break;
                 }
             }
+        }
 
-            this.memory.IME = this.memory.NextIMEValue;
+        private void HandleOkayMode()
+        {
+            this.memory.Update();
+            HandleInterupts();
+            HandleBreakPoints();
+            this.delay += Instruction.Run(this.memory) * DelayStep;
         }
 
         private void HandleStopMode()
         {
             this.memory.joypad.Update(this.memory);
             this.delay += DelayStep;
-            this.syncDelay += DelayStep;
             if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
             {
                 this.memory.Status = CpuState.OKAY;
             }
-        }
-
-        private void RunInstruction()
-        {
-            byte opcode = (byte)this.memory.LdI8();
-            if (this.memory.HaltBugged)
-            {
-                this.memory.HaltBugged = false;
-                this.memory.R.Pc--;
-            }
-
-            int ticks = 0;
-            while (!Instruction.Run(this.memory, opcode, ticks++))
-            {
-                TickIoDevices();
-            }
-
-            this.delay += (ticks * DelayStep);
-        }
-
-        private void TickIoDevices()
-        {
-            this.memory.Update();
-            this.syncDelay += DelayStep;
         }
     }
 }

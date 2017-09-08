@@ -35,6 +35,29 @@ namespace JAGBE.GB.Emulation
         public static bool Run(GbMemory memory, byte opcode, int step) => NmOps[opcode].Invoke(memory, step);
 
         /// <summary>
+        /// Runs an instruction and returns the number of ticks it took to complete.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        /// <returns>The number of ticks that the instruction took to run.</returns>
+        public static int Run(GbMemory memory)
+        {
+            byte opcode = (byte)memory.LdI8();
+            if (memory.HaltBugged)
+            {
+                memory.HaltBugged = false;
+                memory.R.Pc--;
+            }
+
+            int ticks = 0;
+            while (!NmOps[opcode].Invoke(memory, ticks++))
+            {
+                memory.Update();
+            }
+
+            return ticks;
+        }
+
+        /// <summary>
         /// Gets the CB prefixed instructions.
         /// </summary>
         /// <returns>The CB prefixed instructions.</returns>
