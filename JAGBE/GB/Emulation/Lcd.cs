@@ -263,6 +263,8 @@ namespace JAGBE.GB.Emulation
         /// <param name="mem">The memory.</param>
         public void Tick(GbMemory mem)
         {
+            TickDma(mem);
+
             if (!this.Lcdc[7])
             {
                 if (this.LY != 0 || this.cy != 0 || this.displayMemory[0] == 0)
@@ -604,6 +606,25 @@ namespace JAGBE.GB.Emulation
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];
                     }
                 }
+            }
+        }
+
+        private void TickDma(GbMemory memory)
+        {
+            if (this.DMA < 162)
+            {
+                if (this.DMA != 0)
+                {
+                    if (this.DMA > 1)
+                    {
+                        this.Oam[this.DMA - 2] = this.DMAValue;
+                    }
+
+                    this.DMAValue = memory.GetMappedMemoryDma(this.DMAAddress);
+                    this.DMAAddress++;
+                }
+
+                this.DMA++;
             }
         }
     }

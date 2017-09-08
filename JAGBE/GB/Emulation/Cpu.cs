@@ -223,7 +223,6 @@ namespace JAGBE.GB.Emulation
 
                 HandleInterupts();
                 this.memory.IME = this.memory.NextIMEValue;
-
                 if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
                 {
                     this.breakMode = true;
@@ -244,14 +243,12 @@ namespace JAGBE.GB.Emulation
                 }
 
                 int ticks = 0;
-                while (!Instruction.Run(this.memory, opcode, ticks))
+                while (!Instruction.Run(this.memory, opcode, ticks++))
                 {
-                    ticks++;
                     TickIoDevices();
-                    this.delay += DelayStep;
                 }
 
-                this.delay += DelayStep;
+                this.delay += (ticks * DelayStep);
             }
 
             if (this.syncDelay != this.delay)
@@ -307,34 +304,9 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        /// <summary>
-        /// Ticks the dma.
-        /// </summary>
-        private void TickDma()
-        {
-            Lcd lcd = this.memory.Lcd;
-            if (lcd.DMA < DelayStep * 162)
-            {
-                if (lcd.DMA != 0)
-                {
-                    if (lcd.DMA > DelayStep)
-                    {
-                        lcd.Oam[(lcd.DMA / DelayStep) - 2] = lcd.DMAValue;
-                    }
-
-                    lcd.DMAValue = this.memory.GetMappedMemoryDma(lcd.DMAAddress);
-                    lcd.DMAAddress++;
-                }
-
-                lcd.DMA += DelayStep;
-            }
-        }
-
         private void TickIoDevices()
         {
-            this.memory.Lcd.Tick(this.memory);
             this.memory.Update();
-            TickDma();
             this.syncDelay += DelayStep;
         }
     }

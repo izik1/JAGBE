@@ -54,13 +54,16 @@ namespace JAGBETests.RomTests.mooneye
             public void Intr_2_oam_ok_timing() => TestDisplayOut(Path + "intr_2_oam_ok_timing.gb", "", false);
 
             [TestMethod]
-            public void Lcdon_timing_dmgABCXmgbS() => TestDisplayOut(Path + "lcdon_timing-dmgABCXmgbS.gb", "", false);
+            public void Lcdon_timing_dmgABCXmgbS() => TestDisplayOut(Path + "lcdon_timing-dmgABCXmgbS.gb",
+                "", false, "jQLJk2H/WflkWVAhZ7KLyy9FvRpCLGld/PVGRW+QwVE=");
 
             [TestMethod]
-            public void Lcdon_write_timing_GS() => TestDisplayOut(Path + "lcdon_write_timing-GS.gb", "", false);
+            public void Lcdon_write_timing_GS() => TestDisplayOut(Path + "lcdon_write_timing-GS.gb",
+                "", false, "bHTymavOwRDq1rc3KhRtD0sns8pp0B70PSlp8ms9eEA=");
 
             [TestMethod]
-            public void Stat_irq_blocking() => TestDisplayOut(Path + "stat_irq_blocking.gb", "", false);
+            public void Stat_irq_blocking() => TestDisplayOut(Path + "stat_irq_blocking.gb",
+                "", false, "jdbPrSP9VfYmciq/OTBRLs3IHxppU6Qqrx/LxiJS+aw=");
 
             [TestMethod]
             public void Vblank_stat_intr_GS() => TestDisplayOut(Path + "vblank_stat_intr-GS.gb", "", false);
