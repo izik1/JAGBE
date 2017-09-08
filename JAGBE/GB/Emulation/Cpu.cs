@@ -170,6 +170,7 @@ namespace JAGBE.GB.Emulation
                 }
 
                 HandleInterupts();
+                this.memory.IME = this.memory.NextIMEValue;
                 HandleBreakPoints();
                 RunInstruction();
             }
@@ -256,11 +257,12 @@ namespace JAGBE.GB.Emulation
                 {
                     this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
                     this.memory.IF &= (byte)(~(1 << i));
-                    this.memory.IME = false;
                     this.memory.NextIMEValue = false;
-                    return;
+                    break;
                 }
             }
+
+            this.memory.IME = this.memory.NextIMEValue;
         }
 
         private void HandleStopMode()
