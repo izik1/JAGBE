@@ -141,16 +141,16 @@ namespace JAGBETests.RomTests.mooneye
         public void LD_hl_sp_e_timing() => TestDisplayOut(BasePath + "ld_hl_sp_e_timing.gb", "", false);
 
         [TestMethod]
-        public void Oam_dma_restart() =>
-            TestDisplayOut(BasePath + "oam_dma_restart.gb", "j9oxRWGIXPDL+nSTCyJtroBt2PwJNvRFtTD1t03y/8A=", true);
+        public void Oam_dma_restart() => TestDisplayOut(BasePath + "oam_dma_restart.gb",
+                "j9oxRWGIXPDL+nSTCyJtroBt2PwJNvRFtTD1t03y/8A=", true, "dBJNp5nZz3PNREhMZ9gt3Sblr+xEm3T7KX0LleFRnjA=");
 
         [TestMethod]
         public void Oam_dma_start() =>
             TestDisplayOut(BasePath + "oam_dma_start.gb", "", false, "tiJkAdxFIo8/oW/wNGruvLjp4DlxuSBdvk72WjMNmHc=");
 
         [TestMethod]
-        public void Oam_dma_timing() =>
-            TestDisplayOut(BasePath + "oam_dma_timing.gb", "j9oxRWGIXPDL+nSTCyJtroBt2PwJNvRFtTD1t03y/8A=", true);
+        public void Oam_dma_timing() => TestDisplayOut(BasePath + "oam_dma_timing.gb",
+                "j9oxRWGIXPDL+nSTCyJtroBt2PwJNvRFtTD1t03y/8A=", true, "dBJNp5nZz3PNREhMZ9gt3Sblr+xEm3T7KX0LleFRnjA=");
 
         [TestMethod]
         public void Pop_timing() => TestDisplayOut(BasePath + "pop_timing.gb", "yXzxDxECgU1W/KW+HBl9/2LLopxEkMGJ83lOv6siIVc=", true);

@@ -16,7 +16,8 @@ namespace JAGBETests.RomTests.mooneye
             private const string GenericSuccessSha256 = "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=";
 
             [TestMethod]
-            public void Multicart_rom_8Mb() => TestDisplayOut(Path + "multicart_rom_8Mb", "", false);
+            public void Multicart_rom_8Mb() => TestDisplayOut(Path + "multicart_rom_8Mb.gb",
+                "", false, "SQ4jC+XQ0mnl+kn/+ornDMwcgDUm3uOu9eFUY31Gcj0=");
 
             [TestMethod]
             public void Ram_64Kb() => TestDisplayOut(Path + "ram_64Kb.gb", GenericSuccessSha256, true);
@@ -34,10 +35,10 @@ namespace JAGBETests.RomTests.mooneye
             public void Rom_4Mb() => TestDisplayOut(Path + "rom_4Mb.gb", GenericSuccessSha256, true);
 
             [TestMethod]
-            public void Rom_8Mb() => TestDisplayOut(Path + "rom_8Mb.gb", "", false);
+            public void Rom_8Mb() => TestDisplayOut(Path + "rom_8Mb.gb", "", false, "9eWFVgmC+DsQ9G+Ep4gyYpk2L7I/IzYsgP6srBBzFr4=");
 
             [TestMethod]
-            public void Rom_16Mb() => TestDisplayOut(Path + "rom_16Mb.gb", "", false);
+            public void Rom_16Mb() => TestDisplayOut(Path + "rom_16Mb.gb", "", false, "9eWFVgmC+DsQ9G+Ep4gyYpk2L7I/IzYsgP6srBBzFr4=");
 
             [TestMethod]
             public void Rom_512Kb() => TestDisplayOut(Path + "rom_512Kb.gb", GenericSuccessSha256, true);

@@ -327,7 +327,7 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
-            if (!ignoreDmaBlock && this.Lcd.Dma < 162)
+            if (!ignoreDmaBlock && this.Lcd.DmaMode)
             {
                 if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
                 {
@@ -419,7 +419,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="value">The value.</param>
         private void SetERam(GbUInt16 address, GbUInt8 value)
         {
-            if (this.ERamEnabled)
+            if (this.ERamEnabled && this.ERam.Length > 0)
             {
                 this.ERam[(address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)) % this.ERam.Length] = value;
             }

@@ -13,6 +13,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal readonly int[] displayMemory = new int[Width * Height];
 
+        internal bool DmaMode;
+
         /// <summary>
         /// Should the LCD be forced to skip rendering
         /// </summary>
@@ -70,14 +72,14 @@ namespace JAGBE.GB.Emulation
         private int cy;
 
         /// <summary>
+        /// The DMA cycle number
+        /// </summary>
+        private int Dma;
+
+        /// <summary>
         /// The DMA address
         /// </summary>
         private GbUInt16 DMAAddress;
-
-        /// <summary>
-        /// The DMA value
-        /// </summary>
-        private GbUInt8 DMAValue;
 
         /// <summary>
         /// Is the LCD requesting an interupt
@@ -148,11 +150,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// The DMA cycle number
-        /// </summary>
-        internal int Dma { get; private set; } = Cpu.DelayStep * 162;
-
-        /// <summary>
         /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
         /// </summary>
         /// <value>The <see cref="GbUInt8"/>.</value>
@@ -206,7 +203,7 @@ namespace JAGBE.GB.Emulation
 
                     case 0x6:
                         this.DMAAddress = (GbUInt16)(value << 8);
-                        this.Dma = 0;
+                        this.Dma = 161;
                         break;
 
                     case 0x7:
@@ -608,21 +605,19 @@ namespace JAGBE.GB.Emulation
 
         private void TickDma(GbMemory memory)
         {
-            if (this.Dma < 162)
+            if (this.Dma == 0)
             {
-                if (this.Dma != 0)
-                {
-                    if (this.Dma > 1)
-                    {
-                        this.Oam[this.Dma - 2] = this.DMAValue;
-                    }
-
-                    this.DMAValue = memory.GetMappedMemoryDma(this.DMAAddress);
-                    this.DMAAddress++;
-                }
-
-                this.Dma++;
+                this.DmaMode = false;
+                return;
             }
+
+            if (this.Dma < 161)
+            {
+                this.DmaMode = true;
+                this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DMAAddress++);
+            }
+
+            this.Dma--;
         }
     }
 }
