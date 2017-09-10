@@ -564,14 +564,14 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void ScanLineWindow()
         {
-            if (WX < 7 || WX > 166)
+            if (this.WX < 7 || this.WX > 166)
             {
                 this.windowLy++;
                 return;
             }
 
             ushort mapOffset = (ushort)(this.Lcdc[6] ? 0x1C00 : 0x1800); // Base offset
-            mapOffset += (ushort)((((this.WY + windowLy) & 0xFF) >> 3) * 32);
+            mapOffset += (ushort)((((this.WY + this.windowLy) & 0xFF) >> 3) * 32);
             byte lineOffset = (byte)(this.WX - 7);
             byte y = (byte)((this.WY + this.windowLy) & 7);
             byte x = (byte)((this.WX - 7) & 7);

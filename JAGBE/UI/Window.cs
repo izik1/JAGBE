@@ -233,14 +233,7 @@ namespace JAGBE.UI
         /// <param name="e">Contains information necessary for frame updating.</param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (this.paused)
-            {
-                this.Title = "JAGBE Emulator | (paused)";
-            }
-            else
-            {
-                this.Title = "JAGBE Emulator";
-            }
+            this.Title = "JAGBE Emulator" + (this.paused ? " | (paused)" : "");
 
             if (this.paused || this.gameBoy.cpu.BreakMode)
             {
