@@ -442,6 +442,7 @@ namespace JAGBE.GB.Emulation
                 if (this.cy == Cpu.DelayStep)
                 {
                     this.STAT |= 2;
+
                     this.IRC |= this.STAT[6] && this.LY != 0 && this.LYC == this.LY;
                 }
             }

@@ -84,9 +84,33 @@ namespace JAGBE.UI
         private Window(int width, int height) : base(width, height, GraphicsMode.Default, "JAGBE Emulator",
             GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
-            string[] roms = GetRom("config.cfg");
-            this.gameBoy = new GameBoy(roms[0], roms[1], this);
-            Console.WriteLine("Now Playing: " + Path.GetFileName(roms[0]));
+            string cfgPath = "config.cfg";
+            while (this.gameBoy == null)
+            {
+                string[] roms = GetRom("config.cfg");
+                byte[] rom;
+                byte[] bootRom;
+                try
+                {
+                    rom = File.ReadAllBytes(roms[0]);
+                    bootRom = File.ReadAllBytes(roms[1]);
+                }
+                catch (Exception)
+                {
+                    Console.Clear();
+                    if (!string.IsNullOrWhiteSpace(cfgPath))
+                    {
+                        cfgPath = "";
+                    }
+
+                    Console.WriteLine("Invalid config or file path, please try again.");
+                    continue;
+                }
+
+                Console.WriteLine("Now Playing: " + Path.GetFileName(roms[0]));
+                this.gameBoy = new GameBoy(rom, bootRom, this);
+            }
+
             this.Keyboard.KeyRepeat = false;
         }
 

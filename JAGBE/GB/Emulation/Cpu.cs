@@ -118,19 +118,35 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException"></exception>
         public void Reset(byte[] rom, byte[] bootRom, IInputHandler inputHandler)
         {
-            byte mbcMode = rom[0x147];
+            byte[] iRom;
+            if (rom.Length < 0x150)
+            {
+                iRom = new byte[0x150];
+                for (int i = 0; i < 0x150; i++)
+                {
+                    iRom[i] = 0xFF;
+                }
+
+                Array.Copy(rom, iRom, rom.Length);
+            }
+            else
+            {
+                iRom = rom;
+            }
+
+            byte mbcMode = iRom[0x147];
             if (mbcMode > 3)
             {
                 throw new InvalidOperationException("Unimplemented MBC mode " + mbcMode.ToString("X2"));
             }
 
-            Logger.LogInfo("MBCTYPE:" + rom[0x147].ToString("X2"));
-            Logger.LogInfo("ROMSIZE:" + rom[0x148].ToString("X2"));
-            Logger.LogInfo("RAMSIZE:" + rom[0x149].ToString("X2"));
+            Logger.LogInfo("MBCTYPE:" + iRom[0x147].ToString("X2"));
+            Logger.LogInfo("ROMSIZE:" + iRom[0x148].ToString("X2"));
+            Logger.LogInfo("RAMSIZE:" + iRom[0x149].ToString("X2"));
             this.memory = new GbMemory(inputHandler)
             {
-                RomBanks = 2 << rom[0x148],
-                Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << rom[0x148]], // Set the rom size to what the cartrage says.
+                RomBanks = 2 << iRom[0x148],
+                Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << iRom[0x148]], // Set the rom size to what the cartrage says.
                 ERam = new GbUInt8[Cart.GetRamSize(rom[0x149])],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             };

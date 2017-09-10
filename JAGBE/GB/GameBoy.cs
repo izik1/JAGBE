@@ -1,5 +1,4 @@
-﻿using System.IO;
-using JAGBE.GB.Emulation;
+﻿using JAGBE.GB.Emulation;
 
 namespace JAGBE.GB
 {
@@ -16,11 +15,10 @@ namespace JAGBE.GB
         /// <summary>
         /// Initializes a new instance of the <see cref="GameBoy"/> class.
         /// </summary>
-        /// <param name="romPath">The rom path.</param>
-        /// <param name="BootromPath">The bootrom path.</param>
+        /// <param name="rom">The rom.</param>
+        /// <param name="bootRom">The boot rom.</param>
         /// <param name="inputHandler">The input handler.</param>
-        internal GameBoy(string romPath, string BootromPath, Input.IInputHandler inputHandler) =>
-            this.cpu = new Cpu(File.ReadAllBytes(BootromPath), File.ReadAllBytes(romPath), inputHandler);
+        internal GameBoy(byte[] rom, byte[] bootRom, Input.IInputHandler inputHandler) => this.cpu = new Cpu(bootRom, rom, inputHandler);
 
         /// <summary>
         /// Updates the cpu using the given <paramref name="targetUpdateRate"/> to determine the
