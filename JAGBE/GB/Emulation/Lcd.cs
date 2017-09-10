@@ -138,6 +138,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private GbUInt8 WY;
 
+        private int windowLy;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.
         /// </summary>
@@ -430,6 +432,11 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void RenderLine()
         {
+            if (this.LY == 0)
+            {
+                this.windowLy = 0;
+            }
+
             if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == GbUInt8.MinValue))
             {
                 this.STAT |= 4;
@@ -555,24 +562,33 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Scans the window of a line.
         /// </summary>
-        /// <exception cref="NotSupportedException"></exception>
         private void ScanLineWindow()
         {
-            ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800); // Base offset
-            mapOffset += (ushort)((((this.WY + this.LY) & 0xFF) >> 3) * 32);
-            byte lineOffset = (byte)((int)this.WX >> 3);
-            byte y = (byte)((this.WY + this.LY) & 7);
-            byte x = (byte)((int)this.WX & 7);
+            if (WX < 7 || WX > 166)
+            {
+                this.windowLy++;
+                return;
+            }
+
+            ushort mapOffset = (ushort)(this.Lcdc[6] ? 0x1C00 : 0x1800); // Base offset
+            mapOffset += (ushort)((((this.WY + windowLy) & 0xFF) >> 3) * 32);
+            byte lineOffset = (byte)(this.WX - 7);
+            byte y = (byte)((this.WY + this.windowLy) & 7);
+            byte x = (byte)((this.WX - 7) & 7);
             ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
                 tile += 256;
             }
 
-            for (int i = 0; i < Width; i++)
+            for (int i = this.WX - 7; i < Width; i++)
             {
-                this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                   COLORS[GetColorIndex(this.BgPallet, y, x, tile)];
+                int colorIndex = GetColorIndex(this.BgPallet, y, x, tile);
+                if (colorIndex != 0)
+                {
+                    this.displayMemory[((Height - this.LY - 1) * Width) + i - (this.WX - 7)] =
+                       COLORS[GetColorIndex(this.BgPallet, y, x, tile)];
+                }
 
                 x++;
                 if (x == 8)
@@ -586,6 +602,8 @@ namespace JAGBE.GB.Emulation
                     }
                 }
             }
+
+            this.windowLy++;
         }
 
         /// <summary>
