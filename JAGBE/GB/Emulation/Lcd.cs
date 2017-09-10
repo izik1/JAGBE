@@ -186,7 +186,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x1:
-                        this.STAT = (value & 0x78) | (this.STAT & 3);
+                        this.STAT = (value & 0x78) | (this.STAT & 7);
                         break;
 
                     case 0x2:
@@ -254,6 +254,8 @@ namespace JAGBE.GB.Emulation
             return arr;
         }
 
+        private bool disabled;
+
         /// <summary>
         /// Ticks the LCD.
         /// </summary>
@@ -264,14 +266,11 @@ namespace JAGBE.GB.Emulation
 
             if (!this.Lcdc[7])
             {
-                if (this.LY != 0 || this.cy != 0 || this.displayMemory[0] == 0)
-                {
-                    this.Disable();
-                }
-
+                this.Disable();
                 return;
             }
 
+            this.disabled = false;
             if (this.LY < 144)
             {
                 RenderLine();
@@ -353,6 +352,12 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void Disable()
         {
+            if (this.disabled)
+            {
+                return;
+            }
+
+            this.disabled = true;
             this.PIRC = false;
             this.LY = 0;
             this.cy = 0;
@@ -360,6 +365,8 @@ namespace JAGBE.GB.Emulation
             {
                 this.displayMemory[i] = WHITE;
             }
+
+            this.STAT &= 0x78;
         }
 
         private bool DrawSprite()
@@ -389,13 +396,12 @@ namespace JAGBE.GB.Emulation
         /// <param name="pallet">The pallet.</param>
         /// <param name="y">The y.</param>
         /// <param name="x">The x.</param>
-        /// <param name="tileMapOffset">The tile map offset.</param>
         /// <param name="tileNum">The tile number.</param>
         /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
-        private int GetColorIndex(GbUInt8 pallet, byte y, byte x, ushort tileMapOffset, ushort tileNum)
+        private int GetColorIndex(GbUInt8 pallet, byte y, byte x, ushort tileNum)
         {
-            int i = ((int)this.VRam[(tileNum * 16) + tileMapOffset + (y * 2)] >> (7 - x) & 1);
-            i += ((int)this.VRam[(tileNum * 16) + tileMapOffset + (y * 2) + 1] >> (7 - x) & 1) * 2;
+            int i = ((int)this.VRam[(tileNum * 16) + (y * 2)] >> (7 - x) & 1);
+            i += ((int)this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2;
             return ((int)pallet >> (i * 2)) & 3;
         }
 
@@ -408,7 +414,7 @@ namespace JAGBE.GB.Emulation
                 byte tileY = (byte)(sprite.Flags[6] ? (7 - ((int)this.LY & 7)) : ((int)this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
                     if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         return true;
@@ -435,18 +441,16 @@ namespace JAGBE.GB.Emulation
 
             if (this.cy == 0)
             {
-                this.STAT &= 0xFC;
+                this.STAT |= 2;
             }
-            else if (this.cy <= Cpu.DelayStep * 10)
+            else if (this.cy < Cpu.DelayStep * 10)
             {
                 if (this.cy == Cpu.DelayStep)
                 {
-                    this.STAT |= 2;
-
                     this.IRC |= this.STAT[6] && this.LY != 0 && this.LYC == this.LY;
                 }
             }
-            else if (this.cy == Cpu.DelayStep * 11)
+            else if (this.cy == Cpu.DelayStep * 10)
             {
                 this.STAT |= 3;
                 if (!this.ForceNullRender)
@@ -466,6 +470,10 @@ namespace JAGBE.GB.Emulation
                         ScanLineSprite();
                     }
                 }
+            }
+            else if (this.cy == Cpu.DelayStep * 53)
+            {
+                this.STAT &= 0xFC;
             }
             else if (this.cy == Cpu.DelayStep * 113)
             {
@@ -489,7 +497,6 @@ namespace JAGBE.GB.Emulation
             byte lineOffset = (byte)((int)this.SCX >> 3);
             byte y = (byte)((this.LY + this.SCY) & 7);
             byte x = (byte)((int)this.SCX & 7);
-            ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
             ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
@@ -499,7 +506,7 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                    COLORS[GetColorIndex(this.BgPallet, y, x, tileOffset, tile)];
+                    COLORS[GetColorIndex(this.BgPallet, y, x, tile)];
                 x++;
                 if (x == 8)
                 {
@@ -556,7 +563,6 @@ namespace JAGBE.GB.Emulation
             byte lineOffset = (byte)((int)this.WX >> 3);
             byte y = (byte)((this.WY + this.LY) & 7);
             byte x = (byte)((int)this.WX & 7);
-            ushort tileOffset = (ushort)(this.Lcdc[4] ? 0 : 0x800);
             ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
@@ -566,7 +572,7 @@ namespace JAGBE.GB.Emulation
             for (int i = 0; i < Width; i++)
             {
                 this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                   COLORS[GetColorIndex(this.BgPallet, y, x, tileOffset, tile)];
+                   COLORS[GetColorIndex(this.BgPallet, y, x, tile)];
 
                 x++;
                 if (x == 8)
@@ -595,7 +601,7 @@ namespace JAGBE.GB.Emulation
                 byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), 0, sprite.Tile);
+                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
                     if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];
