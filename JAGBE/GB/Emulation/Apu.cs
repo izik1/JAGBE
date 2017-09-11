@@ -1,3 +1,4 @@
+using System.IO;
 using JAGBE.Logging;
 
 namespace JAGBE.GB.Emulation
@@ -210,6 +211,32 @@ namespace JAGBE.GB.Emulation
             this.NR44 = 0;
             this.NR50 = 0;
             this.NR51 = 0;
+        }
+
+        internal void SaveState(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((byte)this.NR10);
+            binaryWriter.Write((byte)this.NR11);
+            binaryWriter.Write((byte)this.NR12);
+            binaryWriter.Write((byte)this.NR13);
+            binaryWriter.Write((byte)this.NR14);
+            binaryWriter.Write((byte)this.NR21);
+            binaryWriter.Write((byte)this.NR22);
+            binaryWriter.Write((byte)this.NR23);
+            binaryWriter.Write((byte)this.NR24);
+            binaryWriter.Write((byte)this.NR30);
+            binaryWriter.Write((byte)this.NR31);
+            binaryWriter.Write((byte)this.NR32);
+            binaryWriter.Write((byte)this.NR33);
+            binaryWriter.Write((byte)this.NR34);
+            binaryWriter.Write((byte)this.NR41);
+            binaryWriter.Write((byte)this.NR42);
+            binaryWriter.Write((byte)this.NR43);
+            binaryWriter.Write((byte)this.NR44);
+            binaryWriter.Write((byte)this.NR50);
+            binaryWriter.Write((byte)this.NR51);
+            binaryWriter.Write((byte)this.NR52);
+            binaryWriter.Write(this.WavePattern.ToBytes());
         }
     }
 }

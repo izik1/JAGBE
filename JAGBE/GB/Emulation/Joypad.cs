@@ -1,4 +1,5 @@
-﻿using JAGBE.GB.Input;
+﻿using System.IO;
+using JAGBE.GB.Input;
 
 namespace JAGBE.GB.Emulation
 {
@@ -65,5 +66,19 @@ namespace JAGBE.GB.Emulation
             this.prevKeys = this.keys;
             this.keys = e.value;
         }
+
+        internal void SaveState(BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((byte)this.Status);
+            binaryWriter.Write(this.keys);
+            binaryWriter.Write(this.prevKeys);
+        }
+
+        internal static Joypad LoadState(BinaryReader binaryReader, IInputHandler inputHandler) => new Joypad(inputHandler)
+        {
+            Status = binaryReader.ReadByte(),
+            keys = binaryReader.ReadByte(),
+            prevKeys = binaryReader.ReadByte()
+        };
     }
 }

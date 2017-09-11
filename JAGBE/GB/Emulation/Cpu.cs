@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace JAGBE.GB.Emulation
 {
@@ -11,6 +13,30 @@ namespace JAGBE.GB.Emulation
     /// </summary>
     internal sealed class Cpu
     {
+        /// <summary>
+        /// The save state version, this is to be incremented every time saves-tates become incompatable.
+        /// </summary>
+        private const ulong SaveStateVersion = 0;
+
+        internal byte[] SaveState()
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+
+            binaryWriter.Write(SaveStateVersion);
+            binaryWriter.Write(this.breakMode);
+            binaryWriter.Write(this.breakPoints.Count);
+            foreach (ushort u in this.breakPoints)
+            {
+                binaryWriter.Write(u);
+            }
+
+            binaryWriter.Write(this.delay);
+            binaryWriter.Write(this.hung);
+            this.memory.SaveState(binaryWriter);
+            return memoryStream.ToArray();
+        }
+
         /// <summary>
         /// The clock speed in hz
         /// </summary>

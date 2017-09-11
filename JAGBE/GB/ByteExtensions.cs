@@ -1,10 +1,14 @@
-﻿namespace JAGBE.GB
+﻿using System;
+
+namespace JAGBE.GB
 {
     /// <summary>
     /// Provides extensions for <see cref="byte"/>
     /// </summary>
     internal static class ByteExtensions
     {
+        internal static byte[] ToBytes(this Emulation.GbUInt8[] arr) => Array.ConvertAll(arr, u8 => (byte)u8);
+
         /// <summary>
         /// Assigns bit number <paramref name="bit"/> of <paramref name="a"/> to <paramref name="value"/>.
         /// </summary>
