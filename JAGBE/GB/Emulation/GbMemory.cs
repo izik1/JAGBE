@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
-using System.Security.Cryptography;
 
 namespace JAGBE.GB.Emulation
 {
@@ -41,7 +39,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal GbUInt8[] ERam;
 
-        internal bool HaltBugged;
+        internal int RomBanks;
 
         /// <summary>
         /// The High Ram (stack)
@@ -79,14 +77,6 @@ namespace JAGBE.GB.Emulation
         /// The next IME value
         /// </summary>
         internal bool NextIMEValue;
-
-        /// <summary>
-        /// Gets the instance's registers.
-        /// </summary>
-        /// <value>The instance's registers.</value>
-        internal readonly GbRegisters R = new GbRegisters();
-
-        internal int RomBanks;
 
         /// <summary>
         /// The status of the cpu
@@ -149,6 +139,14 @@ namespace JAGBE.GB.Emulation
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.timer.SysTimer;
 
+        internal bool HaltBugged { get; set; }
+
+        /// <summary>
+        /// Gets the instance's registers.
+        /// </summary>
+        /// <value>The instance's registers.</value>
+        internal GbRegisters R { get; } = new GbRegisters();
+
         /// <summary>
         /// Gets value of memory at HL.
         /// </summary>
@@ -162,7 +160,8 @@ namespace JAGBE.GB.Emulation
         public int GetRomBank()
         {
             int j = this.MappedRomBank & 0x1F;
-            return (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+            int i = (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
+            return i;
         }
 
         /// <summary>
@@ -221,39 +220,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="value">The value.</param>
         internal void Push(GbUInt8 value) => SetMappedMemory(--this.R.Sp, value);
-
-        internal void SaveState(BinaryWriter binaryWriter)
-        {
-            using (SHA256Managed sha = new SHA256Managed())
-            {
-                binaryWriter.Write(sha.ComputeHash(this.Rom)); // Hash rom and boot rom instead of save-stating them.
-                binaryWriter.Write(sha.ComputeHash(this.BootRom));
-            }
-
-            binaryWriter.Write(this.ERam.Length);
-            binaryWriter.Write(this.ERam.ToBytes());
-            binaryWriter.Write(this.HaltBugged);
-            binaryWriter.Write(this.HRam.Length);
-            binaryWriter.Write(this.HRam.ToBytes());
-            binaryWriter.Write(this.IER);
-            binaryWriter.Write(this.IF);
-            binaryWriter.Write(this.IME);
-            this.joypad.SaveState(binaryWriter);
-            this.Lcd.SaveState(binaryWriter);
-            binaryWriter.Write((int)this.MBCMode);
-            binaryWriter.Write(this.NextIMEValue);
-            this.R.SaveState(binaryWriter);
-            binaryWriter.Write(this.RomBanks);
-            binaryWriter.Write((int)this.Status);
-            binaryWriter.Write(this.WRam.ToBytes());
-            this.apu.SaveState(binaryWriter);
-            binaryWriter.Write(this.bootMode);
-            binaryWriter.Write(this.ERamEnabled);
-            binaryWriter.Write(this.MappedRamBank);
-            binaryWriter.Write(this.MappedRomBank);
-            binaryWriter.Write(this.MbcRamMode);
-            this.timer.SaveState(binaryWriter);
-        }
 
         /// <summary>
         /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.

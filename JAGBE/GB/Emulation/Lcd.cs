@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace JAGBE.GB.Emulation
 {
@@ -72,8 +71,6 @@ namespace JAGBE.GB.Emulation
 
         private int cy;
 
-        private bool disabled;
-
         /// <summary>
         /// The DMA cycle number
         /// </summary>
@@ -131,8 +128,6 @@ namespace JAGBE.GB.Emulation
 
         private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
-        private int windowLy;
-
         /// <summary>
         /// The Window W register
         /// </summary>
@@ -142,6 +137,8 @@ namespace JAGBE.GB.Emulation
         /// The Window Y register
         /// </summary>
         private GbUInt8 WY;
+
+        private int windowLy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.
@@ -259,6 +256,8 @@ namespace JAGBE.GB.Emulation
             return arr;
         }
 
+        private bool disabled;
+
         /// <summary>
         /// Ticks the LCD.
         /// </summary>
@@ -346,32 +345,6 @@ namespace JAGBE.GB.Emulation
             (byte)(this.Oam[offset] - 16),
             this.Oam[offset + 2],
             this.Oam[offset + 3]);
-
-        internal void SaveState(BinaryWriter binaryWriter)
-        {
-            binaryWriter.Write(DisplayToBytes()); // TODO: display to bytes un-converter.
-            binaryWriter.Write(this.DmaMode);
-            binaryWriter.Write(this.ForceNullRender);
-            binaryWriter.Write(this.Oam.ToBytes());
-            binaryWriter.Write((byte)this.STAT);
-            binaryWriter.Write(this.VRam.ToBytes());
-            binaryWriter.Write((byte)this.BgPallet);
-            binaryWriter.Write(this.cy);
-            binaryWriter.Write(this.disabled);
-            binaryWriter.Write(this.Dma);
-            binaryWriter.Write((ushort)this.DMAAddress);
-            binaryWriter.Write((byte)this.Lcdc);
-            binaryWriter.Write((byte)this.LY);
-            binaryWriter.Write((byte)this.LYC);
-            binaryWriter.Write((byte)this.objPallet0);
-            binaryWriter.Write((byte)this.objPallet1);
-            binaryWriter.Write(this.PIRC);
-            binaryWriter.Write((byte)this.SCX);
-            binaryWriter.Write((byte)this.SCY);
-            binaryWriter.Write(this.windowLy);
-            binaryWriter.Write((byte)this.WX);
-            binaryWriter.Write((byte)this.WY);
-        }
 
         private static bool IsSpritePixelVisible(int x, int colorIndex, bool priority, int dispMemAtOffset) =>
             x < Width && colorIndex != 0 && (priority || dispMemAtOffset == WHITE);

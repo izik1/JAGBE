@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace JAGBE.GB.Emulation
+﻿namespace JAGBE.GB.Emulation
 {
     internal sealed class Timer
     {
@@ -112,17 +109,6 @@ namespace JAGBE.GB.Emulation
             }
 
             this.PrevTimerIn = b;
-        }
-
-        internal void SaveState(BinaryWriter binaryWriter)
-        {
-            binaryWriter.Write(this.PrevTimerIn);
-            binaryWriter.Write(this.TimaOverflow);
-            binaryWriter.Write(this.PrevTimaOverflow);
-            binaryWriter.Write((ushort)this.sysTimer);
-            binaryWriter.Write((byte)this.Tac);
-            binaryWriter.Write((byte)this.Tma);
-            binaryWriter.Write((byte)this.Tima);
         }
     }
 }
