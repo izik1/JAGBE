@@ -72,6 +72,11 @@ namespace JAGBE.GB.Emulation
 
             set
             {
+                if (!this.NR52[7] && index != 0x20 && index != 0x26)
+                {
+                    return;
+                }
+
                 if (index < 0x10 || index > 0x3F)
                 {
                     return;

@@ -6,6 +6,8 @@ using JAGBE.GB;
 using JAGBE.GB.Input;
 using System.IO;
 using OpenTK.Input;
+using OpenTK.Audio;
+using OpenTK.Audio.OpenAL;
 
 namespace JAGBE.UI
 {
@@ -87,7 +89,7 @@ namespace JAGBE.UI
             string cfgPath = "config.cfg";
             while (this.gameBoy == null)
             {
-                string[] roms = GetRom("config.cfg");
+                string[] roms = GetRom(cfgPath);
                 byte[] rom;
                 byte[] bootRom;
                 try

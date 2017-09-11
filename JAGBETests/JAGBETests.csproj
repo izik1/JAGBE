@@ -55,6 +55,7 @@
     <Compile Include="InstructionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RomTests\blargg\CpuInstrs.cs" />
+    <Compile Include="RomTests\blargg\DmgSound.cs" />
     <Compile Include="RomTests\blargg\Timing.cs" />
     <Compile Include="RomTests\blargg\Various.cs" />
     <Compile Include="RomTests\Helpers.cs" />
