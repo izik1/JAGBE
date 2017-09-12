@@ -35,7 +35,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
-            mem.R.F = (s == 0 ? RFlags.ZB : (byte)0).AssignBit(RFlags.HF, mem.R.A.GetHCarry(val)).AssignBit(RFlags.CF, s < mem.R.A);
+            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZB : 0) | (mem.R.A.GetHCarry(val) ? RFlags.HB : 0) | (s < mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
 
@@ -115,8 +115,9 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
         public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            byte r = (byte)(mem.R.A - val);
-            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, r == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(r)).AssignBit(RFlags.CF, r > mem.R.A);
+            int r = mem.R.A - val;
+            mem.R.F = (GbUInt8)(RFlags.NB | (r == 0 ? RFlags.ZB : 0) |
+            (((int)mem.R.A & 0xF) < (r & 0xF) ? RFlags.HB : 0) | (r < 0 ? RFlags.CB : 0));
         });
 
         /// <summary>
@@ -283,6 +284,8 @@ namespace JAGBE.GB.Emulation.Alu
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : (GbUInt8)0;
         });
 
+#pragma warning disable S1067 // Expressions should not be too complex
+
         /// <summary>
         /// Subtracts src and the carry flag from A
         /// </summary>
@@ -297,10 +300,14 @@ namespace JAGBE.GB.Emulation.Alu
             // Reimplemented on 8/26/2017 thanks to the previous link.
             int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
             int res = mem.R.A - val - cIn;
-            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZNB : RFlags.NB).AssignBit(RFlags.HF,
-                (mem.R.A & 0xF) - (val & 0xF) - cIn < 0).AssignBit(RFlags.CF, res < 0);
+            mem.R.F = (GbUInt8)(((res & 0xFF) == 0 ? RFlags.ZNB : RFlags.NB) |
+            (((int)mem.R.A & 0xF) - ((int)val & 0xF) - cIn < 0 ? RFlags.HB : 0) | (res < 0 ? RFlags.CB : 0));
             mem.R.A = (GbUInt8)res;
         });
+
+#pragma warning restore S1067 // Expressions should not be too complex
+
+        internal static int ConditionalOrVal(int val, bool value) => value ? val : 0;
 
         /// <summary>
         /// Subtracts src from a.
@@ -313,8 +320,8 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A - val);
-            mem.R.F = RFlags.NB.AssignBit(RFlags.ZF, s == 0).AssignBit(RFlags.HF, mem.R.A.GetHFlagN(val))
-            .AssignBit(RFlags.CF, s > mem.R.A);
+            mem.R.F = (GbUInt8)(RFlags.NB | (s == 0 ? RFlags.ZB : 0) |
+            (mem.R.A.GetHFlagN(val) ? RFlags.HB : 0) | (s > mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
 

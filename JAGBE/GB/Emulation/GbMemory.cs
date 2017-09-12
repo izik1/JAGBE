@@ -139,13 +139,13 @@ namespace JAGBE.GB.Emulation
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.timer.SysTimer;
 
-        internal bool HaltBugged { get; set; }
+        internal bool HaltBugged;
 
         /// <summary>
         /// Gets the instance's registers.
         /// </summary>
         /// <value>The instance's registers.</value>
-        internal GbRegisters R { get; } = new GbRegisters();
+        internal readonly GbRegisters R = new GbRegisters();
 
         /// <summary>
         /// Gets value of memory at HL.
@@ -160,8 +160,7 @@ namespace JAGBE.GB.Emulation
         public int GetRomBank()
         {
             int j = this.MappedRomBank & 0x1F;
-            int i = (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
-            return i;
+            return (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
         }
 
         /// <summary>
@@ -349,7 +348,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return (this.Lcd.STAT & 3) == 3 ? (GbUInt8)0xFF : this.Lcd.VRam[address - 0x8000];
+                return this.Lcd.VRamBlocked ? (GbUInt8)0xFF : this.Lcd.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -369,7 +368,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return (this.Lcd.STAT & 0x2) == 2 ? (byte)0xFF : this.Lcd.Oam[address - 0xFE00];
+                return this.Lcd.OamBlocked ? (byte)0xFF : this.Lcd.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
@@ -481,7 +480,7 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer <= 0x9FFF)
             {
-                if ((this.Lcd.STAT & 3) == 3)
+                if (this.Lcd.VRamBlocked)
                 {
                     return;
                 }
@@ -502,7 +501,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFE9F)
             {
-                if ((this.Lcd.STAT & 2) == 2)
+                if (this.Lcd.OamBlocked)
                 {
                     return;
                 }

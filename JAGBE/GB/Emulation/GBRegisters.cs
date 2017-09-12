@@ -8,6 +8,36 @@ namespace JAGBE.GB.Emulation
     internal sealed class GbRegisters
     {
         /// <summary>
+        /// Gets or sets the AF register.
+        /// </summary>
+        internal GbUInt16 Af;
+
+        /// <summary>
+        /// Gets or sets the BC register.
+        /// </summary>
+        internal GbUInt16 Bc;
+
+        /// <summary>
+        /// Gets or sets the DE register.
+        /// </summary>
+        internal GbUInt16 De;
+
+        /// <summary>
+        /// Gets or sets the HL register.
+        /// </summary>
+        internal GbUInt16 Hl;
+
+        /// <summary>
+        /// Gets or sets the Program Counter.
+        /// </summary>
+        internal GbUInt16 Pc;
+
+        /// <summary>
+        /// Gets or sets the Stack Pointer.
+        /// </summary>
+        internal GbUInt16 Sp;
+
+        /// <summary>
         /// Gets or sets the A register.
         /// </summary>
         internal GbUInt8 A
@@ -17,11 +47,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets or sets the AF register.
-        /// </summary>
-        internal GbUInt16 Af { get; set; }
-
-        /// <summary>
         /// Gets or sets the B register.
         /// </summary>
         internal GbUInt8 B
@@ -29,11 +54,6 @@ namespace JAGBE.GB.Emulation
             get => Bc.HighByte;
             set => Bc = new GbUInt16(value, Bc.LowByte);
         }
-
-        /// <summary>
-        /// Gets or sets the BC register.
-        /// </summary>
-        internal GbUInt16 Bc { get; set; }
 
         /// <summary>
         /// Gets or sets the C register.
@@ -52,11 +72,6 @@ namespace JAGBE.GB.Emulation
             get => De.HighByte;
             set => De = new GbUInt16(value, De.LowByte);
         }
-
-        /// <summary>
-        /// Gets or sets the DE register.
-        /// </summary>
-        internal GbUInt16 De { get; set; }
 
         /// <summary>
         /// Gets or sets the E register.
@@ -86,11 +101,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets or sets the HL register.
-        /// </summary>
-        internal GbUInt16 Hl { get; set; }
-
-        /// <summary>
         /// Gets or sets the L register.
         /// </summary>
         internal GbUInt8 L
@@ -98,16 +108,6 @@ namespace JAGBE.GB.Emulation
             get => Hl.LowByte;
             set => Hl = new GbUInt16(Hl.HighByte, value);
         }
-
-        /// <summary>
-        /// Gets or sets the Program Counter.
-        /// </summary>
-        internal GbUInt16 Pc { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Stack Pointer.
-        /// </summary>
-        internal GbUInt16 Sp { get; set; }
 
         /// <summary>
         /// Gets the 16-bit register at <paramref name="index"/>

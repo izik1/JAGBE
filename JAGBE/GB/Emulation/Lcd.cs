@@ -13,7 +13,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal readonly int[] displayMemory = new int[Width * Height];
 
-        internal bool DmaMode;
+        internal bool DmaMode { get; private set; }
 
         /// <summary>
         /// Should the LCD be forced to skip rendering
@@ -28,7 +28,11 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The STAT register
         /// </summary>
-        internal GbUInt8 STAT;
+        private GbUInt8 STAT;
+
+        internal bool VRamBlocked => ((byte)this.STAT & 3) == 3;
+
+        internal bool OamBlocked => this.STAT[1];
 
         /// <summary>
         /// The Video Ram.
@@ -505,7 +509,8 @@ namespace JAGBE.GB.Emulation
             byte y = (byte)((this.LY + this.SCY) & 7);
             byte x = (byte)((int)this.SCX & 7);
             ushort tile = this.VRam[lineOffset + mapOffset];
-            if (!this.Lcdc[4] && tile < 128)
+            bool isTilesetMode1 = this.Lcdc[4];
+            if (!isTilesetMode1 && tile < 128)
             {
                 tile += 256;
             }
@@ -520,7 +525,7 @@ namespace JAGBE.GB.Emulation
                     x = 0;
                     lineOffset = (byte)((lineOffset + 1) & 31);
                     tile = this.VRam[lineOffset + mapOffset];
-                    if (!this.Lcdc[4] && tile < 128)
+                    if (!isTilesetMode1 && tile < 128)
                     {
                         tile += 256;
                     }

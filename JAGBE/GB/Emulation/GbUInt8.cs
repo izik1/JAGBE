@@ -109,7 +109,7 @@ namespace JAGBE.GB.Emulation
         /// <returns></returns>
         public bool this[byte u8]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if DEBUG // Make function safe during debug.
             get
             {
                 if (u8 > 7)
@@ -119,6 +119,9 @@ namespace JAGBE.GB.Emulation
 
                 return (((int)this >> u8) & 1) == 1;
             }
+#else
+            get => (((int)this >> u8) & 1) == 1;
+#endif
         }
 
         /// <summary>

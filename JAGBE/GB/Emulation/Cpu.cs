@@ -238,7 +238,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void HandleInterupts()
         {
-            if (!this.memory.IME || (this.memory.IER & this.memory.IF & 0x1F) == 0)
+            if (!this.memory.IME || ((int)this.memory.IER & this.memory.IF & 0x1F) == 0)
             {
                 this.memory.IME = this.memory.NextIMEValue;
                 return;
@@ -257,10 +257,10 @@ namespace JAGBE.GB.Emulation
             subStep();
             this.memory.Push(this.memory.R.Pc.LowByte);
             subStep();
-            byte b = (byte)(this.memory.IER & this.memory.IF & 0x1F);
+            int b = (int)this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
             {
-                if (b.GetBit((byte)i))
+                if (((b >> i) & 0x1) == 1)
                 {
                     this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
                     this.memory.IF &= (byte)(~(1 << i));

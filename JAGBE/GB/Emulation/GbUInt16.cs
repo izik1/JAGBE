@@ -61,7 +61,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The low byte of this instance's value
         /// </summary>
-        public GbUInt8 LowByte => (GbUInt8)(this.value & 0xFF);
+        public GbUInt8 LowByte => (GbUInt8)this.value;
 
         /// <summary>
         /// Implements the operator -.
