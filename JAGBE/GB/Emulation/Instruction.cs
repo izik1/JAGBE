@@ -185,7 +185,7 @@ namespace JAGBE.GB.Emulation
             {
                 if (step == 0)
                 {
-                    mem.R.F &= RFlags.ZB;
+                    mem.R.F = (GbUInt8)(mem.R.F & RFlags.ZB);
                     mem.R.F |= RFlags.CB;
                     return true;
                 }
@@ -196,7 +196,7 @@ namespace JAGBE.GB.Emulation
             {
                 if (step == 0)
                 {
-                    mem.R.F &= RFlags.ZCB;
+                    mem.R.F = (GbUInt8)(mem.R.F & RFlags.ZCB);
                     mem.R.F ^= RFlags.CB;
                     return true;
                 }

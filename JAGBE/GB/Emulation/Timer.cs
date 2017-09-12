@@ -72,7 +72,7 @@
                         return;
 
                     case 7:
-                        this.Tac = (value & 7);
+                        this.Tac = (GbUInt8)(value & 7);
                         return;
 
                     default:

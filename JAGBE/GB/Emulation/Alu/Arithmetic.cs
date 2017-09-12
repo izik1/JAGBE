@@ -101,7 +101,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
         public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
-            mem.R.A &= val;
+            mem.R.A = (GbUInt8)(mem.R.A & val);
             mem.R.F = mem.R.A == 0 ? RFlags.ZHB : RFlags.HB;
         });
 
@@ -172,8 +172,8 @@ namespace JAGBE.GB.Emulation.Alu
                         res += 0x60;
                     }
                 }
-                mem.R.F &= RFlags.NCB;
 
+                mem.R.F = (GbUInt8)(mem.R.F & RFlags.NCB);
                 if ((res & 0x100) == 0x100)
                 {
                     mem.R.F |= RFlags.CB;

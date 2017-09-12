@@ -433,7 +433,7 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer == 0)
             {
-                this.joypad.Status = (value & 0x30);
+                this.joypad.Status = (GbUInt8)(value & 0x30);
                 return;
             }
 
@@ -451,7 +451,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer == 0xF)
             {
-                this.IF = value & 0x1F;
+                this.IF = (GbUInt8)(value & 0x1F);
                 return;
             }
 
@@ -510,7 +510,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFEFF)
             {
-                // Just return, this is ignored on DMG.
+                return; // Just return, this is ignored on DMG.
             }
             else if (pointer <= 0xFF7F)
             {

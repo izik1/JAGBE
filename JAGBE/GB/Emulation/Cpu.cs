@@ -187,16 +187,6 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        /// <summary>
-        /// Disables the LCD renderer.
-        /// </summary>
-        internal void DisableLcdRenderer() => this.memory.Lcd.ForceNullRender = true;
-
-        /// <summary>
-        /// Enables the LCD renderer.
-        /// </summary>
-        internal void EnableLcdRenderer() => this.memory.Lcd.ForceNullRender = false;
-
         private void HandleBreakPoints()
         {
             if (this.breakPoints.Contains((ushort)this.Pc) && !this.breakMode)
@@ -263,7 +253,7 @@ namespace JAGBE.GB.Emulation
                 if (((b >> i) & 0x1) == 1)
                 {
                     this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
-                    this.memory.IF &= (byte)(~(1 << i));
+                    this.memory.IF = (GbUInt8)(this.memory.IF & ~(1 << i));
                     this.memory.IME = false;
                     this.memory.NextIMEValue = false;
                     break;

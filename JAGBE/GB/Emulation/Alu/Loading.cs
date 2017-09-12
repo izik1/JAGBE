@@ -259,7 +259,7 @@ namespace JAGBE.GB.Emulation.Alu
                 case 1:
                     if (op.Dest == 3)
                     {
-                        mem.R.F = mem.Pop() & 0xF0;
+                        mem.R.F = (GbUInt8)(mem.Pop() & 0xF0);
                     }
                     else
                     {

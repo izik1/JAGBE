@@ -9,7 +9,7 @@ namespace JAGBETests
     {
         private delegate void InstructionTest(int dest, int src, byte val, GbMemory mem);
 
-        private void TestInstruction(InstructionTest testFunc)
+        private static void TestInstruction(InstructionTest testFunc)
         {
             if (testFunc == null)
             {
