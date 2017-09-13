@@ -136,25 +136,15 @@ namespace JAGBE.GB.Emulation
             ops[0x00] = new Opcode(0, 0, (a, b, c) => true); // NOP
             ops[0x07] = new Opcode(0, 0, (op, mem, step) => // RLCA
             {
-                mem.R.F = mem.R.A[7] ? RFlags.CB : (byte)0;
-                mem.R.A <<= 1;
-                if (mem.R.F[RFlags.CF])
-                {
-                    mem.R.A |= 0x01;
-                }
-
+                mem.R.F = (GbUInt8)(mem.R.A & 0x80) >> (7 - RFlags.CF);
+                mem.R.A = (GbUInt8)((mem.R.A << 1) | ((mem.R.F & RFlags.CB) >> RFlags.CF));
                 return true;
             });
             ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
             ops[0x0F] = new Opcode(0, 0, (op, mem, step) => // RRCA
             {
-                mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
-                mem.R.A >>= 1;
-                if (mem.R.F[RFlags.CF])
-                {
-                    mem.R.A |= 0x80;
-                }
-
+                mem.R.F = (GbUInt8)((mem.R.A & 1) << RFlags.CF);
+                mem.R.A = (GbUInt8)((mem.R.A >> 1) | ((mem.R.F & RFlags.CB) << (7 - RFlags.CF)));
                 return true;
             });
             ops[0x10] = new Opcode(0, 0, (op, mem, step) => // STOP
@@ -196,7 +186,7 @@ namespace JAGBE.GB.Emulation
             {
                 if (step == 0)
                 {
-                    mem.R.F = (GbUInt8)(mem.R.F & RFlags.ZCB);
+                    mem.R.F &= RFlags.ZCB;
                     mem.R.F ^= RFlags.CB;
                     return true;
                 }

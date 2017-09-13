@@ -19,7 +19,7 @@ namespace JAGBE.GB.Emulation.Alu
             // Reimplemented on 8/26/2017 thanks to the previous link.
             int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
             int res = val + cIn + mem.R.A;
-            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZB : (GbUInt8)0).AssignBit(RFlags.HF,
+            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZB : GbUInt8.MinValue).AssignBit(RFlags.HF,
                 (mem.R.A & 0x0F) + (val & 0x0F) + cIn > 0x0F).AssignBit(RFlags.CF, res > 0xFF);
             mem.R.A = (GbUInt8)res;
         });
@@ -81,7 +81,7 @@ namespace JAGBE.GB.Emulation.Alu
 
                 case 3:
                     sbyte v = (sbyte)op.Data1;
-                    memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : (GbUInt8)0)
+                    memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)
                         .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
                     memory.R.Sp += v;
                     return true;
@@ -116,8 +116,8 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             int r = mem.R.A - val;
-            mem.R.F = (GbUInt8)(RFlags.NB | (r == 0 ? RFlags.ZB : 0) |
-            (((int)mem.R.A & 0xF) < (r & 0xF) ? RFlags.HB : 0) | (r < 0 ? RFlags.CB : 0));
+            mem.R.F = (GbUInt8)((r == 0 ? RFlags.ZNB : RFlags.NB) |
+            ((mem.R.A & 0xF) < (r & 0xF) ? RFlags.HB : 0) | (r < 0 ? RFlags.CB : 0));
         });
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A |= val;
-            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (GbUInt8)0;
+            mem.R.F = mem.R.A == GbUInt8.MinValue ? RFlags.ZB : GbUInt8.MinValue;
         });
 
 #pragma warning disable S1067 // Expressions should not be too complex
@@ -301,13 +301,11 @@ namespace JAGBE.GB.Emulation.Alu
             int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
             int res = mem.R.A - val - cIn;
             mem.R.F = (GbUInt8)(((res & 0xFF) == 0 ? RFlags.ZNB : RFlags.NB) |
-            (((int)mem.R.A & 0xF) - ((int)val & 0xF) - cIn < 0 ? RFlags.HB : 0) | (res < 0 ? RFlags.CB : 0));
+            ((mem.R.A & 0xF) - (val & 0xF) - cIn < 0 ? RFlags.HB : 0) | (res < 0 ? RFlags.CB : 0));
             mem.R.A = (GbUInt8)res;
         });
 
 #pragma warning restore S1067 // Expressions should not be too complex
-
-        internal static int ConditionalOrVal(int val, bool value) => value ? val : 0;
 
         /// <summary>
         /// Subtracts src from a.
@@ -320,7 +318,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             byte s = (byte)(mem.R.A - val);
-            mem.R.F = (GbUInt8)(RFlags.NB | (s == 0 ? RFlags.ZB : 0) |
+            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZNB : RFlags.NB) |
             (mem.R.A.GetHFlagN(val) ? RFlags.HB : 0) | (s > mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
@@ -336,7 +334,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
         {
             mem.R.A ^= val;
-            mem.R.F = mem.R.A == 0 ? RFlags.ZB : (byte)0;
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : GbUInt8.MinValue;
         });
     }
 }

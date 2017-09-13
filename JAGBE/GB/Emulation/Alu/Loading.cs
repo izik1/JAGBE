@@ -215,6 +215,7 @@ namespace JAGBE.GB.Emulation.Alu
                 {
                     throw new ArgumentException(nameof(op));
                 }
+
                 if (op.Src == 2 || op.Dest == 2)
                 {
                     mem.R.Hl++;
@@ -227,6 +228,7 @@ namespace JAGBE.GB.Emulation.Alu
                 {
                     // Do nothing.
                 }
+
                 return true;
             }
 

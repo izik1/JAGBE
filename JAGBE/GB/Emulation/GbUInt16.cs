@@ -162,13 +162,6 @@ namespace JAGBE.GB.Emulation
         public bool Equals(GbUInt16 other) => this.value == other.value;
 
         /// <summary>
-        /// determines weather adding <paramref name="val"/> to this instance would produce a half carry.
-        /// </summary>
-        /// <param name="val">The second value.</param>
-        /// <returns></returns>
-        public bool GetHalfCarry(GbUInt16 val) => (((this & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000;
-
-        /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
