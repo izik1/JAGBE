@@ -69,9 +69,9 @@ namespace JAGBE.GB.Emulation.Alu
             }
 
             memory.Update();
-            op.Data1 = memory.GetMappedMemoryHl();
+            GbUInt8 val = memory.GetMappedMemoryHl();
             memory.Update();
-            memory.SetMappedMemoryHl(operation(memory, op.Data1, op.Dest));
+            memory.SetMappedMemoryHl(operation(memory, val, op.Dest));
             return 3;
         }
     }

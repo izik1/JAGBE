@@ -5,16 +5,6 @@ namespace JAGBE.GB.Emulation
     internal sealed class Opcode
     {
         /// <summary>
-        /// A byte of instruction data.
-        /// </summary>
-        internal GbUInt8 Data1;
-
-        /// <summary>
-        /// A byte of instruction data.
-        /// </summary>
-        internal GbUInt8 Data2;
-
-        /// <summary>
         /// The destination operand.
         /// </summary>
         internal readonly GbUInt8 Dest;

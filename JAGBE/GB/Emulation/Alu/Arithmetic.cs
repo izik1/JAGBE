@@ -57,10 +57,9 @@ namespace JAGBE.GB.Emulation.Alu
         public static int AddSpR8(Opcode op, GbMemory memory)
         {
             memory.Update();
-            op.Data1 = memory.LdI8();
+            sbyte v = (sbyte)memory.LdI8();
             memory.Update();
             memory.Update();
-            sbyte v = (sbyte)op.Data1;
             memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)
                 .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
             memory.R.Sp += v;

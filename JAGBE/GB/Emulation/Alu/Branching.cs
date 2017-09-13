@@ -5,9 +5,9 @@
         public static int Call(Opcode op, GbMemory mem)
         {
             mem.Update();
-            op.Data1 = mem.LdI8(); // Low byte
+            GbUInt8 low = mem.LdI8();
             mem.Update();
-            op.Data2 = mem.LdI8(); // High byte.
+            GbUInt8 high = mem.LdI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
@@ -18,23 +18,23 @@
             mem.Push(mem.R.Pc.HighByte);
             mem.Update();
             mem.Push(mem.R.Pc.LowByte);
-            mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+            mem.R.Pc = new GbUInt16(high, low);
             return 6;
         }
 
         public static int Jp(Opcode op, GbMemory mem)
         {
             mem.Update();
-            op.Data1 = mem.LdI8(); // Low byte
+            GbUInt8 low = mem.LdI8();
             mem.Update();
-            op.Data2 = mem.LdI8(); // High byte.
+            GbUInt8 high = mem.LdI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
             }
 
             mem.Update();
-            mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+            mem.R.Pc = new GbUInt16(high, low);
             return 4;
         }
 
@@ -56,11 +56,11 @@
         public static int Ret(Opcode op, GbMemory mem)
         {
             mem.Update();
-            op.Data1 = mem.Pop(); // Low Byte.
+            GbUInt8 low = mem.Pop();
             mem.Update();
-            op.Data2 = mem.Pop(); // High Byte.
+            GbUInt8 high = mem.Pop(); // High Byte.
             mem.Update();
-            mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+            mem.R.Pc = new GbUInt16(high, low);
             mem.IME |= op.Dest != 0; // Unlike EI IME gets enabled right away.
             mem.NextIMEValue = mem.IME;
             return 4;
@@ -80,11 +80,11 @@
             }
 
             mem.Update();
-            op.Data1 = mem.Pop(); // Low Byte.
+            GbUInt8 low = mem.Pop();
             mem.Update();
-            op.Data2 = mem.Pop(); // High Byte.
+            GbUInt8 high = mem.Pop();
             mem.Update();
-            mem.R.Pc = new GbUInt16(op.Data2, op.Data1);
+            mem.R.Pc = new GbUInt16(high, low);
             return 5;
         }
 
