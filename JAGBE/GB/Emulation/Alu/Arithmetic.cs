@@ -8,12 +8,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Adds src and the carry flag to a.
         /// </summary>
-        /// <remarks>Affected flags: Z 0 H C</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Adc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 0 H C</remarks>
+        public static int Adc(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1038
             // Reimplemented on 8/26/2017 thanks to the previous link.
@@ -27,79 +26,55 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Adds src to a.
         /// </summary>
-        /// <remarks>Affected flags: Z 0 H C</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Add(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 0 H C</remarks>
+        public static int Add(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
             mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZB : 0) | (mem.R.A.GetHCarry(val) ? RFlags.HB : 0) | (s < mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
 
-        public static bool AddHl(Opcode op, GbMemory mem, int step)
+        public static int AddHl(Opcode op, GbMemory mem)
         {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                GbUInt16 val = mem.R.GetR16(op.Src, false);
-                mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, (((mem.R.Hl & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000)
-                    .AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
-                mem.R.Hl += val;
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
+            mem.Update();
+            GbUInt16 val = mem.R.GetR16(op.Src, false);
+            mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, (((mem.R.Hl & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000)
+                .AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
+            mem.R.Hl += val;
+            return 2;
         }
 
         /// <summary>
         /// Adds a 8 bit signed value to the Stack Pointer.
         /// </summary>
-        /// <remarks>Affected Flags: - - H C</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">step</exception>
-        public static bool AddSpR8(Opcode op, GbMemory memory, int step)
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected Flags: - - H C</remarks>
+        public static int AddSpR8(Opcode op, GbMemory memory)
         {
-            switch (step)
-            {
-                case 0:
-                case 2:
-                    return false;
-
-                case 1:
-                    op.Data1 = memory.LdI8();
-                    return false;
-
-                case 3:
-                    sbyte v = (sbyte)op.Data1;
-                    memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)
-                        .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
-                    memory.R.Sp += v;
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
-            }
+            memory.Update();
+            op.Data1 = memory.LdI8();
+            memory.Update();
+            memory.Update();
+            sbyte v = (sbyte)op.Data1;
+            memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)
+                .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
+            memory.R.Sp += v;
+            return 4;
         }
 
         /// <summary>
         /// Ands A and src and stores the result into A.
         /// </summary>
-        /// <remarks>Affected flags: Z 0 1 0</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool And(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 0 1 0</remarks>
+        public static int And(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A = (GbUInt8)(mem.R.A & val);
             mem.R.F = mem.R.A == 0 ? RFlags.ZHB : RFlags.HB;
@@ -108,12 +83,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Subracts src from a and discards the result.
         /// </summary>
-        /// <remarks>Affected flags: Z 1 H -</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Cp(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 1 H -</remarks>
+        public static int Cp(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             int r = mem.R.A - val;
             mem.R.F = (GbUInt8)((r == 0 ? RFlags.ZNB : RFlags.NB) |
@@ -123,12 +97,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Complements the A register of the given <paramref name="memory"/>
         /// </summary>
-        /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Cpl(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
+        public static int Cpl(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A = ~val;
             mem.R.F |= RFlags.NHB;
@@ -137,96 +110,77 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Preforms BCD conversion.
         /// </summary>
+        /// <param name="op">The op.</param>
+        /// <param name="mem">The memory.</param>
+        /// <returns>The number of ticks the operation took to complete.</returns>
         /// <remarks>Affected Flags: Z - 0 C</remarks>
-        /// <param name="op">The op.</param>
-        /// <param name="mem">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">step</exception>
-        public static bool Daa(Opcode op, GbMemory mem, int step)
+        public static int Daa(Opcode op, GbMemory mem)
         {
-            if (step == 0)
+            int res = mem.R.A;
+            if (mem.R.F[RFlags.NF])
             {
-                int res = mem.R.A;
-                if (mem.R.F[RFlags.NF])
+                if (mem.R.F[RFlags.HF])
                 {
-                    if (mem.R.F[RFlags.HF])
-                    {
-                        res = (res - 6) & 0xFF;
-                    }
-
-                    if (mem.R.F[RFlags.CF])
-                    {
-                        res -= 0x60;
-                    }
-                }
-                else
-                {
-                    if (mem.R.F[RFlags.HF] || (res & 0xF) > 9)
-                    {
-                        res += 0x06;
-                    }
-
-                    if (mem.R.F[RFlags.CF] || res > 0x9F)
-                    {
-                        res += 0x60;
-                    }
+                    res = (res - 6) & 0xFF;
                 }
 
-                mem.R.F = (GbUInt8)(mem.R.F & RFlags.NCB);
-                if ((res & 0x100) == 0x100)
+                if (mem.R.F[RFlags.CF])
                 {
-                    mem.R.F |= RFlags.CB;
+                    res -= 0x60;
+                }
+            }
+            else
+            {
+                if (mem.R.F[RFlags.HF] || (res & 0xF) > 9)
+                {
+                    res += 0x06;
                 }
 
-                res &= 0xFF;
-
-                if (res == 0)
+                if (mem.R.F[RFlags.CF] || res > 0x9F)
                 {
-                    mem.R.F |= RFlags.ZB;
+                    res += 0x60;
                 }
-
-                mem.R.A = (GbUInt8)res;
-                return true;
             }
 
-            throw new ArgumentOutOfRangeException(nameof(step));
+            mem.R.F = (GbUInt8)(mem.R.F & RFlags.NCB);
+            if ((res & 0x100) == 0x100)
+            {
+                mem.R.F |= RFlags.CB;
+            }
+
+            res &= 0xFF;
+
+            if (res == 0)
+            {
+                mem.R.F |= RFlags.ZB;
+            }
+
+            mem.R.A = (GbUInt8)res;
+            return 1;
         }
 
         /// <summary>
         /// Decrements src.
         /// </summary>
+        /// <param name="op">The op.</param>
+        /// <param name="mem">The memory.</param>
+        /// <returns>The number of ticks the operation took to complete.</returns>
         /// <remarks>Affected flags: - - - -</remarks>
-        /// <param name="op">The op.</param>
-        /// <param name="mem">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">step != 0 &amp;&amp; step != 1</exception>
-        public static bool Dec16(Opcode op, GbMemory mem, int step)
+        public static int Dec16(Opcode op, GbMemory mem)
         {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) - 1, false);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
+            mem.Update();
+            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) - 1, false);
+            return 2;
         }
 
         /// <summary>
         /// Decrements src.
         /// </summary>
-        /// <remarks>Affected flags: Z 1 H -</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Dec8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 1 H -</remarks>
+        public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, val.GetHFlagN(1)) | RFlags.NB;
             return (GbUInt8)(val - 1);
@@ -235,36 +189,25 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Increments src.
         /// </summary>
-        /// <remarks>Affected flags: - - - -</remarks>
         /// <param name="op">The op.</param>
         /// <param name="mem">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Inc16(Opcode op, GbMemory mem, int step)
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: - - - -</remarks>
+        public static int Inc16(Opcode op, GbMemory mem)
         {
-            if (step == 0)
-            {
-                return false;
-            }
-
-            if (step == 1)
-            {
-                mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1, false);
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
+            mem.Update();
+            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1, false);
+            return 2;
         }
 
         /// <summary>
         /// Increments src.
         /// </summary>
-        /// <remarks>Affected flags: Z 0 H -</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Inc8(Opcode op, GbMemory memory, int step) => BitOpFunc(op, memory, step, (mem, val, dest) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 0 H -</remarks>
+        public static int Inc8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHCarry(1));
             return (GbUInt8)(val + 1);
@@ -273,12 +216,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Ors A and src.
         /// </summary>
-        /// <remarks>Affected flags: Z 0 0 0</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Or(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 0 0 0</remarks>
+        public static int Or(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A |= val;
             mem.R.F = mem.R.A == GbUInt8.MinValue ? RFlags.ZB : GbUInt8.MinValue;
@@ -289,12 +231,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Subtracts src and the carry flag from A
         /// </summary>
-        /// <remarks>Affected flags: Z 1 H C</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Sbc(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 1 H C</remarks>
+        public static int Sbc(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1084
             // Reimplemented on 8/26/2017 thanks to the previous link.
@@ -310,12 +251,11 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Subtracts src from a.
         /// </summary>
-        /// <remarks>Affected flags: Z 1 H C</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Sub(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        /// <remarks>Affected flags: Z 1 H C</remarks>
+        public static int Sub(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             byte s = (byte)(mem.R.A - val);
             mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZNB : RFlags.NB) |
@@ -329,9 +269,8 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 0 0 0</remarks>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherwise <see langword="false"/>.</returns>
-        public static bool Xor(Opcode op, GbMemory memory, int step) => ArithOp8Func(op, memory, step, (mem, val) =>
+        /// <returns>The number of ticks the operation took to complete.</returns>
+        public static int Xor(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A ^= val;
             mem.R.F = mem.R.A == 0 ? RFlags.ZB : GbUInt8.MinValue;

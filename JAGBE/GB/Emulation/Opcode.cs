@@ -47,10 +47,6 @@ namespace JAGBE.GB.Emulation
         /// Invokes the <see cref="function"/> of this instance with the given arguments.
         /// </summary>
         /// <param name="memory">The memory.</param>
-        /// <param name="stepNumber">The step number.</param>
-        /// <returns>
-        /// <see langword="true"/> if the operation has completed, <see langword="false"/> otherwise.
-        /// </returns>
-        public bool Invoke(GbMemory memory, int stepNumber) => this.function(this, memory, stepNumber);
+        public int Invoke(GbMemory memory) => this.function(this, memory);
     }
 }

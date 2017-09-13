@@ -28,36 +28,24 @@ namespace JAGBE.GB.Emulation.Alu
         /// </summary>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
         /// <param name="operation">The operation.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="operation"/> is null</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="step"/> is &gt; 1</exception>
-        internal static bool ArithOp8Func(Opcode op, GbMemory memory, int step, ArithOp8 operation)
+        internal static int ArithOp8Func(Opcode op, GbMemory memory, ArithOp8 operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException(nameof(operation));
             }
 
-            if (step == 0)
+            if (op.Src != 6 && op.Src != 8)
             {
-                if (op.Src == 6 || op.Src == 8)
-                {
-                    return false;
-                }
-
                 operation(memory, memory.R.GetR8(op.Src));
-                return true;
+                return 1;
             }
 
-            if (step == 1)
-            {
-                operation(memory, op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8());
-                return true;
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(step));
+            memory.Update();
+            operation(memory, op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8());
+            return 2;
         }
 
         /// <summary>
@@ -65,40 +53,26 @@ namespace JAGBE.GB.Emulation.Alu
         /// </summary>
         /// <param name="op">The op.</param>
         /// <param name="memory">The memory.</param>
-        /// <param name="step">The step.</param>
         /// <param name="operation">The operation.</param>
-        /// <returns><see langword="true"/> if the operation has completed, otherise <see langword="false"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="operation"/> is null</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="step"/> is &gt; 2</exception>
-        internal static bool BitOpFunc(Opcode op, GbMemory memory, int step, BitOp operation)
+        internal static int BitOpFunc(Opcode op, GbMemory memory, BitOp operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException(nameof(operation));
             }
 
-            switch (step)
+            if (op.Src != 6)
             {
-                case 0:
-                    if (op.Src == 6)
-                    {
-                        return false;
-                    }
-
-                    memory.R.SetR8(op.Src, operation(memory, memory.R.GetR8(op.Src), op.Dest));
-                    return true;
-
-                case 1:
-                    op.Data1 = memory.GetMappedMemoryHl();
-                    return false;
-
-                case 2:
-                    memory.SetMappedMemoryHl(operation(memory, op.Data1, op.Dest));
-                    return true;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(step));
+                memory.R.SetR8(op.Src, operation(memory, memory.R.GetR8(op.Src), op.Dest));
+                return 1;
             }
+
+            memory.Update();
+            op.Data1 = memory.GetMappedMemoryHl();
+            memory.Update();
+            memory.SetMappedMemoryHl(operation(memory, op.Data1, op.Dest));
+            return 3;
         }
     }
 }
