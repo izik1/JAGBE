@@ -33,14 +33,15 @@ namespace JAGBETests.RomTests
             Stopwatch sw = new Stopwatch();
             Cpu c = InitCpu(romPath);
             string shaString = "";
+            byte[] buffer = new byte[0x1680];
             using (SHA256Managed sha = new SHA256Managed())
             {
                 while (sw.ElapsedMilliseconds < MAXELAPSEDMS)
                 {
                     sw.Start();
-                    c.Tick(0x8000);
+                    c.Tick(0x4_0000);
                     sw.Stop();
-                    shaString = (Convert.ToBase64String(sha.ComputeHash(c.DisplayMemoryAsBytes())));
+                    shaString = (Convert.ToBase64String(sha.ComputeHash(c.DisplayMemoryAsBytes(buffer))));
 
                     // Check for error just in case something caught the exception.
                     Assert.IsFalse(c.Status == CpuState.HUNG);

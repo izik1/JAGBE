@@ -104,6 +104,13 @@ namespace JAGBE.GB.Emulation
         public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
 
         /// <summary>
+        /// Gets the LCD's display memory and stores in into the given buffer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns>A refrence to <paramref name="buffer"/>.</returns>
+        public byte[] DisplayMemoryAsBytes(byte[] buffer) => this.memory.Lcd.DisplayToBytes(buffer);
+
+        /// <summary>
         /// Removes the break point at <paramref name="address"/>.
         /// </summary>
         /// <param name="address">The address.</param>

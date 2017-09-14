@@ -240,9 +240,25 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <returns><see cref="displayMemory"/> as a byte array.</returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public byte[] DisplayToBytes()
+        public byte[] DisplayToBytes() => DisplayToBytes(new byte[this.displayMemory.Length / 4]);
+
+        public byte[] DisplayToBytes(byte[] buffer)
         {
-            byte[] arr = new byte[this.displayMemory.Length / 4];
+            if (buffer == null)
+            {
+                throw new ArgumentNullException(nameof(buffer));
+            }
+
+            if (buffer.Length != (Width * Height) / 4)
+            {
+                throw new ArgumentException(nameof(this.displayMemory) + " must have a length of 160*144");
+            }
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = 0;
+            }
+
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
                 int data = Array.IndexOf(COLORS, this.displayMemory[i]);
@@ -251,10 +267,10 @@ namespace JAGBE.GB.Emulation
                     throw new InvalidOperationException("Display memory @" + i.ToString() + " is not a supported color");
                 }
 
-                arr[i / 4] |= (byte)(data << (i & 3));
+                buffer[i / 4] |= (byte)(data << (i & 3));
             }
 
-            return arr;
+            return buffer;
         }
 
         /// <summary>
