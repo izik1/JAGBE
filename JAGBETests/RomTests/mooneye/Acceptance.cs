@@ -33,25 +33,32 @@ namespace JAGBETests.RomTests.mooneye
             private const string Path = BasePath + "gpu/";
 
             [TestMethod]
-            public void Hblank_ly_scx_timing_GS() => TestDisplayOut(Path + "hblank_ly_scx_timing-GS.gb", "", false);
+            public void Hblank_ly_scx_timing_GS() => TestDisplayOut(Path + "hblank_ly_scx_timing-GS.gb",
+                "", false, "TU1eDJ+cy2fluCXe82j6uUVe84ddw17jtIegBv2CF3c=");
 
             [TestMethod]
-            public void Intr_1_2_timing_GS() => TestDisplayOut(Path + "intr_1_2_timing-GS.gb", "", false);
+            public void Intr_1_2_timing_GS() =>
+                TestDisplayOut(Path + "intr_1_2_timing-GS.gb", "7+un8n9KHlQeS17RVMhoQPgkIwkz3cWjIj2wIwDEHSE=", true);
 
             [TestMethod]
-            public void Intr_2_0_timing() => TestDisplayOut(Path + "intr_2_0_timing.gb", "", false);
+            public void Intr_2_0_timing() => TestDisplayOut(Path + "intr_2_0_timing.gb",
+                "", false, "MeDHaYlde0VoGrnrtdn0IECGMNxjXyDEu1mNClFK6kI=");
 
             [TestMethod]
-            public void Intr_2_mode0_timing() => TestDisplayOut(Path + "intr_2_mode0_timing.gb", "", false);
+            public void Intr_2_mode0_timing() => TestDisplayOut(Path + "intr_2_mode0_timing.gb",
+                "", false, "lKuqaMKca8Qe9Mel+V6x6BtykqCSq57I8UukDYnP4V8=");
 
             [TestMethod]
-            public void Intr_2_mode0_timing_sprites() => TestDisplayOut(Path + "intr_2_mode0_timing_sprites.gb", "", false);
+            public void Intr_2_mode0_timing_sprites() => TestDisplayOut(Path + "intr_2_mode0_timing_sprites.gb",
+                "", false, "JfQ1L++qDC8gWKj/sZrt51IzZquxxOmc3D/OPVZD2Ww=");
 
             [TestMethod]
-            public void Intr_2_mode3_timing() => TestDisplayOut(Path + "intr_2_mode3_timing.gb", "", false);
+            public void Intr_2_mode3_timing() => TestDisplayOut(Path + "intr_2_mode3_timing.gb",
+                "", false, "S3+KCOG6gYRMpgjYiRCLQTruimouOuG3nfF3kmbwYDQ=");
 
             [TestMethod]
-            public void Intr_2_oam_ok_timing() => TestDisplayOut(Path + "intr_2_oam_ok_timing.gb", "", false);
+            public void Intr_2_oam_ok_timing() => TestDisplayOut(Path + "intr_2_oam_ok_timing.gb",
+                "", false, "CKw2u6LgamT5nEIwMh6AFSzBIBs6ivL3Liqs8i21RCk=");
 
             [TestMethod]
             public void Lcdon_timing_dmgABCXmgbS() => TestDisplayOut(Path + "lcdon_timing-dmgABCXmgbS.gb",
@@ -66,7 +73,8 @@ namespace JAGBETests.RomTests.mooneye
                 "", false, "jdbPrSP9VfYmciq/OTBRLs3IHxppU6Qqrx/LxiJS+aw=");
 
             [TestMethod]
-            public void Vblank_stat_intr_GS() => TestDisplayOut(Path + "vblank_stat_intr-GS.gb", "", false);
+            public void Vblank_stat_intr_GS() =>
+                TestDisplayOut(Path + "vblank_stat_intr-GS.gb", "XAo3aFzglcyC+bPnKvD3W/Q12qExk2ICtktNEl9TIXE=", true);
         }
 
         [TestMethod]

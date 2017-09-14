@@ -302,7 +302,7 @@ namespace JAGBE.GB.Emulation
                     if (this.cy == Cpu.DelayStep)
                     {
                         mem.IF |= 1;
-                        this.IRC |= this.STAT[6] && this.LYC == 144;
+                        this.IRC |= (this.STAT[6] && this.LYC == 144) || this.STAT[4] || this.STAT[5];
                         this.STAT |= 1;
                     }
                     else if (this.cy == Cpu.DelayStep * 113)
@@ -634,12 +634,9 @@ namespace JAGBE.GB.Emulation
 
             switch (this.cy)
             {
-                case 0:
-                    this.STAT |= 2;
-                    return;
-
                 case Cpu.DelayStep:
-                    this.IRC |= this.STAT[6] && this.LY != 0 && this.LYC == this.LY;
+                    this.STAT |= 2;
+                    this.IRC |= (this.STAT[6] && this.LY != 0 && this.LYC == this.LY) || this.STAT[5];
                     return;
 
                 case Cpu.DelayStep * 10:
@@ -648,7 +645,8 @@ namespace JAGBE.GB.Emulation
                     return;
 
                 case Cpu.DelayStep * 53:
-                    this.STAT = (GbUInt8)(this.STAT & 0xFC);
+                    this.IRC |= this.STAT[3];
+                    this.STAT &= 0xFC;
                     return;
 
                 case Cpu.DelayStep * 113:
