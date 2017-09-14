@@ -53,15 +53,15 @@ MoonEye acceptance tests:
 
 |test|state|comment|
 |-|-|-|
-|add_sp_e_timing|:x:|Doesn't complete.|
+|add_sp_e_timing|:white_check_mark:||
 |bits/mem_oam|:white_check_mark:||
 |bits/reg_f|:white_check_mark:||
 |bits/unused_hwio-GS|:white_check_mark:||
 |boot_regs-dmgABCX|:white_check_mark:||
-|call_cc_timing|:x:|Doesn't complete.|
-|call_cc_timing2|:x:|B,C,D Incorrect.|
-|call_timing|:x:|Incorrect.|
-|call_timing2|:x:|B,C,D Incorrect.|
+|call_cc_timing|:white_check_mark:||
+|call_cc_timing2|:white_check_mark:||
+|call_timing|:white_check_mark:||
+|call_timing2|:white_check_mark:||
 |di_timing-GS|:white_check_mark:||
 |div_timing|:white_check_mark:||
 |ei_timing|:white_check_mark:||
@@ -82,20 +82,20 @@ MoonEye acceptance tests:
 |halt_ime1_timing2-GS|:x:|E Incorrect.|
 |if_ie_registers|:white_check_mark:||
 |intr_timing|:x:|E Incorrect.|
-|jp_cc_timing|:x:|Doesn't complete.|
-|jp_timing|:x:|Doesn't complete.|
-|ld_hl_sp_e_timing|:x:|Doesn't complete.|
+|jp_cc_timing|:white_check_mark:||
+|jp_timing|:white_check_mark:||
+|ld_hl_sp_e_timing|:white_check_mark:||
 |oam_dma_restart|:white_check_mark:||
-|oam_dma_start|:x:|B,C,D,E Incorrect.|
+|oam_dma_start|:white_check_mark:||
 |oam_dma_timing|:white_check_mark:||
 |pop_timing|:white_check_mark:||
-|push_timing|:x:|D Incorrect.|
+|push_timing|:white_check_mark:||
 |rapid_di_ei|:white_check_mark:||
-|ret_cc_timing|:x:|Doesn't complete.|
-|ret_timing|:x:|Doesn't complete.|
+|ret_cc_timing|:white_check_mark:||
+|ret_timing|:white_check_mark:||
 |reti_intr_timing|:white_check_mark:||
-|reti_timing|:x:|Doesn't complete.|
-|rst_timing|:x:|B Incorrect.|
+|reti_timing|:white_check_mark:||
+|rst_timing|:white_check_mark:||
 |timer/div_write|:white_check_mark:||
 |timer/rapid_toggle|:x:|C Incorrect.|
 |timer/tim00|:white_check_mark:||

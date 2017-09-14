@@ -228,6 +228,15 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
         internal void SetMappedMemory(GbUInt16 pointer, GbUInt8 value)
         {
+            if (this.Lcd.DmaMode)
+            {
+                if ((pointer >= 0xFE00 && pointer < 0xFEA0) || (UsesMainBus(pointer) && UsesMainBus(this.Lcd.DmaAddress)) ||
+                    (UsesVRam(pointer) && UsesVRam(this.Lcd.DmaAddress))) // Handle bus conflicts.
+                {
+                    return;
+                }
+            }
+
             if (pointer < 0x8000)
             {
                 if (this.MBCMode == MemoryBankController.None)
@@ -318,6 +327,10 @@ namespace JAGBE.GB.Emulation
             return 0xFF;
         }
 
+        private bool UsesMainBus(GbUInt16 address) => address < 0x8000 || (address >= 0xA000 && address < 0xFE00);
+
+        private bool UsesVRam(GbUInt16 address) => address >= 0x8000 && address < 0xA000;
+
         /// <summary>
         /// Gets the mapped memory.
         /// </summary>
@@ -326,14 +339,22 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
+            if (this.R.Pc >= 0xFDFF)
+            {
+                //Console.WriteLine(this.Lcd.DmaMode);
+            }
             if (!ignoreDmaBlock && this.Lcd.DmaMode)
             {
-                if (address >= 0xFF80 && address < 0xFFFF) // 0xFF80-FFFE
+                if (address >= 0xFE00 && address < 0xFEA0)
                 {
-                    return this.HRam[address - 0xFF80];
+                    return 0xFF;
                 }
 
-                return 0xFF;
+                if ((UsesMainBus(address) && UsesMainBus(this.Lcd.DmaAddress)) ||
+                    (UsesVRam(address) && UsesVRam(this.Lcd.DmaAddress))) // Handle bus conflicts.
+                {
+                    return GetMappedMemory(this.Lcd.DmaAddress, true);
+                }
             }
 
             if (address < 0x4000) // 0x0000-3FFF
@@ -363,7 +384,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFE00) // 0xE000-FDFF
             {
-                return address < 0xF000 ? GetERamMemory(address - 0xE000) : this.WRam[address - 0xF000];
+                return GetMappedMemory(address - 0x2000, ignoreDmaBlock);
             }
 
             if (address < 0xFEA0) // 0xFE00-FE9F
@@ -510,7 +531,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFEFF)
             {
-                return; // Just return, this is ignored on DMG.
+                SetMappedMemoryCommon(pointer - 0x2000, value);
             }
             else if (pointer <= 0xFF7F)
             {
@@ -547,7 +568,7 @@ namespace JAGBE.GB.Emulation
             }
             else
             {
-                this.MbcRamMode = (((int)value & 1) == 1);
+                this.MbcRamMode = ((value & 1) == 1);
             }
         }
     }

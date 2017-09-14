@@ -69,7 +69,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The DMA address
         /// </summary>
-        private GbUInt16 DMAAddress;
+        internal GbUInt16 DmaAddress { get; private set; }
 
         /// <summary>
         /// Is the LCD requesting an interupt
@@ -170,7 +170,7 @@ namespace JAGBE.GB.Emulation
                     case 0x43: return this.SCX;
                     case 0x44: return this.LY;
                     case 0x45: return this.LYC;
-                    case 0x46: return this.DMAAddress.HighByte;
+                    case 0x46: return this.DmaAddress.HighByte;
                     case 0x47: return this.BgPallet;
                     case 0x48: return this.objPallet0;
                     case 0x49: return this.objPallet1;
@@ -205,7 +205,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x6:
-                        this.DMAAddress = (GbUInt16)(value << 8);
+                        this.DmaAddress = (GbUInt16)(value << 8);
                         this.Dma = 161;
                         break;
 
@@ -607,7 +607,7 @@ namespace JAGBE.GB.Emulation
             if (this.Dma < 161)
             {
                 this.DmaMode = true;
-                this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DMAAddress++);
+                this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
             }
 
             this.Dma--;
