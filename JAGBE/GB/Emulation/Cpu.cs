@@ -235,26 +235,19 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void HandleInterupts()
         {
-            if (!this.memory.IME || ((int)this.memory.IER & this.memory.IF & 0x1F) == 0)
+            if (!this.memory.IME || (this.memory.IER & this.memory.IF & 0x1F) == 0)
             {
                 this.memory.IME = this.memory.NextIMEValue;
                 return;
             }
 
-            void subStep()
-            {
-                this.delay += DelayStep;
-                this.memory.Update();
-                this.memory.IME = this.memory.NextIMEValue;
-            }
-
-            subStep();
-            subStep();
+            this.memory.Update();
+            this.memory.Update();
             this.memory.Push(this.memory.R.Pc.HighByte);
-            subStep();
+            this.memory.Update();
             this.memory.Push(this.memory.R.Pc.LowByte);
-            subStep();
-            int b = (int)this.memory.IER & this.memory.IF & 0x1F;
+            this.memory.Update();
+            int b = this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
             {
                 if (((b >> i) & 0x1) == 1)
@@ -266,6 +259,8 @@ namespace JAGBE.GB.Emulation
                     break;
                 }
             }
+
+            this.delay += DelayStep * 4;
         }
 
         private void HandleOkayMode()

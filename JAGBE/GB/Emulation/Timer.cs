@@ -2,17 +2,12 @@
 {
     internal sealed class Timer
     {
+        private int PrevTimaOverflow;
+
         /// <summary>
         /// The previous state of timer input
         /// </summary>
         private bool PrevTimerIn;
-
-        /// <summary>
-        /// Is a TIMA Interupt scheduled?
-        /// </summary>
-        private bool TimaOverflow;
-
-        private bool PrevTimaOverflow;
 
         /// <summary>
         /// The system timer.
@@ -25,14 +20,19 @@
         private GbUInt8 Tac;
 
         /// <summary>
-        /// The TIMA Modulo Register
-        /// </summary>
-        private GbUInt8 Tma;
-
-        /// <summary>
         /// The TIMA Value Register.
         /// </summary>
         private GbUInt8 Tima;
+
+        /// <summary>
+        /// Is a TIMA Interupt scheduled?
+        /// </summary>
+        private int TimaOverflow;
+
+        /// <summary>
+        /// The TIMA Modulo Register
+        /// </summary>
+        private GbUInt8 Tma;
 
         /// <summary>
         /// Gets the system timer.
@@ -63,7 +63,7 @@
                         return;
 
                     case 5:
-                        this.TimaOverflow = false;
+                        this.TimaOverflow = 0;
                         this.Tima = value;
                         return;
 
@@ -85,27 +85,40 @@
         /// Updates the timer.
         /// </summary>
         /// <param name="memory">The memory.</param>
+        /// <param name="TCycles">The number of clock cycles to run for.</param>
+        internal void Update(GbMemory memory, int TCycles)
+        {
+            for (int i = 0; i < TCycles; i++)
+            {
+                Update(memory);
+            }
+        }
+
         internal void Update(GbMemory memory)
         {
-            if (this.PrevTimaOverflow)
+            if (this.TimaOverflow > 0)
+            {
+                this.TimaOverflow--;
+            }
+
+            if (this.PrevTimaOverflow != 0 && this.TimaOverflow == 0)
             {
                 memory.IF |= 4;
                 this.Tima = this.Tma;
             }
 
             this.PrevTimaOverflow = this.TimaOverflow;
-            this.TimaOverflow = false;
-            this.sysTimer += (GbUInt16)Cpu.DelayStep;
-
+            this.sysTimer++;
             bool b = this.Tac[2] &&
-                ((this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)((((int)this.Tac & 3) * 2) + 1)]);
+                ((this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)]);
             if (this.PrevTimerIn && !b)
             {
-                this.TimaOverflow = this.Tima == 0xFF;
-                if (!this.PrevTimaOverflow)
+                if (this.PrevTimaOverflow == 0)
                 {
                     this.Tima++;
                 }
+
+                this.TimaOverflow = this.Tima == 0 ? 5 : 0;
             }
 
             this.PrevTimerIn = b;

@@ -39,7 +39,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         internal GbUInt8[] ERam;
 
-        internal int RomBanks;
+        internal bool HaltBugged;
 
         /// <summary>
         /// The High Ram (stack)
@@ -77,6 +77,14 @@ namespace JAGBE.GB.Emulation
         /// The next IME value
         /// </summary>
         internal bool NextIMEValue;
+
+        /// <summary>
+        /// Gets the instance's registers.
+        /// </summary>
+        /// <value>The instance's registers.</value>
+        internal readonly GbRegisters R = new GbRegisters();
+
+        internal int RomBanks;
 
         /// <summary>
         /// The status of the cpu
@@ -139,14 +147,6 @@ namespace JAGBE.GB.Emulation
         /// <value>The system timer.</value>
         public GbUInt16 SysTimer => this.timer.SysTimer;
 
-        internal bool HaltBugged;
-
-        /// <summary>
-        /// Gets the instance's registers.
-        /// </summary>
-        /// <value>The instance's registers.</value>
-        internal readonly GbRegisters R = new GbRegisters();
-
         /// <summary>
         /// Gets value of memory at HL.
         /// </summary>
@@ -169,7 +169,7 @@ namespace JAGBE.GB.Emulation
         public void Update()
         {
             this.Lcd.Tick(this);
-            this.timer.Update(this);
+            this.timer.Update(this, Cpu.DelayStep);
             this.joypad.Update(this);
         }
 
@@ -264,6 +264,10 @@ namespace JAGBE.GB.Emulation
         /// <param name="value">The value.</param>
         internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
 
+        private static bool UsesMainBus(GbUInt16 address) => address < 0x8000 || (address >= 0xA000 && address < 0xFE00);
+
+        private static bool UsesVRam(GbUInt16 address) => address >= 0x8000 && address < 0xA000;
+
         /// <summary>
         /// Gets data from ERAM.
         /// </summary>
@@ -327,10 +331,6 @@ namespace JAGBE.GB.Emulation
             return 0xFF;
         }
 
-        private bool UsesMainBus(GbUInt16 address) => address < 0x8000 || (address >= 0xA000 && address < 0xFE00);
-
-        private bool UsesVRam(GbUInt16 address) => address >= 0x8000 && address < 0xA000;
-
         /// <summary>
         /// Gets the mapped memory.
         /// </summary>
@@ -339,10 +339,6 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
-            if (this.R.Pc >= 0xFDFF)
-            {
-                //Console.WriteLine(this.Lcd.DmaMode);
-            }
             if (!ignoreDmaBlock && this.Lcd.DmaMode)
             {
                 if (address >= 0xFE00 && address < 0xFEA0)

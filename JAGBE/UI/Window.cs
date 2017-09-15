@@ -236,7 +236,7 @@ namespace JAGBE.UI
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             this.Title = "JAGBE Emulator" + (this.paused ? " | (paused)" : "");
-
+            Console.Title = this.Title;
             if (this.paused || this.gameBoy.cpu.BreakMode)
             {
                 if (!this.step)
