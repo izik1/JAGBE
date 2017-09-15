@@ -61,6 +61,9 @@ namespace JAGBE.GB.Emulation
 
         private bool disabled;
 
+        private int dmaLdTimer = -1;
+        private GbUInt16 DmaLdAddr;
+
         /// <summary>
         /// The DMA cycle number
         /// </summary>
@@ -205,8 +208,8 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x6:
-                        this.DmaAddress = (GbUInt16)(value << 8);
-                        this.Dma = 161;
+                        this.DmaLdAddr = (GbUInt16)(value << 8);
+                        this.dmaLdTimer = 4;
                         break;
 
                     case 0x7:
@@ -601,16 +604,25 @@ namespace JAGBE.GB.Emulation
             if (this.Dma == 0)
             {
                 this.DmaMode = false;
-                return;
             }
-
-            if (this.Dma < 161)
+            else
             {
                 this.DmaMode = true;
                 this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
+                this.Dma--;
             }
 
-            this.Dma--;
+            if (this.dmaLdTimer > 0)
+            {
+                this.dmaLdTimer -= Cpu.DelayStep;
+            }
+
+            if (this.dmaLdTimer == 0)
+            {
+                this.Dma = 160;
+                this.DmaAddress = this.DmaLdAddr;
+                this.dmaLdTimer = -1;
+            }
         }
 
         /// <summary>
