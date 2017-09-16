@@ -163,12 +163,9 @@ namespace JAGBE.GB.Emulation
             return (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
         }
 
-        /// <summary>
-        /// Updates this instance.
-        /// </summary>
-        public void Update()
+        public void Update(int TCycles)
         {
-            for (int i = 0; i < Cpu.MCycle; i++)
+            for (int i = 0; i < TCycles; i++)
             {
                 this.Lcd.Tick(this);
                 this.timer.Update(this);
@@ -176,6 +173,11 @@ namespace JAGBE.GB.Emulation
 
             this.joypad.Update(this);
         }
+
+        /// <summary>
+        /// Updates this instance.
+        /// </summary>
+        public void Update() => Update(Cpu.MCycle);
 
         /// <summary>
         /// Dumps the currently mapped ram.
@@ -232,13 +234,10 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
         internal void SetMappedMemory(GbUInt16 pointer, GbUInt8 value)
         {
-            if (this.Lcd.DmaMode)
+            // Handle bus conflicts.
+            if (this.Lcd.DmaMode && ((pointer >= 0xFE00 && pointer < 0xFEA0) || HasBusConflict(pointer, this.Lcd.DmaAddress)))
             {
-                if ((pointer >= 0xFE00 && pointer < 0xFEA0) || (UsesMainBus(pointer) && UsesMainBus(this.Lcd.DmaAddress)) ||
-                    (UsesVRam(pointer) && UsesVRam(this.Lcd.DmaAddress))) // Handle bus conflicts.
-                {
-                    return;
-                }
+                return;
             }
 
             if (pointer < 0x8000)
@@ -267,6 +266,9 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="value">The value.</param>
         internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
+
+        private static bool HasBusConflict(GbUInt16 a1, GbUInt16 a2) =>
+            (UsesMainBus(a1) && UsesMainBus(a2)) || (UsesVRam(a1) && UsesVRam(a2));
 
         private static bool UsesMainBus(GbUInt16 address) => address < 0x8000 || (address >= 0xA000 && address < 0xFE00);
 
@@ -350,8 +352,7 @@ namespace JAGBE.GB.Emulation
                     return 0xFF;
                 }
 
-                if ((UsesMainBus(address) && UsesMainBus(this.Lcd.DmaAddress)) ||
-                    (UsesVRam(address) && UsesVRam(this.Lcd.DmaAddress))) // Handle bus conflicts.
+                if (HasBusConflict(address, this.Lcd.DmaAddress)) // Handle bus conflicts.
                 {
                     return GetMappedMemory(this.Lcd.DmaAddress, true);
                 }
@@ -460,8 +461,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer < 3)
             {
-                // TODO: implement proper serial read/writes.
-                return;
+                return; // TODO: implement proper serial read/writes.
             }
 
             if (pointer < 0xF)
@@ -501,12 +501,10 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer <= 0x9FFF)
             {
-                if (this.Lcd.VRamBlocked)
+                if (!this.Lcd.VRamBlocked)
                 {
-                    return;
+                    this.Lcd.VRam[pointer - 0x8000] = value;
                 }
-
-                this.Lcd.VRam[pointer - 0x8000] = value;
             }
             else if (pointer <= 0xBFFF)
             {
@@ -522,12 +520,10 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFE9F)
             {
-                if (this.Lcd.OamBlocked)
+                if (!this.Lcd.OamBlocked)
                 {
-                    return;
+                    this.Lcd.Oam[pointer - 0xFE00] = value;
                 }
-
-                this.Lcd.Oam[pointer - 0xFE00] = value;
             }
             else if (pointer <= 0xFEFF)
             {

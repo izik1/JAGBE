@@ -28,7 +28,9 @@
         /// <returns>The number of ticks that the instruction took to run.</returns>
         public static int Run(GbMemory memory)
         {
+            memory.Update(1);
             byte opcode = (byte)memory.LdI8();
+            memory.Update(1);
             if (memory.HaltBugged)
             {
                 memory.HaltBugged = false;

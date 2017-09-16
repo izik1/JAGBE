@@ -241,12 +241,11 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
-            this.memory.Update();
-            this.memory.Update();
+            this.memory.Update(10);
             this.memory.Push(this.memory.R.Pc.HighByte);
             this.memory.Update();
             this.memory.Push(this.memory.R.Pc.LowByte);
-            this.memory.Update();
+            this.memory.Update(2);
             int b = this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
             {
@@ -265,7 +264,7 @@ namespace JAGBE.GB.Emulation
 
         private void HandleOkayMode()
         {
-            this.memory.Update();
+            this.memory.Update(2);
             HandleInterupts();
             HandleBreakPoints();
             this.delay += Instruction.Run(this.memory) * MCycle;
