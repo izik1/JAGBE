@@ -33,7 +33,8 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Add(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
-            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZB : 0) | (mem.R.A.GetHCarry(val) ? RFlags.HB : 0) | (s < mem.R.A ? RFlags.CB : 0));
+            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZB : 0) |
+            ((((mem.R.A & 0x0F) + (val & 0x0F)) & 0x10) == 0x10 ? RFlags.HB : 0) | (s < mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
 
@@ -181,7 +182,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 1 H -</remarks>
         public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
         {
-            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, val.GetHFlagN(1)) | RFlags.NB;
+            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB;
             return (GbUInt8)(val - 1);
         });
 
@@ -208,7 +209,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 0 H -</remarks>
         public static int Inc8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
         {
-            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, val.GetHCarry(1));
+            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, (((val & 0x0F) + 1) & 0x10) == 0x10);
             return (GbUInt8)(val + 1);
         });
 
@@ -258,7 +259,7 @@ namespace JAGBE.GB.Emulation.Alu
         {
             byte s = (byte)(mem.R.A - val);
             mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZNB : RFlags.NB) |
-            (mem.R.A.GetHFlagN(val) ? RFlags.HB : 0) | (s > mem.R.A ? RFlags.CB : 0));
+            ((mem.R.A & 0xF) < (val & 0xF) ? RFlags.HB : 0) | (s > mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
 

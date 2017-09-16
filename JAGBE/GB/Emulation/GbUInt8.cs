@@ -174,17 +174,6 @@ namespace JAGBE.GB.Emulation
         public override int GetHashCode() => this.value;
 
         /// <summary>
-        /// Determines if adding <paramref name="u8"/> to this instance would produce a half carry
-        /// </summary>
-        /// <param name="u8">The u8.</param>
-        /// <remarks>
-        /// 0x0F is the largest value a nibble (4 bits) can hold which means any add that causes 2
-        /// nibbles to be &gt; 0xF causes a half carry.
-        /// </remarks>
-        /// <returns>The result of the operation.</returns>
-        public bool GetHCarry(GbUInt8 u8) => (((this & 0x0F) + (u8 & 0x0F)) & 0x10) == 0x10;
-
-        /// <summary>
         /// Sets the specified bit.
         /// </summary>
         /// <param name="bit">The bit.</param>
@@ -236,17 +225,6 @@ namespace JAGBE.GB.Emulation
 
             return (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
         }
-
-        /// <summary>
-        /// Determines if subtracting <paramref name="u8"/> from this instance would produce a half borrow
-        /// </summary>
-        /// <param name="u8">The u8.</param>
-        /// <remarks>
-        /// 0x00 is the smallest value a nibble (4 bits) can hold which means any subtraction that
-        /// causes 2 nibbles to be &lt; 0x0 causes a half carry. (borrow)
-        /// </remarks>
-        /// <returns>The result of the operation</returns>
-        internal bool GetHFlagN(GbUInt8 u8) => ((int)this & 0xF) < ((int)u8 & 0xF);
 
         /// <summary>
         /// Resets the specified <paramref name="bit"/>.
