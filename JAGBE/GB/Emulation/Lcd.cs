@@ -73,11 +73,6 @@ namespace JAGBE.GB.Emulation
         private int dmaMod;
 
         /// <summary>
-        /// Is the LCD requesting an interupt
-        /// </summary>
-        private bool IRC;
-
-        /// <summary>
         /// The LCDC register
         /// </summary>
         private GbUInt8 Lcdc;
@@ -156,7 +151,7 @@ namespace JAGBE.GB.Emulation
 
         internal bool OamBlocked => this.STAT[1];
 
-        internal bool VRamBlocked => ((byte)this.STAT & 3) == 3;
+        internal bool VRamBlocked => (this.STAT & 3) == 3;
 
         /// <summary>
         /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
@@ -300,21 +295,22 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
+            bool IRC = false;
             this.disabled = false;
             if (this.LY < 144)
             {
-                UpdateLine();
+                IRC = UpdateLine();
             }
             else if (this.LY == 144)
             {
                 if (this.cy == 0)
                 {
-                    this.IRC |= this.STAT[3];
+                    IRC |= this.STAT[3];
                     this.STAT = (GbUInt8)(this.STAT & 0xFC);
                 }
                 else
                 {
-                    this.IRC |= this.STAT[4] || this.STAT[5];
+                    IRC |= this.STAT[4] || this.STAT[5];
                     if (this.cy == Cpu.MCycle)
                     {
                         mem.IF |= 1;
@@ -334,7 +330,7 @@ namespace JAGBE.GB.Emulation
                     if (LyCompare())
                     {
                         this.STAT |= 4;
-                        this.IRC |= this.STAT[6];
+                        IRC |= this.STAT[6];
                     }
                     else
                     {
@@ -347,14 +343,14 @@ namespace JAGBE.GB.Emulation
                 if (LyCompare())
                 {
                     this.STAT |= 4;
-                    this.IRC |= this.STAT[6];
+                    IRC |= this.STAT[6];
                 }
                 else
                 {
                     this.STAT = (GbUInt8)(this.STAT & 0xFB);
                 }
 
-                this.IRC |= this.STAT[4] || this.STAT[5];
+                IRC |= this.STAT[4] || this.STAT[5];
                 if (this.cy == (Cpu.MCycle * 113) + 3)
                 {
                     this.LY = (GbUInt8)((this.LY + 1) % 154);
@@ -362,13 +358,12 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            if (this.IRC && !this.PIRC)
+            if (IRC && !this.PIRC)
             {
                 mem.IF |= 2;
             }
 
-            this.PIRC = this.IRC;
-            this.IRC = false;
+            this.PIRC = IRC;
             this.cy++;
         }
 
@@ -433,18 +428,18 @@ namespace JAGBE.GB.Emulation
         /// <param name="x">The x.</param>
         /// <param name="tileNum">The tile number.</param>
         /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
-        private int GetColorIndex(GbUInt8 pallet, int y, int x, ushort tileNum)
+        private int GetColorIndex(int pallet, int y, int x, ushort tileNum)
         {
-            int i = ((int)this.VRam[(tileNum * 16) + (y * 2)] >> (7 - x) & 1);
-            i += ((int)this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2;
-            return ((int)pallet >> (i * 2)) & 3;
+            int i = this.VRam[(tileNum * 16) + (y * 2)] >> (7 - x) & 1;
+            i += (this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2;
+            return (pallet >> (i * 2)) & 3;
         }
 
         private bool IsSpriteVisible(Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
+                int pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
                 int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
@@ -488,11 +483,12 @@ namespace JAGBE.GB.Emulation
             // Offset from the start of VRAM to the start of the background map.
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
             mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
-            int lineOffset = ((int)this.SCX >> 3);
+            int lineOffset = (this.SCX >> 3);
             int y = (this.LY + this.SCY) & 7;
             int x = this.SCX & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
             bool isTilesetMode1 = this.Lcdc[4];
+            int pallet = this.BgPallet;
             if (!isTilesetMode1 && tile < 128)
             {
                 tile += 256;
@@ -500,8 +496,7 @@ namespace JAGBE.GB.Emulation
 
             for (int i = 0; i < Width; i++)
             {
-                this.displayMemory[((Height - this.LY - 1) * Width) + i] =
-                    COLORS[GetColorIndex(this.BgPallet, y, x, tile)];
+                this.displayMemory[((Height - this.LY - 1) * Width) + i] = COLORS[GetColorIndex(pallet, y, x, tile)];
                 x++;
                 if (x == 8)
                 {
@@ -601,14 +596,13 @@ namespace JAGBE.GB.Emulation
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
+                int pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
                 int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
-                bool spritePriority = !sprite.Flags[7];
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, tileY, sprite.Flags[5] ? (7 - x) : x, sprite.Tile);
-                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, spritePriority, this.displayMemory[displayOffset + x]))
+                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];
                     }
@@ -653,12 +647,13 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Updates a line.
         /// </summary>
-        private void UpdateLine()
+        private bool UpdateLine()
         {
+            bool IRC = false;
             if (LyCompare())
             {
                 this.STAT |= 4;
-                this.IRC |= this.STAT[6];
+                IRC |= this.STAT[6];
             }
             else
             {
@@ -669,31 +664,33 @@ namespace JAGBE.GB.Emulation
             {
                 case Cpu.MCycle:
                     this.STAT |= 2;
-                    this.IRC |= this.STAT[5];
-                    return;
+                    IRC |= this.STAT[5];
+                    break;
 
                 case Cpu.MCycle * 10:
                     this.STAT |= 3;
                     RenderLine();
-                    return;
+                    break;
 
                 case 0:
                 case Cpu.MCycle * 53:
-                    this.IRC |= this.STAT[3];
+                    IRC |= this.STAT[3];
                     this.STAT &= 0xFC;
-                    return;
+                    break;
 
                 case (Cpu.MCycle * 113) + 3:
                     this.LY++;
-                    this.IRC |= this.STAT[3];
+                    IRC |= this.STAT[3];
                     this.cy = -1;
-                    return;
+                    break;
 
                 default: // Nothing interesting is happening this cycle.
                     int mode = this.STAT & 3;
-                    this.IRC |= (mode == 2 && this.STAT[5]) || (mode == 0 && this.STAT[3]);
-                    return;
+                    IRC |= (mode == 2 && this.STAT[5]) || (mode == 0 && this.STAT[3]);
+                    break;
             }
+
+            return IRC;
         }
     }
 }
