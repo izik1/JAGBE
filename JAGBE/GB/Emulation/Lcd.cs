@@ -59,6 +59,8 @@ namespace JAGBE.GB.Emulation
 
         private int cy;
 
+        private int STATMode;
+
         private bool disabled;
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The STAT register
         /// </summary>
-        private GbUInt8 STAT;
+        private GbUInt8 STATUpper;
 
         private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
@@ -149,9 +151,9 @@ namespace JAGBE.GB.Emulation
 
         internal bool DmaMode { get; private set; }
 
-        internal bool OamBlocked => this.STAT[1];
+        internal bool OamBlocked => (this.STATMode & 2) == 2;
 
-        internal bool VRamBlocked => (this.STAT & 3) == 3;
+        internal bool VRamBlocked => (this.STATMode) == 3;
 
         /// <summary>
         /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
@@ -166,7 +168,7 @@ namespace JAGBE.GB.Emulation
                 switch (index)
                 {
                     case 0x40: return this.Lcdc;
-                    case 0x41: return this.STAT | 0x80;
+                    case 0x41: return (GbUInt8)((int)this.STATUpper | 0x80 | this.STATMode);
                     case 0x42: return this.SCY;
                     case 0x43: return this.SCX;
                     case 0x44: return this.LY;
@@ -190,7 +192,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x1:
-                        this.STAT = (GbUInt8)((value & 0x78) | (this.STAT & 7));
+                        this.STATUpper = (GbUInt8)(value & 0x78);
                         break;
 
                     case 0x2:
@@ -305,16 +307,16 @@ namespace JAGBE.GB.Emulation
             {
                 if (this.cy == 0)
                 {
-                    IRC |= this.STAT[3];
-                    this.STAT = (GbUInt8)(this.STAT & 0xFC);
+                    IRC |= this.STATUpper[3];
+                    this.STATMode = 0;
                 }
                 else
                 {
-                    IRC |= this.STAT[4] || this.STAT[5];
+                    IRC |= this.STATUpper[4] || this.STATUpper[5];
                     if (this.cy == Cpu.MCycle)
                     {
                         mem.IF |= 1;
-                        this.STAT |= 1;
+                        this.STATMode = 1;
                     }
                     else if (this.cy == (Cpu.MCycle * 113) + 3)
                     {
@@ -329,12 +331,12 @@ namespace JAGBE.GB.Emulation
 
                     if (LyCompare())
                     {
-                        this.STAT |= 4;
-                        IRC |= this.STAT[6];
+                        this.STATUpper |= 4;
+                        IRC |= this.STATUpper[6];
                     }
                     else
                     {
-                        this.STAT = (GbUInt8)(this.STAT & 0xFB);
+                        this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
                     }
                 }
             }
@@ -342,15 +344,15 @@ namespace JAGBE.GB.Emulation
             {
                 if (LyCompare())
                 {
-                    this.STAT |= 4;
-                    IRC |= this.STAT[6];
+                    this.STATUpper |= 4;
+                    IRC |= this.STATUpper[6];
                 }
                 else
                 {
-                    this.STAT = (GbUInt8)(this.STAT & 0xFB);
+                    this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
                 }
 
-                IRC |= this.STAT[4] || this.STAT[5];
+                IRC |= this.STATUpper[4] || this.STATUpper[5];
                 if (this.cy == (Cpu.MCycle * 113) + 3)
                 {
                     this.LY = (GbUInt8)((this.LY + 1) % 154);
@@ -396,7 +398,7 @@ namespace JAGBE.GB.Emulation
                 this.displayMemory[i] = WHITE;
             }
 
-            this.STAT = (GbUInt8)(this.STAT & 0x78);
+            this.STATUpper = (GbUInt8)(this.STATUpper & 0x78);
         }
 
         private bool DrawSprite()
@@ -652,41 +654,40 @@ namespace JAGBE.GB.Emulation
             bool IRC = false;
             if (LyCompare())
             {
-                this.STAT |= 4;
-                IRC |= this.STAT[6];
+                this.STATUpper |= 4;
+                IRC |= this.STATUpper[6];
             }
             else
             {
-                this.STAT = (GbUInt8)(this.STAT & 0xFB);
+                this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
             }
 
             switch (this.cy)
             {
                 case Cpu.MCycle:
-                    this.STAT |= 2;
-                    IRC |= this.STAT[5];
+                    this.STATMode = 2;
+                    IRC |= this.STATUpper[5];
                     break;
 
                 case Cpu.MCycle * 10:
-                    this.STAT |= 3;
+                    this.STATMode = 3;
                     RenderLine();
                     break;
 
                 case 0:
                 case Cpu.MCycle * 53:
-                    IRC |= this.STAT[3];
-                    this.STAT &= 0xFC;
+                    IRC |= this.STATUpper[3];
+                    this.STATMode = 0;
                     break;
 
                 case (Cpu.MCycle * 113) + 3:
                     this.LY++;
-                    IRC |= this.STAT[3];
+                    IRC |= this.STATUpper[3];
                     this.cy = -1;
                     break;
 
                 default: // Nothing interesting is happening this cycle.
-                    int mode = this.STAT & 3;
-                    IRC |= (mode == 2 && this.STAT[5]) || (mode == 0 && this.STAT[3]);
+                    IRC |= (this.STATMode == 2 && this.STATUpper[5]) || (this.STATMode == 0 && this.STATUpper[3]);
                     break;
             }
 

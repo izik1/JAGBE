@@ -32,7 +32,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Res(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (m, val, dest) => val.Res((byte)dest));
+        public static int Res(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (m, val, dest) => val.Res(dest));
 
         /// <summary>
         /// Rls the specified code.
