@@ -218,12 +218,14 @@ namespace JAGBE.GB.Emulation
         /// <returns>The result of the operation</returns>
         internal GbUInt8 AssignBit(GbUInt8 bit, bool val)
         {
+#if DEBUG
             if (bit > 7)
             {
                 throw new ArgumentOutOfRangeException(nameof(bit));
             }
 
-            return (GbUInt8)(val ? this | (1 << bit) : this & ~(1 << bit));
+#endif
+            return val ? this.Set(bit) : this.Res(bit);
         }
 
         /// <summary>
