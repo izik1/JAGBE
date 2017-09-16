@@ -168,8 +168,12 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         public void Update()
         {
-            this.Lcd.Tick(this);
-            this.timer.Update(this, Cpu.DelayStep);
+            for (int i = 0; i < Cpu.MCycle; i++)
+            {
+                this.Lcd.Tick(this);
+                this.timer.Update(this);
+            }
+
             this.joypad.Update(this);
         }
 

@@ -37,8 +37,8 @@ namespace JAGBETests.RomTests.mooneye
                 "", false, "TU1eDJ+cy2fluCXe82j6uUVe84ddw17jtIegBv2CF3c=");
 
             [TestMethod]
-            public void Intr_1_2_timing_GS() =>
-                TestDisplayOut(Path + "intr_1_2_timing-GS.gb", "7+un8n9KHlQeS17RVMhoQPgkIwkz3cWjIj2wIwDEHSE=", true);
+            public void Intr_1_2_timing_GS() => TestDisplayOut(Path + "intr_1_2_timing-GS.gb",
+                "7+un8n9KHlQeS17RVMhoQPgkIwkz3cWjIj2wIwDEHSE=", false, "9yxMVnNYfDxTjtmy4+8zssA9VIW66dbixlbG7UcJjOc=");
 
             [TestMethod]
             public void Intr_2_0_timing() => TestDisplayOut(Path + "intr_2_0_timing.gb",
@@ -70,11 +70,11 @@ namespace JAGBETests.RomTests.mooneye
 
             [TestMethod]
             public void Stat_irq_blocking() => TestDisplayOut(Path + "stat_irq_blocking.gb",
-                "", false, "jdbPrSP9VfYmciq/OTBRLs3IHxppU6Qqrx/LxiJS+aw=");
+                "ct/pSMvekPxIlT/NLHziuq1NDmhtjOC6zt2GF3aDBrs=", true, "jdbPrSP9VfYmciq/OTBRLs3IHxppU6Qqrx/LxiJS+aw=");
 
             [TestMethod]
-            public void Vblank_stat_intr_GS() =>
-                TestDisplayOut(Path + "vblank_stat_intr-GS.gb", "XAo3aFzglcyC+bPnKvD3W/Q12qExk2ICtktNEl9TIXE=", true);
+            public void Vblank_stat_intr_GS() => TestDisplayOut(Path + "vblank_stat_intr-GS.gb",
+                "XAo3aFzglcyC+bPnKvD3W/Q12qExk2ICtktNEl9TIXE=", false, "Kj5h/BhF8WIWM5OLOauNYziiYLeQ7FPRL8kBLgTEoqg=");
         }
 
         [TestMethod]

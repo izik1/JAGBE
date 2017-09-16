@@ -20,7 +20,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The multiplier for the number of clocks an instruction takes.
         /// </summary>
-        internal const int DelayStep = 4;
+        internal const int MCycle = 4;
 
         /// <summary>
         /// Determines weather the cpu is in break mode or not.
@@ -212,7 +212,7 @@ namespace JAGBE.GB.Emulation
         private void HandleHaltMode()
         {
             this.memory.Update();
-            this.delay += DelayStep;
+            this.delay += MCycle;
             if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
             {
                 this.memory.Status = CpuState.OKAY;
@@ -260,7 +260,7 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            this.delay += DelayStep * 4;
+            this.delay += MCycle * 4;
         }
 
         private void HandleOkayMode()
@@ -268,13 +268,13 @@ namespace JAGBE.GB.Emulation
             this.memory.Update();
             HandleInterupts();
             HandleBreakPoints();
-            this.delay += Instruction.Run(this.memory) * DelayStep;
+            this.delay += Instruction.Run(this.memory) * MCycle;
         }
 
         private void HandleStopMode()
         {
             this.memory.joypad.Update(this.memory);
-            this.delay += DelayStep;
+            this.delay += MCycle;
             if ((this.memory.IF & this.memory.IER & 0x1F) > 0)
             {
                 this.memory.Status = CpuState.OKAY;

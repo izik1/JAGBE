@@ -114,8 +114,7 @@
                 ops[(i * 0x10) + 0xC5] = new Opcode((byte)i, 0, Alu.Loading.Push);
             }
 
-            ops[0x00] = new Opcode(0, 0, (a, b) =>
-            1); // NOP
+            ops[0x00] = new Opcode(0, 0, (a, b) => 1); // NOP
             ops[0x07] = new Opcode(0, 0, (op, mem) => // RLCA
             {
                 mem.R.F = (GbUInt8)(mem.R.A & 0x80) >> (7 - RFlags.CF);

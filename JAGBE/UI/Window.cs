@@ -248,6 +248,8 @@ namespace JAGBE.UI
             }
 
             this.gameBoy.Update((int)this.TargetUpdateFrequency);
+
+            // Console.WriteLine((int)Math.Round(this.UpdateFrequency));
         }
 
         /// <summary>

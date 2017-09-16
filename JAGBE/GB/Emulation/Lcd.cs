@@ -61,18 +61,16 @@ namespace JAGBE.GB.Emulation
 
         private bool disabled;
 
-        private int dmaLdTimer = -1;
-        private GbUInt16 DmaLdAddr;
-
         /// <summary>
         /// The DMA cycle number
         /// </summary>
         private int Dma;
 
-        /// <summary>
-        /// The DMA address
-        /// </summary>
-        internal GbUInt16 DmaAddress { get; private set; }
+        private GbUInt16 DmaLdAddr;
+
+        private int dmaLdTimer = -1;
+
+        private int dmaMod;
 
         /// <summary>
         /// Is the LCD requesting an interupt
@@ -148,6 +146,11 @@ namespace JAGBE.GB.Emulation
                 this.displayMemory[i] = WHITE;
             }
         }
+
+        /// <summary>
+        /// The DMA address
+        /// </summary>
+        internal GbUInt16 DmaAddress { get; private set; }
 
         internal bool DmaMode { get; private set; }
 
@@ -276,6 +279,14 @@ namespace JAGBE.GB.Emulation
             return buffer;
         }
 
+        public void Tick(GbMemory mem, int TCycles)
+        {
+            for (int i = 0; i < TCycles; i++)
+            {
+                Tick(mem);
+            }
+        }
+
         /// <summary>
         /// Ticks the LCD.
         /// </summary>
@@ -298,29 +309,32 @@ namespace JAGBE.GB.Emulation
             {
                 if (this.cy == 0)
                 {
+                    this.IRC |= this.STAT[3];
                     this.STAT = (GbUInt8)(this.STAT & 0xFC);
                 }
                 else
                 {
-                    if (this.cy == Cpu.DelayStep)
+                    this.IRC |= this.STAT[4] || this.STAT[5];
+                    if (this.cy == Cpu.MCycle)
                     {
                         mem.IF |= 1;
-                        this.IRC |= (this.STAT[6] && this.LYC == 144) || this.STAT[4] || this.STAT[5];
                         this.STAT |= 1;
                     }
-                    else if (this.cy == Cpu.DelayStep * 113)
+                    else if (this.cy == (Cpu.MCycle * 113) + 3)
                     {
                         this.LY++;
-                        this.cy = -Cpu.DelayStep;
+                        this.windowLy = 0;
+                        this.cy = -1;
                     }
                     else
                     {
                         // Left intentionally empty
                     }
 
-                    if (this.LYC == 144)
+                    if (LyCompare())
                     {
                         this.STAT |= 4;
+                        this.IRC |= this.STAT[6];
                     }
                     else
                     {
@@ -330,18 +344,21 @@ namespace JAGBE.GB.Emulation
             }
             else
             {
-                if (this.cy == Cpu.DelayStep)
+                if (LyCompare())
                 {
-                    this.IRC |= this.STAT[6] && this.LYC == 144;
-                }
-                else if (this.cy == Cpu.DelayStep * 113)
-                {
-                    this.LY = (GbUInt8)((this.LY + 1) % 154);
-                    this.cy = -Cpu.DelayStep;
+                    this.STAT |= 4;
+                    this.IRC |= this.STAT[6];
                 }
                 else
                 {
-                    // Left intentionally empty
+                    this.STAT = (GbUInt8)(this.STAT & 0xFB);
+                }
+
+                this.IRC |= this.STAT[4] || this.STAT[5];
+                if (this.cy == (Cpu.MCycle * 113) + 3)
+                {
+                    this.LY = (GbUInt8)((this.LY + 1) % 154);
+                    this.cy = -1;
                 }
             }
 
@@ -349,12 +366,10 @@ namespace JAGBE.GB.Emulation
             {
                 mem.IF |= 2;
             }
-            else
-            {
-                this.PIRC = false;
-            }
+
+            this.PIRC = this.IRC;
             this.IRC = false;
-            this.cy += Cpu.DelayStep;
+            this.cy++;
         }
 
         internal Sprite ReadSprite(int offset) => new Sprite(
@@ -380,6 +395,7 @@ namespace JAGBE.GB.Emulation
             this.PIRC = false;
             this.LY = 0;
             this.cy = 0;
+            this.windowLy = 0;
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
                 this.displayMemory[i] = WHITE;
@@ -417,7 +433,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="x">The x.</param>
         /// <param name="tileNum">The tile number.</param>
         /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
-        private int GetColorIndex(GbUInt8 pallet, byte y, int x, ushort tileNum)
+        private int GetColorIndex(GbUInt8 pallet, int y, int x, ushort tileNum)
         {
             int i = ((int)this.VRam[(tileNum * 16) + (y * 2)] >> (7 - x) & 1);
             i += ((int)this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2;
@@ -430,7 +446,7 @@ namespace JAGBE.GB.Emulation
             {
                 GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
-                byte tileY = (byte)(sprite.Flags[6] ? (7 - ((int)this.LY & 7)) : ((int)this.LY & 7));
+                int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
@@ -473,8 +489,8 @@ namespace JAGBE.GB.Emulation
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
             mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
             int lineOffset = ((int)this.SCX >> 3);
-            byte y = (byte)((this.LY + this.SCY) & 7);
-            int x = ((int)this.SCX & 7);
+            int y = (this.LY + this.SCY) & 7;
+            int x = this.SCX & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
             bool isTilesetMode1 = this.Lcdc[4];
             if (!isTilesetMode1 && tile < 128)
@@ -545,8 +561,8 @@ namespace JAGBE.GB.Emulation
             ushort mapOffset = (ushort)(this.Lcdc[6] ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((this.WY + this.windowLy) & 0xFF) >> 3) * 32);
             int lineOffset = this.WX - 7;
-            byte y = (byte)((this.WY + this.windowLy) & 7);
-            byte x = (byte)((this.WX - 7) & 7);
+            int y = (this.WY + this.windowLy) & 7;
+            int x = (this.WX - 7) & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
             if (!this.Lcdc[4] && tile < 128)
             {
@@ -587,11 +603,12 @@ namespace JAGBE.GB.Emulation
             {
                 GbUInt8 pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
-                byte tileY = (byte)(sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                bool spritePriority = !sprite.Flags[7];
                 for (int x = 0; x < 8; x++)
                 {
                     int colorIndex = GetColorIndex(pallet, tileY, sprite.Flags[5] ? (7 - x) : x, sprite.Tile);
-                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
+                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, spritePriority, this.displayMemory[displayOffset + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[colorIndex];
                     }
@@ -601,20 +618,28 @@ namespace JAGBE.GB.Emulation
 
         private void TickDma(GbMemory memory)
         {
-            if (this.Dma == 0)
+            if (this.dmaMod == 0)
             {
-                this.DmaMode = false;
+                this.dmaMod = 3;
+                if (this.Dma == 0)
+                {
+                    this.DmaMode = false;
+                }
+                else
+                {
+                    this.DmaMode = true;
+                    this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
+                    this.Dma--;
+                }
             }
             else
             {
-                this.DmaMode = true;
-                this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
-                this.Dma--;
+                this.dmaMod--;
             }
 
             if (this.dmaLdTimer > 0)
             {
-                this.dmaLdTimer -= Cpu.DelayStep;
+                this.dmaLdTimer--;
             }
 
             if (this.dmaLdTimer == 0)
@@ -630,14 +655,10 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void UpdateLine()
         {
-            if (this.LY == 0)
-            {
-                this.windowLy = 0;
-            }
-
             if (LyCompare())
             {
                 this.STAT |= 4;
+                this.IRC |= this.STAT[6];
             }
             else
             {
@@ -646,27 +667,31 @@ namespace JAGBE.GB.Emulation
 
             switch (this.cy)
             {
-                case Cpu.DelayStep:
+                case Cpu.MCycle:
                     this.STAT |= 2;
-                    this.IRC |= (this.STAT[6] && this.LY != 0 && this.LYC == this.LY) || this.STAT[5];
+                    this.IRC |= this.STAT[5];
                     return;
 
-                case Cpu.DelayStep * 10:
+                case Cpu.MCycle * 10:
                     this.STAT |= 3;
                     RenderLine();
                     return;
 
-                case Cpu.DelayStep * 53:
+                case 0:
+                case Cpu.MCycle * 53:
                     this.IRC |= this.STAT[3];
                     this.STAT &= 0xFC;
                     return;
 
-                case Cpu.DelayStep * 113:
+                case (Cpu.MCycle * 113) + 3:
                     this.LY++;
-                    this.cy = -Cpu.DelayStep;
+                    this.IRC |= this.STAT[3];
+                    this.cy = -1;
                     return;
 
                 default: // Nothing interesting is happening this cycle.
+                    int mode = this.STAT & 3;
+                    this.IRC |= (mode == 2 && this.STAT[5]) || (mode == 0 && this.STAT[3]);
                     return;
             }
         }
