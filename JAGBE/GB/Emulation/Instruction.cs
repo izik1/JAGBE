@@ -119,7 +119,7 @@
             ops[0x00] = new Opcode(0, 0, (a, b) => 1); // NOP
             ops[0x07] = new Opcode(0, 0, (op, mem) => // RLCA
             {
-                mem.R.F = (GbUInt8)(mem.R.A & 0x80) >> (7 - RFlags.CF);
+                mem.R.F = (GbUInt8)((mem.R.A & 0x80) >> (7 - RFlags.CF));
                 mem.R.A = (GbUInt8)((mem.R.A << 1) | ((mem.R.F & RFlags.CB) >> RFlags.CF));
                 return 1;
             });
@@ -149,7 +149,7 @@
             {
                 bool oldCf = mem.R.F[RFlags.CF];
                 mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
-                mem.R.A = (byte)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
+                mem.R.A = (GbUInt8)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
                 return 1;
             });
             ops[0x27] = new Opcode(0, 0, Alu.Arithmetic.Daa);

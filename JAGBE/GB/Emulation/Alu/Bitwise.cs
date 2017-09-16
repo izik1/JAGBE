@@ -133,9 +133,9 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns>The number of ticks the operation took to complete.</returns>
         public static int Srl(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
         {
-            GbUInt8 retVal = val >> 1;
-            mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == GbUInt8.MinValue ? RFlags.ZB : 0));
-            return retVal;
+            int retVal = val >> 1;
+            mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
+            return (GbUInt8)retVal;
         });
 
         /// <summary>

@@ -148,14 +148,6 @@ namespace JAGBE.GB.Emulation
         public static bool operator ==(GbUInt8 u8a, GbUInt8 u8b) => u8a.value == u8b.value;
 
         /// <summary>
-        /// Implements the operator &gt;&gt;.
-        /// </summary>
-        /// <param name="u8">The value.</param>
-        /// <param name="bits">The bits.</param>
-        /// <returns>The result of the operator.</returns>
-        public static GbUInt8 operator >>(GbUInt8 u8, int bits) => (GbUInt8)(u8.value >> bits);
-
-        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
