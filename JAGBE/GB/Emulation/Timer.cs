@@ -12,7 +12,7 @@
         /// <summary>
         /// The system timer.
         /// </summary>
-        private GbUInt16 sysTimer = 0;
+        internal GbUInt16 SysTimer { get; private set; } = 0;
 
         /// <summary>
         /// The tac register
@@ -34,19 +34,13 @@
         /// </summary>
         private GbUInt8 Tma;
 
-        /// <summary>
-        /// Gets the system timer.
-        /// </summary>
-        /// <value>The system timer.</value>
-        public GbUInt16 SysTimer => this.sysTimer;
-
         public GbUInt8 this[byte index]
         {
             get
             {
                 switch (index)
                 {
-                    case 4: return this.sysTimer.HighByte;
+                    case 4: return this.SysTimer.HighByte;
                     case 5: return this.Tima;
                     case 6: return this.Tma;
                     case 7: return this.Tac | 0xF8;
@@ -59,7 +53,7 @@
                 switch (index)
                 {
                     case 4:
-                        this.sysTimer = 0;
+                        this.SysTimer = 0;
                         return;
 
                     case 5:
@@ -108,17 +102,16 @@
             }
 
             this.PrevTimaOverflow = this.TimaOverflow;
-            this.sysTimer++;
+            this.SysTimer++;
             bool b = this.Tac[2] &&
-                ((this.Tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)]);
+                ((this.Tac & 3) == 0 ? this.SysTimer.HighByte[1] : this.SysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)]);
             if (this.PrevTimerIn && !b)
             {
-                if (this.PrevTimaOverflow == 0)
-                {
-                    this.Tima++;
+                this.Tima++;
+                if (this.Tima == GbUInt8.MinValue)
+                { // MCycle + 1 because TimaOverflow behaviour happens on the falling edge of this.
+                    this.TimaOverflow = Cpu.MCycle + 1;
                 }
-
-                this.TimaOverflow = this.Tima == 0 ? 5 : 0;
             }
 
             this.PrevTimerIn = b;
