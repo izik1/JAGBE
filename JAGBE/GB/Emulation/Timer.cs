@@ -17,12 +17,12 @@
         /// <summary>
         /// The tac register
         /// </summary>
-        private GbUInt8 Tac;
+        private byte Tac;
 
         /// <summary>
         /// The TIMA Value Register.
         /// </summary>
-        private GbUInt8 Tima;
+        private byte Tima;
 
         /// <summary>
         /// Is a TIMA Interupt scheduled?
@@ -32,7 +32,7 @@
         /// <summary>
         /// The TIMA Modulo Register
         /// </summary>
-        private GbUInt8 Tma;
+        private byte Tma;
 
         public GbUInt8 this[byte index]
         {
@@ -43,8 +43,8 @@
                     case 4: return this.SysTimer.HighByte;
                     case 5: return this.Tima;
                     case 6: return this.Tma;
-                    case 7: return this.Tac | 0xF8;
-                    default: return 0xFF;
+                    case 7: return (GbUInt8)(this.Tac | 0xF8);
+                    default: return GbUInt8.MaxValue;
                 }
             }
 
@@ -58,15 +58,15 @@
 
                     case 5:
                         this.TimaOverflow = 0;
-                        this.Tima = value;
+                        this.Tima = (byte)value;
                         return;
 
                     case 6:
-                        this.Tma = value;
+                        this.Tma = (byte)value;
                         return;
 
                     case 7:
-                        this.Tac = (GbUInt8)(value & 7);
+                        this.Tac = (byte)(value & 7);
                         return;
 
                     default:
@@ -103,12 +103,12 @@
 
             this.PrevTimaOverflow = this.TimaOverflow;
             this.SysTimer++;
-            bool b = this.Tac[2] &&
+            bool b = (this.Tac & 0b100) == 0b100 &&
                 ((this.Tac & 3) == 0 ? this.SysTimer.HighByte[1] : this.SysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)]);
             if (this.PrevTimerIn && !b)
             {
                 this.Tima++;
-                if (this.Tima == GbUInt8.MinValue)
+                if (this.Tima == 0)
                 { // MCycle + 1 because TimaOverflow behaviour happens on the falling edge of this.
                     this.TimaOverflow = Cpu.MCycle + 1;
                 }

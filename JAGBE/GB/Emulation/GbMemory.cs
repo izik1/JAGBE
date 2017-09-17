@@ -370,7 +370,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return this.lcd.VRamBlocked ? (GbUInt8)0xFF : this.lcd.VRam[address - 0x8000];
+                return this.lcd.VRamBlocked ? GbUInt8.MaxValue : this.lcd.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -503,7 +503,7 @@ namespace JAGBE.GB.Emulation
             {
                 if (!this.lcd.VRamBlocked)
                 {
-                    this.lcd.VRam[pointer - 0x8000] = value;
+                    this.lcd.VRam[pointer - 0x8000] = (byte)value;
                 }
             }
             else if (pointer <= 0xBFFF)

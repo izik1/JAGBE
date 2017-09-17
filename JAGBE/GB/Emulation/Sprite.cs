@@ -12,7 +12,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The number of the tile that this sprite uses.
         /// </summary>
-        internal readonly GbUInt8 Tile;
+        internal readonly byte Tile;
 
         /// <summary>
         /// The offset from the left side of the screen in pixels.
@@ -31,7 +31,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="y">The y.</param>
         /// <param name="tile">The tile.</param>
         /// <param name="flags">The flags.</param>
-        public Sprite(byte x, byte y, GbUInt8 tile, GbUInt8 flags)
+        public Sprite(byte x, byte y, byte tile, GbUInt8 flags)
         {
             this.X = x;
             this.Y = y;

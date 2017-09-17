@@ -21,7 +21,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Video Ram.
         /// </summary>
-        internal readonly GbUInt8[] VRam = new GbUInt8[MemoryRange.VRAMBANKSIZE * 2];
+        internal readonly byte[] VRam = new byte[MemoryRange.VRAMBANKSIZE * 2];
 
         /// <summary>
         /// The height of the Game Boy LCD screen.
@@ -55,11 +55,9 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The pallet of the background
         /// </summary>
-        private GbUInt8 BgPallet;
+        private byte bgPallet;
 
         private int cy;
-
-        private int STATMode;
 
         private bool disabled;
 
@@ -82,22 +80,22 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Current scan line the lcd is drawing
         /// </summary>
-        private GbUInt8 LY;
+        private int LY;
 
         /// <summary>
         /// The number to use when comparing to <see cref="LY"/>
         /// </summary>
-        private GbUInt8 LYC;
+        private byte LYC;
 
         /// <summary>
         /// The first object pallet
         /// </summary>
-        private GbUInt8 objPallet0;
+        private byte objPallet0;
 
         /// <summary>
         /// The second object pallet
         /// </summary>
-        private GbUInt8 objPallet1;
+        private byte objPallet1;
 
         /// <summary>
         /// The Previous state of <see cref="IRC"/>
@@ -107,12 +105,14 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Scroll X register
         /// </summary>
-        private GbUInt8 SCX;
+        private byte SCX;
 
         /// <summary>
         /// The Scroll Y register
         /// </summary>
-        private GbUInt8 SCY;
+        private byte SCY;
+
+        private int STATMode;
 
         /// <summary>
         /// The STAT register
@@ -171,10 +171,10 @@ namespace JAGBE.GB.Emulation
                     case 0x41: return (GbUInt8)((int)this.STATUpper | 0x80 | this.STATMode);
                     case 0x42: return this.SCY;
                     case 0x43: return this.SCX;
-                    case 0x44: return this.LY;
+                    case 0x44: return (GbUInt8)this.LY;
                     case 0x45: return this.LYC;
                     case 0x46: return this.DmaAddress.HighByte;
-                    case 0x47: return this.BgPallet;
+                    case 0x47: return this.bgPallet;
                     case 0x48: return this.objPallet0;
                     case 0x49: return this.objPallet1;
                     case 0x4A: return this.WY;
@@ -196,15 +196,15 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x2:
-                        this.SCY = value;
+                        this.SCY = (byte)value;
                         break;
 
                     case 0x3:
-                        this.SCX = value;
+                        this.SCX = (byte)value;
                         break;
 
                     case 0x5:
-                        this.LYC = value;
+                        this.LYC = (byte)value;
                         break;
 
                     case 0x6:
@@ -213,15 +213,15 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x7:
-                        this.BgPallet = value;
+                        this.bgPallet = (byte)value;
                         break;
 
                     case 0x8:
-                        this.objPallet0 = (GbUInt8)(value & 0xFC);
+                        this.objPallet0 = (byte)(value & 0xFC);
                         break;
 
                     case 0x9:
-                        this.objPallet1 = (GbUInt8)(value & 0xFC);
+                        this.objPallet1 = (byte)(value & 0xFC);
                         break;
 
                     case 0xA:
@@ -372,7 +372,7 @@ namespace JAGBE.GB.Emulation
         internal Sprite ReadSprite(int offset) => new Sprite(
             (byte)(this.Oam[offset + 1] - 8),
             (byte)(this.Oam[offset] - 16),
-            this.Oam[offset + 2],
+            (byte)this.Oam[offset + 2],
             this.Oam[offset + 3]);
 
         private static bool IsSpritePixelVisible(int x, int colorIndex, bool priority, int dispMemAtOffset) =>
@@ -457,7 +457,7 @@ namespace JAGBE.GB.Emulation
             return false;
         }
 
-        private bool LyCompare() => (this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == GbUInt8.MinValue);
+        private bool LyCompare() => (this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0);
 
         private void RenderLine()
         {
@@ -490,7 +490,7 @@ namespace JAGBE.GB.Emulation
             int x = this.SCX & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
             bool isTilesetMode1 = this.Lcdc[4];
-            int pallet = this.BgPallet;
+            int pallet = this.bgPallet;
             if (!isTilesetMode1 && tile < 128)
             {
                 tile += 256;
@@ -568,7 +568,7 @@ namespace JAGBE.GB.Emulation
 
             for (int i = this.WX - 7; i < Width; i++)
             {
-                int colorIndex = GetColorIndex(this.BgPallet, y, x, tile);
+                int colorIndex = GetColorIndex(this.bgPallet, y, x, tile);
                 if (colorIndex != 0)
                 {
                     this.displayMemory[((Height - this.LY - 1) * Width) + i - (this.WX - 7)] = COLORS[colorIndex];
