@@ -1,5 +1,4 @@
-﻿using System;
-using static JAGBE.GB.Emulation.Alu.Ops;
+﻿using static JAGBE.GB.Emulation.Alu.Ops;
 
 namespace JAGBE.GB.Emulation.Alu
 {
@@ -169,7 +168,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Dec16(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) - 1, false);
+            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) - 1);
             return 2;
         }
 
@@ -196,7 +195,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Inc16(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1, false);
+            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1);
             return 2;
         }
 

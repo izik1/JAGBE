@@ -66,9 +66,9 @@ namespace JAGBE.GB.Emulation.Alu
         public static int LdD16(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.R.SetR16(op.Dest, new GbUInt16(mem.R.GetR16(op.Dest, false).HighByte, mem.LdI8()), false);
+            GbUInt8 low = mem.LdI8();
             mem.Update();
-            mem.R.SetR16(op.Dest, new GbUInt16(mem.LdI8(), mem.R.GetR16(op.Dest, false).LowByte), false);
+            mem.R.SetR16(op.Dest, new GbUInt16(mem.LdI8(), low));
             return 3;
         }
 

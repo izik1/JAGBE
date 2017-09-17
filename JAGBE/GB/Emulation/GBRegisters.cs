@@ -10,7 +10,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the AF register.
         /// </summary>
-        internal GbUInt16 Af;
+        internal GbUInt16 Af => new GbUInt16(this.A, this.F);
 
         /// <summary>
         /// Gets or sets the BC register.
@@ -40,11 +40,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the A register.
         /// </summary>
-        internal GbUInt8 A
-        {
-            get => Af.HighByte;
-            set => Af = new GbUInt16(value, Af.LowByte);
-        }
+        internal GbUInt8 A { get; set; }
 
         /// <summary>
         /// Gets or sets the B register.
@@ -85,11 +81,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the F register.
         /// </summary>
-        internal GbUInt8 F
-        {
-            get => Af.LowByte;
-            set => Af = new GbUInt16(Af.HighByte, value);
-        }
+        internal GbUInt8 F { get; set; }
 
         /// <summary>
         /// Gets or sets the H register.
@@ -186,11 +178,10 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="value">The value.</param>
-        /// <param name="UseAf">if set to <see langword="true"/> sets AF instead of SP.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
         /// </exception>
-        public void SetR16(int index, GbUInt16 value, bool UseAf)
+        public void SetR16(int index, GbUInt16 value)
         {
             switch (index)
             {
@@ -207,14 +198,7 @@ namespace JAGBE.GB.Emulation
                     break;
 
                 case 3:
-                    if (UseAf)
-                    {
-                        this.Af = value;
-                    }
-                    else
-                    {
-                        this.Sp = value;
-                    }
+                    this.Sp = value;
                     break;
 
                 default:
