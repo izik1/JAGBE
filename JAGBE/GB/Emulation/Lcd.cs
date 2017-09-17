@@ -151,9 +151,9 @@ namespace JAGBE.GB.Emulation
 
         internal bool DmaMode { get; private set; }
 
-        internal bool OamBlocked => (this.STATMode & 2) == 2;
+        internal bool OamBlocked => this.STATMode > 1;
 
-        internal bool VRamBlocked => (this.STATMode) == 3;
+        internal bool VRamBlocked => this.STATMode == 3;
 
         /// <summary>
         /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.

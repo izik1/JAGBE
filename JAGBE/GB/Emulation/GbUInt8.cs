@@ -105,7 +105,7 @@ namespace JAGBE.GB.Emulation
                 return ((this.value >> u8) & 1) == 1;
             }
 #else
-            get => ((this.value >> u8) & 1) == 1;
+            get => (this.value & (1 << u8)) > 0;
 #endif
         }
 

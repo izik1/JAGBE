@@ -71,7 +71,7 @@ namespace JAGBE.GB.Emulation
         /// Gets the display memory.
         /// </summary>
         /// <value>The display memory.</value>
-        public int[] DisplayMemory => this.memory.Lcd.displayMemory;
+        public int[] DisplayMemory => this.memory.lcd.displayMemory;
 
         /// <summary>
         /// Gets the status of this instance.
@@ -101,14 +101,14 @@ namespace JAGBE.GB.Emulation
         /// Gets the LCD's display memory a <see cref="byte"/>[].
         /// </summary>
         /// <returns>The LCD's display memory as a <see cref="byte"/>[].</returns>
-        public byte[] DisplayMemoryAsBytes() => this.memory.Lcd.DisplayToBytes();
+        public byte[] DisplayMemoryAsBytes() => this.memory.lcd.DisplayToBytes();
 
         /// <summary>
         /// Gets the LCD's display memory and stores in into the given buffer.
         /// </summary>
         /// <param name="buffer">The buffer.</param>
         /// <returns>A refrence to <paramref name="buffer"/>.</returns>
-        public byte[] DisplayMemoryAsBytes(byte[] buffer) => this.memory.Lcd.DisplayToBytes(buffer);
+        public byte[] DisplayMemoryAsBytes(byte[] buffer) => this.memory.lcd.DisplayToBytes(buffer);
 
         /// <summary>
         /// Removes the break point at <paramref name="address"/>.

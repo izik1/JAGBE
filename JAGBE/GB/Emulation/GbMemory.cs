@@ -66,7 +66,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The LCD memory
         /// </summary>
-        internal Lcd Lcd = new Lcd();
+        internal Lcd lcd = new Lcd();
 
         /// <summary>
         /// The MBC mode
@@ -167,7 +167,7 @@ namespace JAGBE.GB.Emulation
         {
             for (int i = 0; i < TCycles; i++)
             {
-                this.Lcd.Tick(this);
+                this.lcd.Tick(this);
                 this.timer.Update(this);
             }
 
@@ -235,7 +235,7 @@ namespace JAGBE.GB.Emulation
         internal void SetMappedMemory(GbUInt16 pointer, GbUInt8 value)
         {
             // Handle bus conflicts.
-            if (this.Lcd.DmaMode && ((pointer >= 0xFE00 && pointer < 0xFEA0) || HasBusConflict(pointer, this.Lcd.DmaAddress)))
+            if (this.lcd.DmaMode && ((pointer >= 0xFE00 && pointer < 0xFEA0) || HasBusConflict(pointer, this.lcd.DmaAddress)))
             {
                 return;
             }
@@ -331,7 +331,7 @@ namespace JAGBE.GB.Emulation
 
             if (number < 0x50)
             {
-                return this.Lcd[number];
+                return this.lcd[number];
             }
 
             return 0xFF;
@@ -345,16 +345,16 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
-            if (!ignoreDmaBlock && this.Lcd.DmaMode)
+            if (!ignoreDmaBlock && this.lcd.DmaMode)
             {
                 if (address >= 0xFE00 && address < 0xFEA0)
                 {
                     return 0xFF;
                 }
 
-                if (HasBusConflict(address, this.Lcd.DmaAddress)) // Handle bus conflicts.
+                if (HasBusConflict(address, this.lcd.DmaAddress)) // Handle bus conflicts.
                 {
-                    return GetMappedMemory(this.Lcd.DmaAddress, true);
+                    return GetMappedMemory(this.lcd.DmaAddress, true);
                 }
             }
 
@@ -370,7 +370,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xA000) // 0x8000-9FFF
             {
-                return this.Lcd.VRamBlocked ? (GbUInt8)0xFF : this.Lcd.VRam[address - 0x8000];
+                return this.lcd.VRamBlocked ? (GbUInt8)0xFF : this.lcd.VRam[address - 0x8000];
             }
 
             if (address < 0xC000) // 0xA000-BFFF
@@ -390,7 +390,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return this.Lcd.OamBlocked ? (byte)0xFF : this.Lcd.Oam[address - 0xFE00];
+                return this.lcd.OamBlocked ? (byte)0xFF : this.lcd.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
@@ -484,7 +484,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer <= 0x4F)
             {
-                this.Lcd[(byte)(pointer - 0x40)] = value;
+                this.lcd[(byte)(pointer - 0x40)] = value;
                 return;
             }
 
@@ -501,9 +501,9 @@ namespace JAGBE.GB.Emulation
         {
             if (pointer <= 0x9FFF)
             {
-                if (!this.Lcd.VRamBlocked)
+                if (!this.lcd.VRamBlocked)
                 {
-                    this.Lcd.VRam[pointer - 0x8000] = value;
+                    this.lcd.VRam[pointer - 0x8000] = value;
                 }
             }
             else if (pointer <= 0xBFFF)
@@ -520,9 +520,9 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFE9F)
             {
-                if (!this.Lcd.OamBlocked)
+                if (!this.lcd.OamBlocked)
                 {
-                    this.Lcd.Oam[pointer - 0xFE00] = value;
+                    this.lcd.Oam[pointer - 0xFE00] = value;
                 }
             }
             else if (pointer <= 0xFEFF)
