@@ -157,11 +157,7 @@ namespace JAGBE.GB.Emulation
         /// Gets active rom bank.
         /// </summary>
         /// <returns></returns>
-        public int GetRomBank()
-        {
-            int j = this.MappedRomBank & 0x1F;
-            return (this.RomBanks - 1) & (j == 0 ? 1 : j | (!this.MbcRamMode ? this.MappedRamBank << 5 : 0));
-        }
+        public int GetRomBank() => (this.RomBanks - 1) & (this.MappedRomBank | (this.MappedRamBank << 5));
 
         public void Update(int TCycles)
         {
@@ -360,7 +356,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0x4000) // 0x0000-3FFF
             {
-                return GetRomMemory(0, address);
+                return GetRomMemory(this.MbcRamMode ? ((this.RomBanks - 1) & (this.MappedRamBank << 5)) : 0, address);
             }
 
             if (address < 0x8000) // 0x4000-7FFF
@@ -556,7 +552,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer < 0x4000)
             {
-                this.MappedRomBank = value;
+                this.MappedRomBank = ((value & 0x1F) == 0 ? 1 : value & 0x1F);
             }
             else if (pointer < 0x6000)
             {

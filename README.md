@@ -120,6 +120,6 @@ mooneye mbc1 tests:
 |rom_1Mb|:white_check_mark:|
 |rom_2Mb|:white_check_mark:|
 |rom_4Mb|:white_check_mark:|
-|rom_8Mb|:x:|
-|rom_16Mb|:x:|
+|rom_8Mb|:white_check_mark:|
+|rom_16Mb|:white_check_mark:|
 |rom_512Kb|:white_check_mark:|
