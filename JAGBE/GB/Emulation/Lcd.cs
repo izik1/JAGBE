@@ -97,9 +97,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private byte objPallet1;
 
-        /// <summary>
-        /// The Previous state of <see cref="IRC"/>
-        /// </summary>
         private bool PIRC;
 
         /// <summary>
@@ -148,6 +145,8 @@ namespace JAGBE.GB.Emulation
         /// The DMA address
         /// </summary>
         internal GbUInt16 DmaAddress { get; private set; }
+
+        private readonly bool[] currLinePixelsTransparent = new bool[160];
 
         internal bool DmaMode { get; private set; }
 
@@ -375,8 +374,8 @@ namespace JAGBE.GB.Emulation
             (byte)this.Oam[offset + 2],
             this.Oam[offset + 3]);
 
-        private static bool IsSpritePixelVisible(int x, int colorIndex, bool priority, int dispMemAtOffset) =>
-            x < Width && colorIndex != 0 && (priority || dispMemAtOffset == WHITE);
+        private static bool IsSpritePixelVisible(int x, int palletIndex, bool priority, bool displayMemTransparent) =>
+            x < Width && palletIndex != 0 && (priority || displayMemTransparent);
 
         /// <summary>
         /// Turns off the lcd.
@@ -430,24 +429,28 @@ namespace JAGBE.GB.Emulation
         /// <param name="x">The x.</param>
         /// <param name="tileNum">The tile number.</param>
         /// <returns>The index in <see cref="COLORS"/> that a pixel of a given tile is.</returns>
-        private int GetColorIndex(int pallet, int y, int x, ushort tileNum)
+        private int GetColorIndex(int pallet, int y, int x, ushort tileNum) => GetColorIndex(pallet, GetPalletIndex(y, x, tileNum));
+
+        private int GetPalletIndex(int y, int x, ushort tileNum)
         {
             int i = this.VRam[(tileNum * 16) + (y * 2)] >> (7 - x) & 1;
-            i += (this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2;
-            return (pallet >> (i * 2)) & 3;
+            return i + ((this.VRam[(tileNum * 16) + (y * 2) + 1] >> (7 - x) & 1) * 2);
         }
+
+        private static int GetColorIndex(int pallet, int index) => (pallet >> (index * 2)) & 3;
 
         private bool IsSpriteVisible(Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                int pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
-                int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
                 int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
-                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
+                    int colorIndex = GetPalletIndex(tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
+
+                    // 0 is a hack to make sure that x is always < width
+                    if (IsSpritePixelVisible(0, colorIndex, !sprite.Flags[7],
+                        sprite.X + x >= Width || this.currLinePixelsTransparent[sprite.X + x]))
                     {
                         return true;
                     }
@@ -498,7 +501,9 @@ namespace JAGBE.GB.Emulation
 
             for (int i = 0; i < Width; i++)
             {
-                this.displayMemory[((Height - this.LY - 1) * Width) + i] = COLORS[GetColorIndex(pallet, y, x, tile)];
+                int index = GetPalletIndex(y, x, tile);
+                this.displayMemory[((Height - this.LY - 1) * Width) + i] = COLORS[GetColorIndex(pallet, index)];
+                this.currLinePixelsTransparent[i] = index == 0;
                 x++;
                 if (x == 8)
                 {
@@ -535,12 +540,9 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            for (int i = 0; i < 10; i++)
+            while (DrawSprite())
             {
-                if (!DrawSprite())
-                {
-                    return;
-                }
+                // Draw a sprite.
             }
         }
 
@@ -601,12 +603,12 @@ namespace JAGBE.GB.Emulation
                 int pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
                 int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < 8 && sprite.X + x < Width; x++)
                 {
-                    int colorIndex = GetColorIndex(pallet, tileY, sprite.Flags[5] ? (7 - x) : x, sprite.Tile);
-                    if (IsSpritePixelVisible(sprite.X + x, colorIndex, !sprite.Flags[7], this.displayMemory[displayOffset + x]))
+                    int palletIndex = GetPalletIndex(tileY, sprite.Flags[5] ? (7 - x) : x, sprite.Tile);
+                    if (IsSpritePixelVisible(sprite.X + x, palletIndex, !sprite.Flags[7], this.currLinePixelsTransparent[sprite.X + x]))
                     {
-                        this.displayMemory[displayOffset + x] = COLORS[colorIndex];
+                        this.displayMemory[displayOffset + x] = COLORS[GetColorIndex(pallet, palletIndex)];
                     }
                 }
             }

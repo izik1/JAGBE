@@ -118,10 +118,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private int MappedRomBank = 1;
 
-        /// <summary>
-        /// Is ram enabled in MBC?
-        /// </summary>
-        private bool MbcRamMode;
+        private int Mbc1ModeFlag;
 
         /// <summary>
         /// The timer
@@ -285,12 +282,7 @@ namespace JAGBE.GB.Emulation
                 return 0xFF;
             }
 
-            if (this.MBCMode == MemoryBankController.None || this.MBCMode == MemoryBankController.MBC1)
-            {
-                return this.ERam[(address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)) % this.ERam.Length];
-            }
-
-            throw new InvalidOperationException("Unsuported or unimplemented " + nameof(MemoryBankController));
+            return this.ERam[GetERamAddress(address)];
         }
 
         /// <summary>
@@ -356,7 +348,7 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0x4000) // 0x0000-3FFF
             {
-                return GetRomMemory(this.MbcRamMode ? ((this.RomBanks - 1) & (this.MappedRamBank << 5)) : 0, address);
+                return GetRomMemory(this.Mbc1ModeFlag * ((this.RomBanks - 1) & (this.MappedRamBank << 5)), address);
             }
 
             if (address < 0x8000) // 0x4000-7FFF
@@ -438,9 +430,12 @@ namespace JAGBE.GB.Emulation
         {
             if (this.ERamEnabled && this.ERam.Length > 0)
             {
-                this.ERam[(address + (this.MbcRamMode ? this.MappedRamBank * MemoryRange.ERAMBANKSIZE : 0)) % this.ERam.Length] = value;
+                this.ERam[GetERamAddress(address)] = value;
             }
         }
+
+        private int GetERamAddress(GbUInt16 address) =>
+            (address + (this.Mbc1ModeFlag * this.MappedRamBank * MemoryRange.ERAMBANKSIZE)) % this.ERam.Length;
 
         /// <summary>
         /// Sets the io registers.
@@ -560,7 +555,7 @@ namespace JAGBE.GB.Emulation
             }
             else
             {
-                this.MbcRamMode = ((value & 1) == 1);
+                this.Mbc1ModeFlag = value & 1;
             }
         }
     }
