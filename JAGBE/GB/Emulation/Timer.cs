@@ -57,7 +57,7 @@
                         return;
 
                     case 5:
-                        this.TimaOverflow = 0;
+                        this.TimaOverflow = 1;
                         this.Tima = (byte)value;
                         return;
 
@@ -93,12 +93,11 @@
             if (this.TimaOverflow > 0)
             {
                 this.TimaOverflow--;
-            }
-
-            if (this.PrevTimaOverflow != 0 && this.TimaOverflow == 0)
-            {
-                memory.IF |= 4;
-                this.Tima = this.Tma;
+                if (this.PrevTimaOverflow != 0 && this.TimaOverflow == 0)
+                {
+                    memory.IF |= 4;
+                    this.Tima = this.Tma;
+                }
             }
 
             this.PrevTimaOverflow = this.TimaOverflow;

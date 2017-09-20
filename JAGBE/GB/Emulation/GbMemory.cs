@@ -139,12 +139,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets the system timer.
-        /// </summary>
-        /// <value>The system timer.</value>
-        public GbUInt16 SysTimer => this.timer.SysTimer;
-
-        /// <summary>
         /// Gets value of memory at HL.
         /// </summary>
         /// <returns></returns>
@@ -378,12 +372,12 @@ namespace JAGBE.GB.Emulation
 
             if (address < 0xFEA0) // 0xFE00-FE9F
             {
-                return this.lcd.OamBlocked ? (byte)0xFF : this.lcd.Oam[address - 0xFE00];
+                return this.lcd.OamBlocked ? GbUInt8.MaxValue : this.lcd.Oam[address - 0xFE00];
             }
 
             if (address < 0xFF00) // 0xFEA0-FEFF
             {
-                return 0x00;
+                return GbUInt8.MinValue;
             }
 
             if (address < 0xFF80) // 0xFF00-FF7F
@@ -475,7 +469,7 @@ namespace JAGBE.GB.Emulation
 
             if (pointer <= 0x4F)
             {
-                this.lcd[(byte)(pointer - 0x40)] = value;
+                this.lcd[(byte)(pointer - 0x40)] = (byte)value;
                 return;
             }
 

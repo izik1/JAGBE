@@ -221,13 +221,13 @@ namespace JAGBE.GB.Emulation
 
         private void HandleHungMode()
         {
+            this.memory.Update();
+            this.delay += MCycle;
             if (!this.hung)
             {
                 Logger.LogWarning("Cpu has hung.");
                 this.hung = true;
             }
-
-            this.delay = 0;
         }
 
         /// <summary>
@@ -241,11 +241,17 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
+            this.memory.IME = false;
+            this.memory.NextIMEValue = false;
+
+            // Interrupt to service might be decided on the falling edge of second push's M-clock. So
+            // timing might be: delay, delay, push, push, discover interrupt/handle pc, delay delay
+
             this.memory.Update(10);
             this.memory.Push(this.memory.R.Pc.HighByte);
             this.memory.Update();
             this.memory.Push(this.memory.R.Pc.LowByte);
-            this.memory.Update(2);
+            this.memory.R.Pc = 0;
             int b = this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
             {
@@ -253,12 +259,11 @@ namespace JAGBE.GB.Emulation
                 {
                     this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
                     this.memory.IF = (GbUInt8)(this.memory.IF & ~(1 << i));
-                    this.memory.IME = false;
-                    this.memory.NextIMEValue = false;
                     break;
                 }
             }
 
+            this.memory.Update(2);
             this.delay += MCycle * 4;
         }
 
