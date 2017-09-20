@@ -249,19 +249,21 @@ namespace JAGBE.GB.Emulation
 
             this.memory.Update(10);
             this.memory.Push(this.memory.R.Pc.HighByte);
-            this.memory.Update();
-            this.memory.Push(this.memory.R.Pc.LowByte);
-            this.memory.R.Pc = 0;
+            GbUInt16 newPc = 0;
             int b = this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
             {
                 if (((b >> i) & 0x1) == 1)
                 {
-                    this.memory.R.Pc = new GbUInt16(0, (byte)((i * 8) + 0x40));
+                    newPc = new GbUInt16(0, (byte)((i * 8) + 0x40));
                     this.memory.IF = (GbUInt8)(this.memory.IF & ~(1 << i));
                     break;
                 }
             }
+
+            this.memory.Update();
+            this.memory.Push(this.memory.R.Pc.LowByte);
+            this.memory.R.Pc = newPc;
 
             this.memory.Update(2);
             this.delay += MCycle * 4;

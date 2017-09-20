@@ -82,6 +82,7 @@ MoonEye acceptance tests:
 |halt_ime1_timing2-GS|:x:|E Incorrect.|
 |if_ie_registers|:white_check_mark:||
 |intr_timing|:x:|E Incorrect.|
+|interrupts/ie_push|:white_check_mark:|
 |jp_cc_timing|:white_check_mark:||
 |jp_timing|:white_check_mark:||
 |ld_hl_sp_e_timing|:white_check_mark:||
