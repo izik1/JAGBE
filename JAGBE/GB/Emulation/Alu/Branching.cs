@@ -4,10 +4,8 @@
     {
         public static int Call(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 low = mem.LdI8();
-            mem.Update();
-            GbUInt8 high = mem.LdI8();
+            GbUInt8 low = mem.ReadCycleI8();
+            GbUInt8 high = mem.ReadCycleI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
@@ -24,10 +22,8 @@
 
         public static int Jp(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 low = mem.LdI8();
-            mem.Update();
-            GbUInt8 high = mem.LdI8();
+            GbUInt8 low = mem.ReadCycleI8();
+            GbUInt8 high = mem.ReadCycleI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
@@ -47,20 +43,16 @@
                 return 2;
             }
 
-            mem.Update();
-            mem.R.Pc += (sbyte)(byte)mem.LdI8();
+            mem.R.Pc += (sbyte)(byte)mem.ReadCycleI8();
             mem.R.Pc++;
             return 3;
         }
 
         public static int Ret(Opcode op, GbMemory mem)
         {
+            GbUInt8 low = mem.ReadCyclePop();
+            mem.R.Pc = new GbUInt16(mem.ReadCyclePop(), low);
             mem.Update();
-            GbUInt8 low = mem.Pop();
-            mem.Update();
-            GbUInt8 high = mem.Pop(); // High Byte.
-            mem.Update();
-            mem.R.Pc = new GbUInt16(high, low);
             mem.IME |= op.Dest != 0; // Unlike EI IME gets enabled right away.
             mem.NextIMEValue = mem.IME;
             return 4;
@@ -79,12 +71,9 @@
                 return 2;
             }
 
+            GbUInt8 low = mem.ReadCyclePop();
+            mem.R.Pc = new GbUInt16(mem.ReadCyclePop(), low);
             mem.Update();
-            GbUInt8 low = mem.Pop();
-            mem.Update();
-            GbUInt8 high = mem.Pop();
-            mem.Update();
-            mem.R.Pc = new GbUInt16(high, low);
             return 5;
         }
 

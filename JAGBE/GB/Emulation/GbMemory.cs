@@ -201,11 +201,19 @@ namespace JAGBE.GB.Emulation
         /// <returns></returns>
         internal GbUInt8 LdI8() => GetMappedMemory(this.R.Pc++, false);
 
-        /// <summary>
-        /// Pops a 8-bit value from the stack.
-        /// </summary>
-        /// <returns></returns>
-        internal GbUInt8 Pop() => GetMappedMemory(this.R.Sp++, false);
+        internal GbUInt8 ReadCycle(GbUInt16 address)
+        {
+            this.Update(4); // should be 3.
+            GbUInt8 val = GetMappedMemory(address, false);
+            this.Update(0); // should be 1.
+            return val;
+        }
+
+        internal GbUInt8 ReadCycleI8() => ReadCycle(this.R.Pc++);
+
+        internal GbUInt8 ReadCycleHl() => ReadCycle(this.R.Hl);
+
+        internal GbUInt8 ReadCyclePop() => this.ReadCycle(this.R.Sp++);
 
         /// <summary>
         /// Pushes the specified <paramref name="value"/> onto the stack.
@@ -327,67 +335,68 @@ namespace JAGBE.GB.Emulation
         /// <returns>the value at <paramref name="address"/></returns>
         private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
+            GbUInt16 readAddress = address;
             if (!ignoreDmaBlock && this.lcd.DmaMode)
             {
-                if (address >= 0xFE00 && address < 0xFEA0)
+                if (readAddress >= 0xFE00 && readAddress < 0xFEA0)
                 {
                     return 0xFF;
                 }
 
-                if (HasBusConflict(address, this.lcd.DmaAddress)) // Handle bus conflicts.
+                if (HasBusConflict(readAddress, this.lcd.DmaAddress)) // Handle bus conflicts.
                 {
-                    return GetMappedMemory(this.lcd.DmaAddress, true);
+                    readAddress = this.lcd.DmaAddress;
                 }
             }
 
-            if (address < 0x4000) // 0x0000-3FFF
+            if (readAddress < 0x4000) // 0x0000-3FFF
             {
-                return GetRomMemory(this.Mbc1ModeFlag * ((this.RomBanks - 1) & (this.MappedRamBank << 5)), address);
+                return GetRomMemory(this.Mbc1ModeFlag * ((this.RomBanks - 1) & (this.MappedRamBank << 5)), readAddress);
             }
 
-            if (address < 0x8000) // 0x4000-7FFF
+            if (readAddress < 0x8000) // 0x4000-7FFF
             {
-                return GetRomMemory(GetRomBank(), address - 0x4000);
+                return GetRomMemory(GetRomBank(), readAddress - 0x4000);
             }
 
-            if (address < 0xA000) // 0x8000-9FFF
+            if (readAddress < 0xA000) // 0x8000-9FFF
             {
-                return this.lcd.VRamBlocked ? GbUInt8.MaxValue : this.lcd.VRam[address - 0x8000];
+                return this.lcd.VRamBlocked ? GbUInt8.MaxValue : this.lcd.VRam[readAddress - 0x8000];
             }
 
-            if (address < 0xC000) // 0xA000-BFFF
+            if (readAddress < 0xC000) // 0xA000-BFFF
             {
-                return GetERamMemory(address - 0xA000);
+                return GetERamMemory(readAddress - 0xA000);
             }
 
-            if (address < 0xE000) // 0xC000-DFFF
+            if (readAddress < 0xE000) // 0xC000-DFFF
             {
-                return this.WRam[address - 0xC000];
+                return this.WRam[readAddress - 0xC000];
             }
 
-            if (address < 0xFE00) // 0xE000-FDFF
+            if (readAddress < 0xFE00) // 0xE000-FDFF
             {
-                return GetMappedMemory(address - 0x2000, ignoreDmaBlock);
+                return GetMappedMemory(readAddress - 0x2000, ignoreDmaBlock);
             }
 
-            if (address < 0xFEA0) // 0xFE00-FE9F
+            if (readAddress < 0xFEA0) // 0xFE00-FE9F
             {
-                return this.lcd.OamBlocked ? GbUInt8.MaxValue : this.lcd.Oam[address - 0xFE00];
+                return this.lcd.OamBlocked ? GbUInt8.MaxValue : this.lcd.Oam[readAddress - 0xFE00];
             }
 
-            if (address < 0xFF00) // 0xFEA0-FEFF
+            if (readAddress < 0xFF00) // 0xFEA0-FEFF
             {
                 return GbUInt8.MinValue;
             }
 
-            if (address < 0xFF80) // 0xFF00-FF7F
+            if (readAddress < 0xFF80) // 0xFF00-FF7F
             {
-                return GetIoReg((byte)(address - 0xFF00));
+                return GetIoReg((byte)(readAddress - 0xFF00));
             }
 
-            if (address < 0xFFFF) // 0xFF80-FFFE
+            if (readAddress < 0xFFFF) // 0xFF80-FFFE
             {
-                return this.HRam[address - 0xFF80];
+                return this.HRam[readAddress - 0xFF80];
             }
 
             return this.IER; // 0xFFFF

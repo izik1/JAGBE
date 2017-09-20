@@ -13,13 +13,13 @@ namespace JAGBE.GB.Emulation.Alu
                     throw new InvalidOperationException("Opcode with dest = 6 and src = 6 is invalid for this instruction.");
                 }
 
-                memory.Update();
                 if (op.Src == 6)
                 {
-                    memory.R.SetR8(op.Dest, memory.GetMappedMemoryHl());
+                    memory.R.SetR8(op.Dest, memory.ReadCycleHl());
                 }
                 else
                 {
+                    memory.Update();
                     memory.SetMappedMemory(memory.R.Hl, memory.R.GetR8(op.Src));
                 }
 
@@ -32,10 +32,8 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdA16(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 low = mem.LdI8();
-            mem.Update();
-            GbUInt8 high = mem.LdI8();
+            GbUInt8 low = mem.ReadCycleI8();
+            GbUInt8 high = mem.ReadCycleI8();
             mem.Update();
 
             if (op.Dest == 7)
@@ -52,10 +50,8 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdA16Sp(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 low = mem.LdI8();
-            mem.Update();
-            GbUInt8 high = mem.LdI8();
+            GbUInt8 low = mem.ReadCycleI8();
+            GbUInt8 high = mem.ReadCycleI8();
             mem.Update();
             mem.SetMappedMemory(new GbUInt16(high, low), mem.R.Sp.LowByte);
             mem.Update();
@@ -65,17 +61,14 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdD16(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 low = mem.LdI8();
-            mem.Update();
-            mem.R.SetR16(op.Dest, new GbUInt16(mem.LdI8(), low));
+            GbUInt8 low = mem.ReadCycleI8();
+            mem.R.SetR16(op.Dest, new GbUInt16(mem.ReadCycleI8(), low));
             return 3;
         }
 
         public static int LdD8(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 val = mem.LdI8();
+            GbUInt8 val = mem.ReadCycleI8();
             if (op.Dest == 6)
             {
                 mem.Update();
@@ -89,8 +82,7 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdH(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            GbUInt8 val = mem.LdI8();
+            GbUInt8 val = mem.ReadCycleI8();
             mem.Update();
             if (op.Dest == 7)
             {
@@ -106,8 +98,7 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdHlSpR8(Opcode op, GbMemory mem)
         {
-            mem.Update();
-            sbyte s = (sbyte)mem.LdI8();
+            sbyte s = (sbyte)mem.ReadCycleI8();
             mem.Update();
             mem.R.F = (((mem.R.Sp & 0xFF) +
                 (s & 0xFF)) > 0xFF ? RFlags.CB : (GbUInt8)0).AssignBit(RFlags.HF, ((mem.R.Sp & 0x0F) + (s & 0x0F)) > 0x0F);
@@ -156,24 +147,15 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int Pop(Opcode op, GbMemory mem)
         {
-            mem.Update();
             if (op.Dest == 3)
             {
-                mem.R.F = (GbUInt8)(mem.Pop() & 0xF0);
+                mem.R.F = (GbUInt8)(mem.ReadCyclePop() & 0xF0);
+                mem.R.A = mem.ReadCyclePop();
             }
             else
             {
-                mem.R.SetR8((op.Dest * 2) + 1, mem.Pop());
-            }
-
-            mem.Update();
-            if (op.Dest == 3)
-            {
-                mem.R.A = mem.Pop();
-            }
-            else
-            {
-                mem.R.SetR8(op.Dest * 2, mem.Pop());
+                mem.R.SetR8((op.Dest * 2) + 1, mem.ReadCyclePop());
+                mem.R.SetR8(op.Dest * 2, mem.ReadCyclePop());
             }
 
             return 3;

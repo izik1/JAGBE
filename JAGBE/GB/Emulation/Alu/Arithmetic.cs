@@ -56,8 +56,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected Flags: - - H C</remarks>
         public static int AddSpR8(Opcode op, GbMemory memory)
         {
-            memory.Update();
-            sbyte v = (sbyte)memory.LdI8();
+            sbyte v = (sbyte)memory.ReadCycleI8();
             memory.Update();
             memory.Update();
             memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)

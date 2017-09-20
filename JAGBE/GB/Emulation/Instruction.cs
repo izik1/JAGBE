@@ -182,11 +182,7 @@
             ops[0xC3] = new Opcode(0, 0, Alu.Branching.Jp);
             ops[0xC6] = new Opcode(7, 8, Alu.Arithmetic.Add);
             ops[0xC9] = new Opcode(0, 0, Alu.Branching.Ret);
-            ops[0xCB] = new Opcode(0, 0, (op, mem) => // CBPrefix
-            {
-                mem.Update();
-                return CbOps[mem.LdI8()].Invoke(mem) + 1;
-            });
+            ops[0xCB] = new Opcode(0, 0, (op, mem) => CbOps[mem.ReadCycleI8()].Invoke(mem) + 1); // CBPrefix
             ops[0xCD] = new Opcode(0, 0, Alu.Branching.Call);
             ops[0xCE] = new Opcode(7, 8, Alu.Arithmetic.Adc);
             ops[0xD3] = InvalidOpcode;

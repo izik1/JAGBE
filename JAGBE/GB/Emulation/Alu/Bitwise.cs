@@ -21,8 +21,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            memory.Update();
-            memory.R.F = memory.R.F.AssignBit(RFlags.ZF, !memory.GetMappedMemoryHl()[(byte)code.Dest]).Res(RFlags.NF) | RFlags.HB;
+            memory.R.F = memory.R.F.AssignBit(RFlags.ZF, !memory.ReadCycleHl()[(byte)code.Dest]).Res(RFlags.NF) | RFlags.HB;
             return 2;
         }
 
@@ -55,7 +54,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns>The number of ticks the operation took to complete.</returns>
         public static int Rlc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
         {
-            byte retVal = (byte)((val << 1) | ((int)val >> 7));
+            byte retVal = (byte)((val << 1) | (val >> 7));
             mem.R.F = (GbUInt8)(((val & 0x80) >> (7 - RFlags.CF)) | (retVal == 0 ? RFlags.ZB : 0));
             return retVal;
         });
@@ -68,7 +67,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns>The number of ticks the operation took to complete.</returns>
         public static int Rr(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
         {
-            byte retVal = (byte)(((int)val >> 1) | (mem.R.F[RFlags.CF] ? 0x80 : 0));
+            byte retVal = (byte)((val >> 1) | (mem.R.F[RFlags.CF] ? 0x80 : 0));
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
             return retVal;
         });
@@ -81,7 +80,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <returns>The number of ticks the operation took to complete.</returns>
         public static int Rrc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
         {
-            byte retVal = (byte)(((int)val >> 1) | (val << 7));
+            byte retVal = (byte)((val >> 1) | (val << 7));
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
             return retVal;
         });
@@ -147,7 +146,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Swap(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
         {
             mem.R.F = val == GbUInt8.MinValue ? RFlags.ZB : GbUInt8.MinValue;
-            return (GbUInt8)((val << 4) | ((int)val >> 4));
+            return (GbUInt8)((val << 4) | val >> 4);
         });
     }
 }

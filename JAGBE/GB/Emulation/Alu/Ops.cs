@@ -43,8 +43,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            memory.Update();
-            operation(memory, op.Src == 6 ? memory.GetMappedMemoryHl() : memory.LdI8());
+            operation(memory, op.Src == 6 ? memory.ReadCycleHl() : memory.ReadCycleI8());
             return 2;
         }
 
@@ -68,8 +67,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            memory.Update();
-            GbUInt8 val = memory.GetMappedMemoryHl();
+            GbUInt8 val = memory.ReadCycleHl();
             memory.Update();
             memory.SetMappedMemoryHl(operation(memory, val, op.Dest));
             return 3;
