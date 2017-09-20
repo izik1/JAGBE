@@ -264,7 +264,6 @@ namespace JAGBE.GB.Emulation
             this.memory.Update();
             this.memory.Push(this.memory.R.Pc.LowByte);
             this.memory.R.Pc = newPc;
-
             this.memory.Update(2);
             this.delay += MCycle * 4;
         }

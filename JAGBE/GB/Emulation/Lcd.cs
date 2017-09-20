@@ -616,9 +616,9 @@ namespace JAGBE.GB.Emulation
 
         private void TickDma(GbMemory memory)
         {
-            if (this.dmaMod-- == 0)
+            if (this.dmaMod == 0)
             {
-                this.dmaMod = Cpu.MCycle;
+                this.dmaMod = 3;
                 if (this.Dma == 0)
                 {
                     this.DmaMode = false;
@@ -626,13 +626,20 @@ namespace JAGBE.GB.Emulation
                 else
                 {
                     this.DmaMode = true;
-                    this.Oam[160 - this.Dma--] = memory.GetMappedMemoryDma(this.DmaAddress++);
+                    this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
+                    this.Dma--;
                 }
+            }
+            else
+            {
+                this.dmaMod--;
             }
 
             if (this.dmaLdTimer > 0)
             {
                 this.dmaLdTimer--;
+            }
+
                 if (this.dmaLdTimer == 0)
                 {
                     this.Dma = 160;
@@ -640,7 +647,6 @@ namespace JAGBE.GB.Emulation
                     this.dmaLdTimer = -1;
                 }
             }
-        }
 
         /// <summary>
         /// Updates a line.
