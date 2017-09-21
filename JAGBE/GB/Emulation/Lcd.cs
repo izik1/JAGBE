@@ -640,13 +640,13 @@ namespace JAGBE.GB.Emulation
                 this.dmaLdTimer--;
             }
 
-                if (this.dmaLdTimer == 0)
-                {
-                    this.Dma = 160;
-                    this.DmaAddress = this.DmaLdAddr;
-                    this.dmaLdTimer = -1;
-                }
+            if (this.dmaLdTimer == 0)
+            {
+                this.Dma = 160;
+                this.DmaAddress = this.DmaLdAddr;
+                this.dmaLdTimer = -1;
             }
+        }
 
         /// <summary>
         /// Updates a line.

@@ -167,21 +167,6 @@ namespace JAGBE.GB.Emulation
         public void Update() => Update(Cpu.MCycle);
 
         /// <summary>
-        /// Dumps the currently mapped ram.
-        /// </summary>
-        /// <returns>The currently mapped ram</returns>
-        internal byte[] DumpRam()
-        {
-            byte[] b = new byte[0x10000];
-            for (int i = 0; i < 0x10000; i++)
-            {
-                b[i] = (byte)GetMappedMemory((ushort)i);
-            }
-
-            return b;
-        }
-
-        /// <summary>
         /// Gets the memory at <paramref name="address"/>.
         /// </summary>
         /// <param name="address"></param>

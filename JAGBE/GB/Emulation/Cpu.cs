@@ -86,12 +86,6 @@ namespace JAGBE.GB.Emulation
         internal GbUInt16 Pc => this.memory.R.Pc;
 
         /// <summary>
-        /// This re-dumps the memory each time it's called.
-        /// </summary>
-        /// <value>The ram dump.</value>
-        internal byte[] RamDump => this.memory.DumpRam();
-
-        /// <summary>
         /// Adds a break point at <paramref name="address"/>.
         /// </summary>
         /// <param name="address">The address.</param>
@@ -154,7 +148,7 @@ namespace JAGBE.GB.Emulation
             {
                 RomBanks = 2 << iRom[0x148],
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << iRom[0x148]], // Set the rom size to what the cartrage says.
-                ERam = new GbUInt8[Cart.GetRamSize(rom[0x149])],
+                ERam = new GbUInt8[Cart.GetRamSize(iRom[0x149])],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             };
 
