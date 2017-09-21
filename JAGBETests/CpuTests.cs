@@ -17,7 +17,7 @@ namespace JAGBETests
             byte[] rom = File.ReadAllBytes("blargg/cpu_instrs/cpu_instrs.gb");
             Cpu cpu = new Cpu(bootRom, rom, null);
             stopwatch.Start();
-            const int ticks = 4000_0000 * Cpu.MCycle;
+            const int ticks = 8000_0000 * Cpu.MCycle;
             cpu.Tick(ticks);
             stopwatch.Stop();
             Console.WriteLine("elapsedµs:cpuTicks");

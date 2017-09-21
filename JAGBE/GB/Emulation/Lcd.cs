@@ -489,7 +489,7 @@ namespace JAGBE.GB.Emulation
             ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
             mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
             int lineOffset = (this.SCX >> 3);
-            int y = (this.LY + this.SCY) & 7;
+            int y = ((this.LY + this.SCY) & 7) * 2;
             int x = this.SCX & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
             bool isTilesetMode1 = this.Lcdc[4];
@@ -499,10 +499,12 @@ namespace JAGBE.GB.Emulation
                 tile += 256;
             }
 
+            int pIndexUpper = this.VRam[(tile * 16) + y];
+            int pIndexLower = this.VRam[(tile * 16) + y + 1];
             for (int i = 0; i < Width; i++)
             {
-                int index = GetPalletIndex(y, x, tile);
-                this.displayMemory[((Height - this.LY - 1) * Width) + i] = COLORS[GetColorIndex(pallet, index)];
+                int index = ((pIndexUpper >> (7 - x) & 1) | ((pIndexLower >> (7 - x) & 1) * 2)) * 2;
+                this.displayMemory[((Height - this.LY - 1) * Width) + i] = COLORS[(pallet >> index) & 3];
                 this.currLinePixelsTransparent[i] = index == 0;
                 x++;
                 if (x == 8)
@@ -514,6 +516,9 @@ namespace JAGBE.GB.Emulation
                     {
                         tile += 256;
                     }
+
+                    pIndexUpper = this.VRam[(tile * 16) + y];
+                    pIndexLower = this.VRam[(tile * 16) + y + 1];
                 }
             }
         }
