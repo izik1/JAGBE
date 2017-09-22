@@ -472,6 +472,7 @@ namespace JAGBE.GB.Emulation
             if (this.Lcdc[5])
             {
                 ScanLineWindow();
+                this.windowLy++;
             }
 
             if (this.Lcdc[1])
@@ -558,7 +559,6 @@ namespace JAGBE.GB.Emulation
         {
             if (this.WX < 7 || this.WX > 166)
             {
-                this.windowLy++;
                 return;
             }
 
@@ -593,8 +593,6 @@ namespace JAGBE.GB.Emulation
                     }
                 }
             }
-
-            this.windowLy++;
         }
 
         /// <summary>

@@ -28,10 +28,22 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Resources the specified code.
         /// </summary>
-        /// <param name="code">The code.</param>
+        /// <param name="opcode">The opcode.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Res(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (m, val, dest) => val.Res(dest));
+        public static int Res(Opcode opcode, GbMemory memory)
+        {
+            if (opcode.Src != 6)
+            {
+                memory.R.SetR8(opcode.Src, memory.R.GetR8(opcode.Src).Res(opcode.Dest));
+                return 1;
+            }
+
+            GbUInt8 val = memory.ReadCycleHl();
+            memory.Update();
+            memory.SetMappedMemoryHl(val.Res(opcode.Dest));
+            return 3;
+        }
 
         /// <summary>
         /// Rls the specified code.
@@ -39,7 +51,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Rl(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Rl(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)((val << 1) | ((mem.R.F & RFlags.CB) >> RFlags.CF));
             mem.R.F = (GbUInt8)(((val & 0x80) >> (7 - RFlags.CF)) | (retVal == 0 ? RFlags.ZB : 0));
@@ -52,7 +64,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Rlc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Rlc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)((val << 1) | (val >> 7));
             mem.R.F = (GbUInt8)(((val & 0x80) >> (7 - RFlags.CF)) | (retVal == 0 ? RFlags.ZB : 0));
@@ -65,7 +77,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Rr(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Rr(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)((val >> 1) | (mem.R.F[RFlags.CF] ? 0x80 : 0));
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
@@ -78,7 +90,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Rrc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Rrc(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)((val >> 1) | (val << 7));
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
@@ -88,11 +100,23 @@ namespace JAGBE.GB.Emulation.Alu
         /// <summary>
         /// Sets the dest bit of the src byte to true
         /// </summary>
-        /// <param name="code">The code.</param>
+        /// <param name="opcode">The opcode.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
         /// <remarks>Affected Flags: None.</remarks>
-        public static int Set(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) => val.Set(dest));
+        public static int Set(Opcode opcode, GbMemory memory)
+        {
+            if (opcode.Src != 6)
+            {
+                memory.R.SetR8(opcode.Src, memory.R.GetR8(opcode.Src).Set(opcode.Dest));
+                return 1;
+            }
+
+            GbUInt8 val = memory.ReadCycleHl();
+            memory.Update();
+            memory.SetMappedMemoryHl(val.Set(opcode.Dest));
+            return 3;
+        }
 
         /// <summary>
         /// Shift left, bit 7 gets shifted into Carry.
@@ -104,7 +128,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// Flags affected: Z is set if the result of the operation is zero. Reset N,H. C = bit 7 of
         /// The original number
         /// </remarks>
-        public static int Sla(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Sla(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)(val << 1);
             mem.R.F = (GbUInt8)(((val & 0x80) >> (7 - RFlags.CF)) | (retVal == 0 ? RFlags.ZB : 0));
@@ -117,7 +141,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Sra(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Sra(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             byte retVal = (byte)((val >> 1) | (val & 0x80));
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
@@ -130,7 +154,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Srl(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Srl(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             int retVal = val >> 1;
             mem.R.F = (GbUInt8)(((val & 1) << RFlags.CF) | (retVal == 0 ? RFlags.ZB : 0));
@@ -143,7 +167,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="code">The code.</param>
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
-        public static int Swap(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val, dest) =>
+        public static int Swap(Opcode code, GbMemory memory) => BitOpFunc(code, memory, (mem, val) =>
         {
             mem.R.F = val == GbUInt8.MinValue ? RFlags.ZB : GbUInt8.MinValue;
             return (GbUInt8)((val << 4) | val >> 4);

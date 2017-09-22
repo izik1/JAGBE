@@ -178,7 +178,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
         /// <remarks>Affected flags: Z 1 H -</remarks>
-        public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
+        public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB;
             return (GbUInt8)(val - 1);
@@ -205,7 +205,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="memory">The memory.</param>
         /// <returns>The number of ticks the operation took to complete.</returns>
         /// <remarks>Affected flags: Z 0 H -</remarks>
-        public static int Inc8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val, dest) =>
+        public static int Inc8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, (((val & 0x0F) + 1) & 0x10) == 0x10);
             return (GbUInt8)(val + 1);
