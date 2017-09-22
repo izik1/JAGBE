@@ -361,7 +361,7 @@ namespace JAGBE.GB.Emulation
 
             if (readAddress < 0xFE00) // 0xE000-FDFF
             {
-                return GetMappedMemory(readAddress - 0x2000, ignoreDmaBlock);
+                return this.WRam[readAddress - 0xE000];
             }
 
             if (readAddress < 0xFEA0) // 0xFE00-FE9F

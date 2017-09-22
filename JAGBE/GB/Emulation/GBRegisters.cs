@@ -246,6 +246,7 @@ namespace JAGBE.GB.Emulation
 
                 case 6:
                     throw new ArgumentException(nameof(index));
+
                 case 7:
                     this.A = value;
                     break;
