@@ -148,6 +148,12 @@ namespace JAGBE.GB.Emulation
 
         private readonly bool[] currLinePixelsTransparent = new bool[160];
 
+        /// <summary>
+        /// the Ly as visible to the cpu FIXME: don't hook this up yet, it does wierd things to
+        /// display emulation.
+        /// </summary>
+        private int visibleLy;
+
         internal bool DmaMode { get; private set; }
 
         internal bool OamBlocked => this.STATMode > 1;
@@ -296,76 +302,67 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
-            bool IRC = false;
             this.disabled = false;
-            if (this.LY < 144)
+            bool IRQ = this.LY < 144 ? UpdateLine() : this.LY == 144 ?
+                UpdateVblankSwitch(mem) : LyCp() || (this.STATUpper & 0x30) > 0;
+
+            this.cy++;
+            if (this.cy == Cpu.MCycle * 114)
             {
-                IRC = UpdateLine();
-            }
-            else if (this.LY == 144)
-            {
-                if (this.cy == 0)
+                this.cy = 0;
+                if (this.LY == 153)
                 {
-                    IRC |= this.STATUpper[3];
-                    this.STATMode = 0;
+                    this.LY = 0;
                 }
                 else
                 {
-                    IRC |= this.STATUpper[4] || this.STATUpper[5];
-                    if (this.cy == Cpu.MCycle)
-                    {
-                        mem.IF |= 1;
-                        this.STATMode = 1;
-                    }
-                    else if (this.cy == (Cpu.MCycle * 113) + 3)
-                    {
-                        this.LY++;
-                        this.windowLy = 0;
-                        this.cy = -1;
-                    }
-                    else
-                    {
-                        // Left intentionally empty
-                    }
-
-                    if (LyCompare())
-                    {
-                        this.STATUpper |= 4;
-                        IRC |= this.STATUpper[6];
-                    }
-                    else
-                    {
-                        this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
-                    }
+                    this.visibleLy++;
+                    this.LY++;
                 }
             }
-            else
+
+            if (this.LY == 153 && this.cy == Cpu.MCycle)
             {
-                if (LyCompare())
-                {
-                    this.STATUpper |= 4;
-                    IRC |= this.STATUpper[6];
-                }
-                else
-                {
-                    this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
-                }
-
-                IRC |= this.STATUpper[4] || this.STATUpper[5];
-                if (this.cy == (Cpu.MCycle * 113) + 3)
-                {
-                    this.LY = (GbUInt8)((this.LY + 1) % 154);
-                    this.cy = -1;
-                }
+                this.visibleLy = 0;
             }
 
-            if (IRC && !this.PIRC)
+            if (IRQ && !this.PIRC)
             {
                 mem.IF |= 2;
             }
 
-            this.PIRC = IRC;
-            this.cy++;
+            this.PIRC = IRQ;
+        }
+
+        private bool UpdateVblankSwitch(GbMemory mem)
+        {
+            if (this.cy == 0)
+            {
+                this.windowLy = 0;
+                this.STATMode = 0;
+                return this.STATUpper[3];
+            }
+
+            bool IRQ = this.STATUpper[4] || this.STATUpper[5];
+            if (this.cy == Cpu.MCycle)
+            {
+                mem.IF |= 1;
+                this.STATMode = 1;
+            }
+
+            return LyCp() || IRQ;
+        }
+
+        private bool LyCp()
+        {
+            if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
+            {
+                this.STATUpper |= 4;
+                return this.STATUpper[6];
+            }
+
+            this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
+            return false;
         }
 
         internal Sprite ReadSprite(int offset) => new Sprite(
@@ -459,8 +456,6 @@ namespace JAGBE.GB.Emulation
 
             return false;
         }
-
-        private bool LyCompare() => (this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0);
 
         private void RenderLine()
         {
@@ -656,47 +651,31 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private bool UpdateLine()
         {
-            bool IRC = false;
-            if (LyCompare())
-            {
-                this.STATUpper |= 4;
-                IRC |= this.STATUpper[6];
-            }
-            else
-            {
-                this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
-            }
-
+            bool IRQ = LyCp();
             switch (this.cy)
             {
                 case Cpu.MCycle:
                     this.STATMode = 2;
-                    IRC |= this.STATUpper[5];
-                    break;
+                    return IRQ || this.STATUpper[5];
 
                 case Cpu.MCycle * 10:
                     this.STATMode = 3;
                     RenderLine();
-                    break;
+                    return IRQ;
 
                 case 0:
                 case Cpu.MCycle * 53:
-                    IRC |= this.STATUpper[3];
                     this.STATMode = 0;
-                    break;
+                    return IRQ || this.STATUpper[3];
 
                 case (Cpu.MCycle * 113) + 3:
-                    this.LY++;
-                    IRC |= this.STATUpper[3];
-                    this.cy = -1;
-                    break;
+                    return IRQ || this.STATUpper[3];
 
                 default: // Nothing interesting is happening this cycle.
-                    IRC |= (this.STATMode == 2 && this.STATUpper[5]) || (this.STATMode == 0 && this.STATUpper[3]);
-                    break;
+#pragma warning disable S1067 // Expressions should not be too complex
+                    return IRQ || (this.STATMode == 2 && this.STATUpper[5]) || (this.STATMode == 0 && this.STATUpper[3]);
+#pragma warning restore S1067 // Expressions should not be too complex
             }
-
-            return IRC;
         }
     }
 }
