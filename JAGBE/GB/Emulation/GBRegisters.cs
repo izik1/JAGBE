@@ -5,7 +5,10 @@ namespace JAGBE.GB.Emulation
     /// <summary>
     /// Keeps track of a GameBoy's registers
     /// </summary>
-    internal sealed class GbRegisters
+#pragma warning disable S3898 // Value types should implement "IEquatable<T>"
+
+    internal struct GbRegisters
+#pragma warning restore S3898 // Value types should implement "IEquatable<T>"
     {
         /// <summary>
         /// Gets or sets the AF register.
@@ -40,7 +43,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the A register.
         /// </summary>
-        internal GbUInt8 A { get; set; }
+        internal GbUInt8 A;
 
         /// <summary>
         /// Gets or sets the B register.

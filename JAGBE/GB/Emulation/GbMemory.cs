@@ -82,7 +82,7 @@ namespace JAGBE.GB.Emulation
         /// Gets the instance's registers.
         /// </summary>
         /// <value>The instance's registers.</value>
-        internal readonly GbRegisters R = new GbRegisters();
+        internal GbRegisters R = new GbRegisters();
 
         internal int RomBanks;
 
