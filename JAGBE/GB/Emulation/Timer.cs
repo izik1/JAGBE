@@ -3,7 +3,7 @@
     internal sealed class Timer
     {
         private readonly GbMemory memory;
-        private int PrevTimaOverflow;
+        private int prevTimaOverflow;
 
         /// <summary>
         /// The previous state of timer input
@@ -13,29 +13,29 @@
         /// <summary>
         /// The tac register
         /// </summary>
-        private byte Tac;
+        private byte tac;
 
         /// <summary>
         /// The TIMA Value Register.
         /// </summary>
-        private byte Tima;
+        private byte tima;
 
         /// <summary>
         /// Is a TIMA Interupt scheduled?
         /// </summary>
-        private int TimaOverflow;
+        private int timaOverflow;
 
         /// <summary>
         /// The TIMA Modulo Register
         /// </summary>
-        private byte Tma;
+        private byte tma;
 
         internal Timer(GbMemory memory) => this.memory = memory;
 
         /// <summary>
         /// The system timer.
         /// </summary>
-        internal GbUInt16 SysTimer { get; private set; } = 0;
+        private GbUInt16 sysTimer;
 
         public GbUInt8 this[byte index]
         {
@@ -43,10 +43,10 @@
             {
                 switch (index)
                 {
-                    case 4: return this.SysTimer.HighByte;
-                    case 5: return this.Tima;
-                    case 6: return this.Tma;
-                    case 7: return (GbUInt8)(this.Tac | 0xF8);
+                    case 4: return this.sysTimer.HighByte;
+                    case 5: return this.tima;
+                    case 6: return this.tma;
+                    case 7: return (GbUInt8)(this.tac | 0xF8);
                     default: return GbUInt8.MaxValue;
                 }
             }
@@ -56,20 +56,20 @@
                 switch (index)
                 {
                     case 4:
-                        this.SysTimer = 0;
+                        this.sysTimer = 0;
                         return;
 
                     case 5:
-                        this.TimaOverflow = 1;
-                        this.Tima = (byte)value;
+                        this.timaOverflow = 1;
+                        this.tima = (byte)value;
                         return;
 
                     case 6:
-                        this.Tma = (byte)value;
+                        this.tma = (byte)value;
                         return;
 
                     case 7:
-                        this.Tac = (byte)(value & 7);
+                        this.tac = (byte)(value & 7);
                         return;
 
                     default:
@@ -92,26 +92,26 @@
 
         internal void Update()
         {
-            if (this.TimaOverflow > 0)
+            if (this.timaOverflow > 0)
             {
-                this.TimaOverflow--;
-                if (this.PrevTimaOverflow != 0 && this.TimaOverflow == 0)
+                this.timaOverflow--;
+                if (this.prevTimaOverflow != 0 && this.timaOverflow == 0)
                 {
                     this.memory.IF |= 4;
-                    this.Tima = this.Tma;
+                    this.tima = this.tma;
                 }
             }
 
-            this.PrevTimaOverflow = this.TimaOverflow;
-            this.SysTimer++;
-            bool b = (this.Tac & 0b100) == 0b100 &&
-                ((this.Tac & 3) == 0 ? this.SysTimer.HighByte[1] : this.SysTimer.LowByte[(byte)(((this.Tac & 3) * 2) + 1)]);
+            this.prevTimaOverflow = this.timaOverflow;
+            this.sysTimer++;
+            bool b = (this.tac & 0b100) == 0b100 &&
+                ((this.tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.tac & 3) * 2) + 1)]);
             if (this.PrevTimerIn && !b)
             {
-                this.Tima++;
-                if (this.Tima == 0)
+                this.tima++;
+                if (this.tima == 0)
                 { // MCycle + 1 because TimaOverflow behaviour happens on the falling edge of this.
-                    this.TimaOverflow = Cpu.MCycle + 1;
+                    this.timaOverflow = Cpu.MCycle + 1;
                 }
             }
 
