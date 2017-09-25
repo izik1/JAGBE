@@ -2,17 +2,13 @@
 {
     internal sealed class Timer
     {
+        private readonly GbMemory memory;
         private int PrevTimaOverflow;
 
         /// <summary>
         /// The previous state of timer input
         /// </summary>
         private bool PrevTimerIn;
-
-        /// <summary>
-        /// The system timer.
-        /// </summary>
-        internal GbUInt16 SysTimer { get; private set; } = 0;
 
         /// <summary>
         /// The tac register
@@ -33,6 +29,13 @@
         /// The TIMA Modulo Register
         /// </summary>
         private byte Tma;
+
+        internal Timer(GbMemory memory) => this.memory = memory;
+
+        /// <summary>
+        /// The system timer.
+        /// </summary>
+        internal GbUInt16 SysTimer { get; private set; } = 0;
 
         public GbUInt8 this[byte index]
         {
@@ -78,17 +81,16 @@
         /// <summary>
         /// Updates the timer.
         /// </summary>
-        /// <param name="memory">The memory.</param>
         /// <param name="TCycles">The number of clock cycles to run for.</param>
-        internal void Update(GbMemory memory, int TCycles)
+        internal void Update(int TCycles)
         {
             for (int i = 0; i < TCycles; i++)
             {
-                Update(memory);
+                Update();
             }
         }
 
-        internal void Update(GbMemory memory)
+        internal void Update()
         {
             if (this.TimaOverflow > 0)
             {

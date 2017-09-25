@@ -66,7 +66,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The LCD memory
         /// </summary>
-        internal Lcd lcd = new Lcd();
+        internal Lcd lcd;
 
         /// <summary>
         /// The MBC mode
@@ -123,13 +123,18 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The timer
         /// </summary>
-        private readonly Timer timer = new Timer();
+        private readonly Timer timer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbMemory"/> class with the given <paramref name="inputHandler"/>.
         /// </summary>
         /// <param name="inputHandler">The input handler.</param>
-        internal GbMemory(IInputHandler inputHandler) => this.joypad = new Joypad(inputHandler);
+        internal GbMemory(IInputHandler inputHandler)
+        {
+            this.lcd = new Lcd(this);
+            this.timer = new Timer(this);
+            this.joypad = new Joypad(inputHandler);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GbMemory"/> class.
@@ -154,11 +159,9 @@ namespace JAGBE.GB.Emulation
         {
             for (int i = 0; i < TCycles; i++)
             {
-                this.lcd.Tick(this);
-                this.timer.Update(this);
+                this.lcd.Tick();
+                this.timer.Update();
             }
-
-            this.joypad.Update(this);
         }
 
         /// <summary>

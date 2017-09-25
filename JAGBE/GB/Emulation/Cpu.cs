@@ -162,6 +162,7 @@ namespace JAGBE.GB.Emulation
         public void Tick(int cycles)
         {
             this.delay -= cycles;
+            this.memory.joypad.Update(this.memory); // This is only okay because I'm assuming a single threaded application.
             while (this.delay < 0)
             {
                 switch (this.memory.Status)

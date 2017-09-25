@@ -130,15 +130,19 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private GbUInt8 WY;
 
+        private readonly GbMemory mem;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.
         /// </summary>
-        public Lcd()
+        public Lcd(GbMemory memory)
         {
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
                 this.displayMemory[i] = WHITE;
             }
+
+            this.mem = memory;
         }
 
         /// <summary>
@@ -259,7 +263,7 @@ namespace JAGBE.GB.Emulation
 
             if (buffer.Length != (Width * Height) / 4)
             {
-                throw new ArgumentException(nameof(this.displayMemory) + " must have a length of 160*144");
+                throw new ArgumentException(nameof(buffer) + " must have a length of 160*144", nameof(buffer));
             }
 
             for (int i = 0; i < buffer.Length; i++)
@@ -281,21 +285,20 @@ namespace JAGBE.GB.Emulation
             return buffer;
         }
 
-        public void Tick(GbMemory mem, int TCycles)
+        public void Tick(int TCycles)
         {
             for (int i = 0; i < TCycles; i++)
             {
-                Tick(mem);
+                Tick();
             }
         }
 
         /// <summary>
         /// Ticks the LCD.
         /// </summary>
-        /// <param name="mem">The memory.</param>
-        public void Tick(GbMemory mem)
+        public void Tick()
         {
-            TickDma(mem);
+            TickDma();
             if (!this.Lcdc[7])
             {
                 this.Disable();
@@ -304,7 +307,7 @@ namespace JAGBE.GB.Emulation
 
             this.disabled = false;
             bool IRQ = this.LY < 144 ? UpdateLine() : this.LY == 144 ?
-                UpdateVblankSwitch(mem) : LyCp() || (this.STATUpper & 0x30) > 0;
+                UpdateVblankSwitch() : LyCp() || (this.STATUpper & 0x30) > 0;
 
             this.cy++;
             if (this.cy == Cpu.MCycle * 114)
@@ -334,7 +337,7 @@ namespace JAGBE.GB.Emulation
             this.PIRQ = IRQ;
         }
 
-        private bool UpdateVblankSwitch(GbMemory mem)
+        private bool UpdateVblankSwitch()
         {
             if (this.cy == 0)
             {
@@ -389,6 +392,7 @@ namespace JAGBE.GB.Emulation
             this.LY = 0;
             this.cy = 0;
             this.windowLy = 0;
+            this.visibleLy = 0;
             for (int i = 0; i < this.displayMemory.Length; i++)
             {
                 this.displayMemory[i] = WHITE;
@@ -612,7 +616,7 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        private void TickDma(GbMemory memory)
+        private void TickDma()
         {
             if (this.dmaMod == 0)
             {
@@ -624,7 +628,7 @@ namespace JAGBE.GB.Emulation
                 else
                 {
                     this.DmaMode = true;
-                    this.Oam[160 - this.Dma] = memory.GetMappedMemoryDma(this.DmaAddress++);
+                    this.Oam[160 - this.Dma] = this.mem.GetMappedMemoryDma(this.DmaAddress++);
                     this.Dma--;
                 }
             }
