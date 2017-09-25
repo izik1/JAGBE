@@ -97,7 +97,7 @@
                 this.TimaOverflow--;
                 if (this.PrevTimaOverflow != 0 && this.TimaOverflow == 0)
                 {
-                    memory.IF |= 4;
+                    this.memory.IF |= 4;
                     this.Tima = this.Tma;
                 }
             }

@@ -331,7 +331,7 @@ namespace JAGBE.GB.Emulation
 
             if (IRQ && !this.PIRQ)
             {
-                mem.IF |= 2;
+                this.mem.IF |= 2;
             }
 
             this.PIRQ = IRQ;
@@ -349,7 +349,7 @@ namespace JAGBE.GB.Emulation
             bool IRQ = this.STATUpper[4] || this.STATUpper[5];
             if (this.cy == Cpu.MCycle)
             {
-                mem.IF |= 1;
+                this.mem.IF |= 1;
                 this.STATMode = 1;
             }
 

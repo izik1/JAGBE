@@ -34,14 +34,13 @@ namespace JAGBE.GB.Emulation.Alu
         {
             GbUInt8 low = mem.ReadCycleI8();
             GbUInt8 high = mem.ReadCycleI8();
-            mem.Update();
-
             if (op.Dest == 7)
             {
-                mem.R.A = mem.GetMappedMemory(new GbUInt16(high, low));
+                mem.R.A = mem.ReadCycle(new GbUInt16(high, low));
             }
             else
             {
+                mem.Update();
                 mem.SetMappedMemory(new GbUInt16(high, low), mem.R.A);
             }
 
@@ -82,15 +81,14 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdH(Opcode op, GbMemory mem)
         {
-            GbUInt8 val = mem.ReadCycleI8();
-            mem.Update();
             if (op.Dest == 7)
             {
-                mem.R.A = mem.GetMappedMemory((GbUInt16)0xFF00 + val);
+                mem.R.A = mem.ReadCycle(new GbUInt16(0xFF, mem.ReadCycleI8()));
             }
             else
             {
-                mem.SetMappedMemory((GbUInt16)0xFF00 + val, mem.R.A);
+                mem.Update();
+                mem.SetMappedMemory(new GbUInt16(0xFF, mem.ReadCycleI8()), mem.R.A);
             }
 
             return 3;
@@ -113,13 +111,9 @@ namespace JAGBE.GB.Emulation.Alu
             {
                 mem.SetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16(op.Dest, false), mem.R.A);
             }
-            else if (op.Dest == 8)
-            {
-                mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
-            }
             else
             {
-                throw new ArgumentException(nameof(op));
+                mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
             }
 
             if (op.Src == 2 || op.Dest == 2)
@@ -163,11 +157,12 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int Push(Opcode op, GbMemory mem)
         {
+            GbUInt16 r = mem.R.GetR16(op.Dest, true);
             mem.Update();
             mem.Update();
-            mem.Push(mem.R.GetR16(op.Dest, true).HighByte);
+            mem.Push(r.HighByte);
             mem.Update();
-            mem.Push(mem.R.GetR16(op.Dest, true).LowByte);
+            mem.Push(r.LowByte);
             return 4;
         }
     }
