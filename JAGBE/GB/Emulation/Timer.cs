@@ -78,18 +78,6 @@
             }
         }
 
-        /// <summary>
-        /// Updates the timer.
-        /// </summary>
-        /// <param name="TCycles">The number of clock cycles to run for.</param>
-        internal void Update(int TCycles)
-        {
-            for (int i = 0; i < TCycles; i++)
-            {
-                Update();
-            }
-        }
-
         internal void Update()
         {
             if (this.timaOverflow > 0)
@@ -104,8 +92,8 @@
 
             this.prevTimaOverflow = this.timaOverflow;
             this.sysTimer++;
-            bool b = (this.tac & 0b100) == 0b100 &&
-                ((this.tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.tac & 3) * 2) + 1)]);
+            bool b = (this.tac & 0b100) == 0b100 && ((this.tac & 3) == 0 ? this.sysTimer.HighByte[1] :
+                (this.sysTimer & (1 << (((this.tac & 3) * 2) + 1))) > 0);
             if (this.prevTimerIn && !b)
             {
                 this.tima++;

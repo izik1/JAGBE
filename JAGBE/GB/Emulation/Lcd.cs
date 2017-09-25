@@ -285,14 +285,6 @@ namespace JAGBE.GB.Emulation
             return buffer;
         }
 
-        public void Tick(int TCycles)
-        {
-            for (int i = 0; i < TCycles; i++)
-            {
-                Tick();
-            }
-        }
-
         /// <summary>
         /// Ticks the LCD.
         /// </summary>
