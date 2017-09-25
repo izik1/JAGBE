@@ -101,7 +101,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
         public static int Cpl(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
-            mem.R.A = ~val;
+            mem.R.A = (GbUInt8)~val;
             mem.R.F |= RFlags.NHB;
         });
 
