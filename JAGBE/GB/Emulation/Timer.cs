@@ -1,40 +1,84 @@
 ﻿namespace JAGBE.GB.Emulation
 {
+    /// <summary>
+    /// Represents The Game Boy DMG Timer subsystem.
+    /// </summary>
     internal sealed class Timer
     {
+        /// <summary>
+        /// A reference to the bound memory.
+        /// </summary>
+        /// <remarks>This field is for preformance.</remarks>
         private readonly GbMemory memory;
+
+        /// <summary>
+        /// The value of <see cref="timaOverflow"/> 1 tick ago.
+        /// </summary>
         private int prevTimaOverflow;
 
         /// <summary>
-        /// The previous state of timer input
+        /// The previous state of timer input.
         /// </summary>
+        /// <remarks>
+        /// <see cref="tac"/> increments on the falling edge of this. This field is <see
+        /// langword="true"/> if <see cref="tac"/> bit 2 is 1 and depending on <see cref="tac"/> bits
+        /// 1-0 <see cref="tac"/> for more informantion.
+        /// </remarks>
+        /// <seealso cref="tac"/>
         private bool prevTimerIn;
 
         /// <summary>
-        /// The tac register
+        /// The timer control register.
         /// </summary>
+        /// <remarks>
+        /// Lower 3 bits are R/W upper 5 bits are fixed to 1. Bit 2 enables the timer, bits 1-0
+        /// control the frequency. The way the frequency works is by selecting a bit of <see
+        /// cref="sysTimer"/> if <see cref="tac"/> bits 1-0 is 0b00 then it selects bit 9, 0b01
+        /// selects bit 3, 0b10 bit 5 and 0b11 selects bit 7.
+        /// </remarks>
         private byte tac;
 
         /// <summary>
-        /// The TIMA Value Register.
+        /// The TIMA counter register.
         /// </summary>
+        /// <remarks>
+        /// Increments whenever <see cref="prevTimerIn"/> is <see langword="true"/> but <see
+        /// cref="tac"/> selection is <see langword="false"/>. On overflow has an M-Cycle gap before
+        /// being reloaded with <see cref="tma"/> any writes to this register during that time cancel
+        /// the overflow and prevent <see cref="GbMemory.IF"/> flag from being set, however a write
+        /// during the M-Cycle after said gap will be ignored.
+        /// </remarks>
+        /// <seealso cref="Timer"/>
         private byte tima;
 
         /// <summary>
-        /// Is a TIMA Interupt scheduled?
+        /// Stores the number of cycles until <see cref="tima"/> gets reloaded during an overflow.
         /// </summary>
         private int timaOverflow;
 
         /// <summary>
-        /// The TIMA Modulo Register
+        /// The value loaded into <see cref="tima"/> when it overflows.
         /// </summary>
+        /// <remarks>
+        /// If this register is written to while it is loading into <see cref="tima"/> the value of
+        /// the write will be written to both this register and <see cref="tima"/>.
+        /// </remarks>
+        /// <seealso cref="timaOverflow"/>
         private byte tma;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Timer"/> class.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
         internal Timer(GbMemory memory) => this.memory = memory;
 
         /// <summary>
-        /// The system timer.
+        /// The DMG's internal counter register.
         /// </summary>
+        /// <remarks>
+        /// Always increments by one every tick. Reading from 0xFF04 with return the upper 8 bits of
+        /// this register. Writing to 0xFF04 will reset this register to 0.
+        /// </remarks>
         private GbUInt16 sysTimer;
 
         public GbUInt8 this[byte index]
@@ -78,6 +122,9 @@
             }
         }
 
+        /// <summary>
+        /// Ticks the internal timer and handles other behaviour.
+        /// </summary>
         internal void Update()
         {
             if (this.timaOverflow > 0)
@@ -92,7 +139,7 @@
 
             this.prevTimaOverflow = this.timaOverflow;
             this.sysTimer++;
-            bool b = (this.tac & 0b100) == 0b100 && ((this.tac & 3) == 0 ? this.sysTimer.HighByte[1] :
+            bool b = (this.tac & 0b100) == 0b100 && (this.tac == 0b100 ? this.sysTimer.HighByte[1] :
                 (this.sysTimer & (1 << (((this.tac & 3) * 2) + 1))) > 0);
             if (this.prevTimerIn && !b)
             {
