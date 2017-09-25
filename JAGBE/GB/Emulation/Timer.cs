@@ -8,7 +8,7 @@
         /// <summary>
         /// The previous state of timer input
         /// </summary>
-        private bool PrevTimerIn;
+        private bool prevTimerIn;
 
         /// <summary>
         /// The tac register
@@ -106,16 +106,16 @@
             this.sysTimer++;
             bool b = (this.tac & 0b100) == 0b100 &&
                 ((this.tac & 3) == 0 ? this.sysTimer.HighByte[1] : this.sysTimer.LowByte[(byte)(((this.tac & 3) * 2) + 1)]);
-            if (this.PrevTimerIn && !b)
+            if (this.prevTimerIn && !b)
             {
                 this.tima++;
                 if (this.tima == 0)
-                { // MCycle + 1 because TimaOverflow behaviour happens on the falling edge of this.
+                {   // MCycle + 1 because TimaOverflow behaviour happens on the falling edge of this.
                     this.timaOverflow = Cpu.MCycle + 1;
                 }
             }
 
-            this.PrevTimerIn = b;
+            this.prevTimerIn = b;
         }
     }
 }
