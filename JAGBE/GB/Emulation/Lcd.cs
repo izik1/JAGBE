@@ -97,7 +97,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private byte objPallet1;
 
-        private bool PIRC;
+        private bool PIRQ;
 
         /// <summary>
         /// The Scroll X register
@@ -326,12 +326,12 @@ namespace JAGBE.GB.Emulation
                 this.visibleLy = 0;
             }
 
-            if (IRQ && !this.PIRC)
+            if (IRQ && !this.PIRQ)
             {
                 mem.IF |= 2;
             }
 
-            this.PIRC = IRQ;
+            this.PIRQ = IRQ;
         }
 
         private bool UpdateVblankSwitch(GbMemory mem)
@@ -385,7 +385,7 @@ namespace JAGBE.GB.Emulation
             }
 
             this.disabled = true;
-            this.PIRC = false;
+            this.PIRQ = false;
             this.LY = 0;
             this.cy = 0;
             this.windowLy = 0;
