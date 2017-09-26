@@ -32,8 +32,8 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdA16(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCycleI8();
-            GbUInt8 high = mem.ReadCycleI8();
+            byte low = mem.ReadCycleI8();
+            byte high = mem.ReadCycleI8();
             if (op.Dest == 7)
             {
                 mem.R.A = mem.ReadCycle(new GbUInt16(high, low));
@@ -49,8 +49,8 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdA16Sp(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCycleI8();
-            GbUInt8 high = mem.ReadCycleI8();
+            byte low = mem.ReadCycleI8();
+            byte high = mem.ReadCycleI8();
             mem.Update();
             mem.SetMappedMemory(new GbUInt16(high, low), mem.R.Sp.LowByte);
             mem.Update();
@@ -60,14 +60,14 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdD16(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCycleI8();
+            byte low = mem.ReadCycleI8();
             mem.R.SetR16(op.Dest, new GbUInt16(mem.ReadCycleI8(), low));
             return 3;
         }
 
         public static int LdD8(Opcode op, GbMemory mem)
         {
-            GbUInt8 val = mem.ReadCycleI8();
+            byte val = mem.ReadCycleI8();
             if (op.Dest == 6)
             {
                 mem.Update();
@@ -99,7 +99,7 @@ namespace JAGBE.GB.Emulation.Alu
             sbyte s = (sbyte)mem.ReadCycleI8();
             mem.Update();
             mem.R.F = (((mem.R.Sp & 0xFF) +
-                (s & 0xFF)) > 0xFF ? RFlags.CB : (GbUInt8)0).AssignBit(RFlags.HF, ((mem.R.Sp & 0x0F) + (s & 0x0F)) > 0x0F);
+                (s & 0xFF)) > 0xFF ? RFlags.CB : (byte)0).AssignBit(RFlags.HF, ((mem.R.Sp & 0x0F) + (s & 0x0F)) > 0x0F);
             mem.R.Hl = mem.R.Sp + s;
             return 3;
         }
@@ -143,7 +143,7 @@ namespace JAGBE.GB.Emulation.Alu
         {
             if (op.Dest == 3)
             {
-                mem.R.F = (GbUInt8)(mem.ReadCyclePop() & 0xF0);
+                mem.R.F = (byte)(mem.ReadCyclePop() & 0xF0);
                 mem.R.A = mem.ReadCyclePop();
             }
             else

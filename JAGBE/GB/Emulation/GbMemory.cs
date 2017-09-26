@@ -37,24 +37,24 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The External Ram.
         /// </summary>
-        internal GbUInt8[] ERam;
+        internal byte[] ERam;
 
         internal bool HaltBugged;
 
         /// <summary>
         /// The High Ram (stack)
         /// </summary>
-        internal readonly GbUInt8[] HRam = new GbUInt8[MemoryRange.HRAMSIZE];
+        internal readonly byte[] HRam = new byte[MemoryRange.HRAMSIZE];
 
         /// <summary>
         /// The Interupt Enable Register
         /// </summary>
-        internal GbUInt8 IER;
+        internal byte IER;
 
         /// <summary>
         /// The Interupt Flags register
         /// </summary>
-        internal GbUInt8 IF;
+        internal byte IF;
 
         /// <summary>
         /// The Interupt Master Enable register
@@ -94,7 +94,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Work Ram.
         /// </summary>
-        internal readonly GbUInt8[] WRam = new GbUInt8[MemoryRange.WRAMBANKSIZE * 8];
+        internal readonly byte[] WRam = new byte[MemoryRange.WRAMBANKSIZE * 8];
 
         private readonly Apu apu = new Apu();
 
@@ -147,7 +147,7 @@ namespace JAGBE.GB.Emulation
         /// Gets value of memory at HL.
         /// </summary>
         /// <returns></returns>
-        public GbUInt8 GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
+        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
 
         /// <summary>
         /// Gets active rom bank.
@@ -174,40 +174,40 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        internal GbUInt8 GetMappedMemory(GbUInt16 address) => GetMappedMemory(address, false);
+        internal byte GetMappedMemory(GbUInt16 address) => GetMappedMemory(address, false);
 
         /// <summary>
         /// Gets the memory at <paramref name="address"/> - for use in DMAs.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns></returns>
-        internal GbUInt8 GetMappedMemoryDma(GbUInt16 address) => GetMappedMemory(address, true);
+        internal byte GetMappedMemoryDma(GbUInt16 address) => GetMappedMemory(address, true);
 
         /// <summary>
         /// Loads a 8-bit value and increments the pc.
         /// </summary>
         /// <returns></returns>
-        internal GbUInt8 LdI8() => GetMappedMemory(this.R.Pc++, false);
+        internal byte LdI8() => GetMappedMemory(this.R.Pc++, false);
 
-        internal GbUInt8 ReadCycle(GbUInt16 address)
+        internal byte ReadCycle(GbUInt16 address)
         {
             this.Update(4); // should be 3.
-            GbUInt8 val = GetMappedMemory(address, false);
+            byte val = GetMappedMemory(address, false);
             this.Update(0); // should be 1.
             return val;
         }
 
-        internal GbUInt8 ReadCycleI8() => ReadCycle(this.R.Pc++);
+        internal byte ReadCycleI8() => ReadCycle(this.R.Pc++);
 
-        internal GbUInt8 ReadCycleHl() => ReadCycle(this.R.Hl);
+        internal byte ReadCycleHl() => ReadCycle(this.R.Hl);
 
-        internal GbUInt8 ReadCyclePop() => this.ReadCycle(this.R.Sp++);
+        internal byte ReadCyclePop() => this.ReadCycle(this.R.Sp++);
 
         /// <summary>
         /// Pushes the specified <paramref name="value"/> onto the stack.
         /// </summary>
         /// <param name="value">The value.</param>
-        internal void Push(GbUInt8 value) => SetMappedMemory(--this.R.Sp, value);
+        internal void Push(byte value) => SetMappedMemory(--this.R.Sp, value);
 
         /// <summary>
         /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
@@ -215,7 +215,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="InvalidOperationException">MBC mode is invalid or unimplemented</exception>
-        internal void SetMappedMemory(GbUInt16 pointer, GbUInt8 value)
+        internal void SetMappedMemory(GbUInt16 pointer, byte value)
         {
             // Handle bus conflicts.
             if (this.lcd.DmaMode && ((pointer >= 0xFE00 && pointer < 0xFEA0) || HasBusConflict(pointer, this.lcd.DmaAddress)))
@@ -248,7 +248,7 @@ namespace JAGBE.GB.Emulation
         /// Sets the memory at HL to value.
         /// </summary>
         /// <param name="value">The value.</param>
-        internal void SetMappedMemoryHl(GbUInt8 value) => SetMappedMemory(this.R.Hl, value);
+        internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
 
         private static bool HasBusConflict(GbUInt16 a1, GbUInt16 a2) =>
             (UsesMainBus(a1) && UsesMainBus(a2)) || (UsesVRam(a1) && UsesVRam(a2));
@@ -265,7 +265,7 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="InvalidOperationException">
         /// Thrown when <see cref="MBCMode"/> is invalid
         /// </exception>
-        private GbUInt8 GetERamMemory(GbUInt16 address)
+        private byte GetERamMemory(GbUInt16 address)
         {
             if (!this.ERamEnabled)
             {
@@ -280,7 +280,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="number">The number.</param>
         /// <returns>The value of the <paramref name="number"/>'th IO Register.</returns>
-        private GbUInt8 GetIoReg(byte number)
+        private byte GetIoReg(byte number)
         {
             if (number == 0x00)
             {
@@ -299,7 +299,7 @@ namespace JAGBE.GB.Emulation
 
             if (number == 0xF)
             {
-                return (GbUInt8)(this.IF | 0xE0);
+                return (byte)(this.IF | 0xE0);
             }
 
             if (number <= 0x3F)
@@ -321,7 +321,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="address">The address.</param>
         /// <param name="ignoreDmaBlock">if set to <see langword="true"/> ignore dma write restriction.</param>
         /// <returns>the value at <paramref name="address"/></returns>
-        private GbUInt8 GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
+        private byte GetMappedMemory(GbUInt16 address, bool ignoreDmaBlock)
         {
             GbUInt16 readAddress = address;
             if (!ignoreDmaBlock && this.lcd.DmaMode)
@@ -349,7 +349,7 @@ namespace JAGBE.GB.Emulation
 
             if (readAddress < 0xA000) // 0x8000-9FFF
             {
-                return this.lcd.VRamBlocked ? GbUInt8.MaxValue : this.lcd.VRam[readAddress - 0x8000];
+                return this.lcd.VRamBlocked ? byte.MaxValue : this.lcd.VRam[readAddress - 0x8000];
             }
 
             if (readAddress < 0xC000) // 0xA000-BFFF
@@ -369,12 +369,12 @@ namespace JAGBE.GB.Emulation
 
             if (readAddress < 0xFEA0) // 0xFE00-FE9F
             {
-                return this.lcd.OamBlocked ? GbUInt8.MaxValue : this.lcd.Oam[readAddress - 0xFE00];
+                return this.lcd.OamBlocked ? byte.MaxValue : this.lcd.Oam[readAddress - 0xFE00];
             }
 
             if (readAddress < 0xFF00) // 0xFEA0-FEFF
             {
-                return GbUInt8.MinValue;
+                return 0;
             }
 
             if (readAddress < 0xFF80) // 0xFF00-FF7F
@@ -417,7 +417,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="value">The value.</param>
-        private void SetERam(GbUInt16 address, GbUInt8 value)
+        private void SetERam(GbUInt16 address, byte value)
         {
             if (this.ERamEnabled && this.ERam.Length > 0)
             {
@@ -433,11 +433,11 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetIoRegisters(GbUInt8 pointer, GbUInt8 value)
+        private void SetIoRegisters(byte pointer, byte value)
         {
             if (pointer == 0)
             {
-                this.joypad.Status = (GbUInt8)(value & 0x30);
+                this.joypad.Status = (byte)(value & 0x30);
                 return;
             }
 
@@ -448,25 +448,25 @@ namespace JAGBE.GB.Emulation
 
             if (pointer < 0xF)
             {
-                this.timer[(byte)pointer] = value;
+                this.timer[pointer] = value;
                 return;
             }
 
             if (pointer == 0xF)
             {
-                this.IF = (GbUInt8)(value & 0x1F);
+                this.IF = (byte)(value & 0x1F);
                 return;
             }
 
             if (pointer <= 0x3F)
             {
-                this.apu[(byte)pointer] = value;
+                this.apu[pointer] = value;
                 return;
             }
 
             if (pointer <= 0x4F)
             {
-                this.lcd[(byte)(pointer - 0x40)] = (byte)value;
+                this.lcd[(byte)(pointer - 0x40)] = value;
                 return;
             }
 
@@ -479,13 +479,13 @@ namespace JAGBE.GB.Emulation
         /// <remarks>Common to all MBC modes</remarks>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetMappedMemoryCommon(GbUInt16 pointer, GbUInt8 value)
+        private void SetMappedMemoryCommon(GbUInt16 pointer, byte value)
         {
             if (pointer <= 0x9FFF)
             {
                 if (!this.lcd.VRamBlocked)
                 {
-                    this.lcd.VRam[pointer - 0x8000] = (byte)value;
+                    this.lcd.VRam[pointer - 0x8000] = value;
                 }
             }
             else if (pointer <= 0xBFFF)
@@ -513,7 +513,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFF7F)
             {
-                SetIoRegisters((GbUInt8)(pointer - 0xFF00), value);
+                SetIoRegisters((byte)(pointer - 0xFF00), value);
             }
             else if (pointer <= 0xFFFE)
             {
@@ -530,7 +530,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="pointer">The pointer.</param>
         /// <param name="value">The value.</param>
-        private void SetMappedMemoryMbc1(GbUInt16 pointer, GbUInt8 value)
+        private void SetMappedMemoryMbc1(GbUInt16 pointer, byte value)
         {
             if (pointer < 0x2000)
             {

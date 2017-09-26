@@ -81,7 +81,7 @@
         /// </remarks>
         private GbUInt16 sysTimer;
 
-        public GbUInt8 this[byte index]
+        public byte this[byte index]
         {
             get
             {
@@ -90,8 +90,8 @@
                     case 4: return this.sysTimer.HighByte;
                     case 5: return this.tima;
                     case 6: return this.tma;
-                    case 7: return (GbUInt8)(this.tac | 0xF8);
-                    default: return GbUInt8.MaxValue;
+                    case 7: return (byte)(this.tac | 0xF8);
+                    default: return byte.MaxValue;
                 }
             }
 
@@ -105,11 +105,11 @@
 
                     case 5:
                         this.timaOverflow = 1;
-                        this.tima = (byte)value;
+                        this.tima = value;
                         return;
 
                     case 6:
-                        this.tma = (byte)value;
+                        this.tma = value;
                         return;
 
                     case 7:
@@ -139,7 +139,7 @@
 
             this.prevTimaOverflow = this.timaOverflow;
             this.sysTimer++;
-            bool b = (this.tac & 0b100) == 0b100 && (this.tac == 0b100 ? this.sysTimer.HighByte[1] :
+            bool b = (this.tac & 0b100) == 0b100 && (this.tac == 0b100 ? this.sysTimer.HighByte.GetBit(1) :
                 (this.sysTimer & (1 << (((this.tac & 3) * 2) + 1))) > 0);
             if (this.prevTimerIn && !b)
             {

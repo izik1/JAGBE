@@ -16,7 +16,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Object Atribute Memory.
         /// </summary>
-        internal readonly GbUInt8[] Oam = new GbUInt8[MemoryRange.OAMSIZE];
+        internal readonly byte[] Oam = new byte[MemoryRange.OAMSIZE];
 
         /// <summary>
         /// The Video Ram.
@@ -75,7 +75,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The LCDC register
         /// </summary>
-        private GbUInt8 Lcdc;
+        private byte Lcdc;
 
         /// <summary>
         /// The Current scan line the lcd is drawing
@@ -114,7 +114,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The STAT register
         /// </summary>
-        private GbUInt8 STATUpper;
+        private byte STATUpper;
 
         private readonly List<Sprite> visibleSprites = new List<Sprite>(10);
 
@@ -123,12 +123,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Window W register
         /// </summary>
-        private GbUInt8 WX;
+        private byte WX;
 
         /// <summary>
         /// The Window Y register
         /// </summary>
-        private GbUInt8 WY;
+        private byte WY;
 
         private readonly GbMemory mem;
 
@@ -170,17 +170,17 @@ namespace JAGBE.GB.Emulation
         /// <value>The <see cref="GbUInt8"/>.</value>
         /// <param name="index">The index.</param>
         /// <returns>the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.</returns>
-        public GbUInt8 this[byte index]
+        public byte this[byte index]
         {
             get
             {
                 switch (index)
                 {
                     case 0x40: return this.Lcdc;
-                    case 0x41: return (GbUInt8)((int)this.STATUpper | 0x80 | this.STATMode);
+                    case 0x41: return (byte)(this.STATUpper | 0x80 | this.STATMode);
                     case 0x42: return this.SCY;
                     case 0x43: return this.SCX;
-                    case 0x44: return (GbUInt8)this.LY;
+                    case 0x44: return (byte)this.LY;
                     case 0x45: return this.LYC;
                     case 0x46: return this.DmaAddress.HighByte;
                     case 0x47: return this.bgPallet;
@@ -188,7 +188,7 @@ namespace JAGBE.GB.Emulation
                     case 0x49: return this.objPallet1;
                     case 0x4A: return this.WY;
                     case 0x4B: return this.WX;
-                    default: return GbUInt8.MaxValue;
+                    default: return byte.MaxValue;
                 }
             }
 
@@ -201,19 +201,19 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x1:
-                        this.STATUpper = (GbUInt8)(value & 0x78);
+                        this.STATUpper = (byte)(value & 0x78);
                         break;
 
                     case 0x2:
-                        this.SCY = (byte)value;
+                        this.SCY = value;
                         break;
 
                     case 0x3:
-                        this.SCX = (byte)value;
+                        this.SCX = value;
                         break;
 
                     case 0x5:
-                        this.LYC = (byte)value;
+                        this.LYC = value;
                         break;
 
                     case 0x6:
@@ -222,7 +222,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x7:
-                        this.bgPallet = (byte)value;
+                        this.bgPallet = value;
                         break;
 
                     case 0x8:
@@ -291,7 +291,7 @@ namespace JAGBE.GB.Emulation
         public void Tick()
         {
             TickDma();
-            if (!this.Lcdc[7])
+            if (!this.Lcdc.GetBit(7))
             {
                 this.Disable();
                 return;
@@ -335,10 +335,10 @@ namespace JAGBE.GB.Emulation
             {
                 this.windowLy = 0;
                 this.STATMode = 0;
-                return this.STATUpper[3];
+                return this.STATUpper.GetBit(3);
             }
 
-            bool IRQ = this.STATUpper[4] || this.STATUpper[5];
+            bool IRQ = this.STATUpper.GetBit(4) || this.STATUpper.GetBit(5);
             if (this.cy == Cpu.MCycle)
             {
                 this.mem.IF |= 1;
@@ -353,17 +353,17 @@ namespace JAGBE.GB.Emulation
             if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
             {
                 this.STATUpper |= 4;
-                return this.STATUpper[6];
+                return this.STATUpper.GetBit(6);
             }
 
-            this.STATUpper = (GbUInt8)(this.STATUpper & 0xFB);
+            this.STATUpper = (byte)(this.STATUpper & 0xFB);
             return false;
         }
 
         internal Sprite ReadSprite(int offset) => new Sprite(
             (byte)(this.Oam[offset + 1] - 8),
             (byte)(this.Oam[offset] - 16),
-            (byte)this.Oam[offset + 2],
+            this.Oam[offset + 2],
             this.Oam[offset + 3]);
 
         private static bool IsSpritePixelVisible(int x, int palletIndex, bool priority, bool displayMemTransparent) =>
@@ -390,7 +390,7 @@ namespace JAGBE.GB.Emulation
                 this.displayMemory[i] = WHITE;
             }
 
-            this.STATUpper = (GbUInt8)(this.STATUpper & 0x78);
+            this.STATUpper = (byte)(this.STATUpper & 0x78);
         }
 
         private bool DrawSprite()
@@ -436,13 +436,13 @@ namespace JAGBE.GB.Emulation
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                int tileY = (sprite.Flags.GetBit(6) ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8; x++)
                 {
-                    int colorIndex = GetPalletIndex(tileY, (byte)(sprite.Flags[5] ? (7 - x) : x), sprite.Tile);
+                    int colorIndex = GetPalletIndex(tileY, (byte)(sprite.Flags.GetBit(5) ? (7 - x) : x), sprite.Tile);
 
                     // 0 is a hack to make sure that x is always < width
-                    if (IsSpritePixelVisible(0, colorIndex, !sprite.Flags[7],
+                    if (IsSpritePixelVisible(0, colorIndex, !sprite.Flags.GetBit(7),
                         sprite.X + x >= Width || this.currLinePixelsTransparent[sprite.X + x]))
                     {
                         return true;
@@ -455,18 +455,18 @@ namespace JAGBE.GB.Emulation
 
         private void RenderLine()
         {
-            if (this.Lcdc[0])
+            if (this.Lcdc.GetBit(0))
             {
                 ScanLine();
             }
 
-            if (this.Lcdc[5])
+            if (this.Lcdc.GetBit(5))
             {
                 ScanLineWindow();
                 this.windowLy++;
             }
 
-            if (this.Lcdc[1])
+            if (this.Lcdc.GetBit(1))
             {
                 ScanLineSprite();
             }
@@ -478,13 +478,13 @@ namespace JAGBE.GB.Emulation
         private void ScanLine()
         {
             // Offset from the start of VRAM to the start of the background map.
-            ushort mapOffset = (ushort)(this.Lcdc[3] ? 0x1C00 : 0x1800);
+            ushort mapOffset = (ushort)(this.Lcdc.GetBit(3) ? 0x1C00 : 0x1800);
             mapOffset += (ushort)((((this.SCY + this.LY) & 0xFF) >> 3) * 32);
             int lineOffset = (this.SCX >> 3);
             int y = ((this.LY + this.SCY) & 7) * 2;
             int x = this.SCX & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
-            bool isTilesetMode1 = this.Lcdc[4];
+            bool isTilesetMode1 = this.Lcdc.GetBit(4);
             int pallet = this.bgPallet;
             if (!isTilesetMode1 && tile < 128)
             {
@@ -521,7 +521,7 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="NotSupportedException"></exception>
         private void ScanLineSprite()
         {
-            if (this.Lcdc[2])
+            if (this.Lcdc.GetBit(2))
             {
                 throw new NotSupportedException();
             }
@@ -553,13 +553,13 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
-            ushort mapOffset = (ushort)(this.Lcdc[6] ? 0x1C00 : 0x1800); // Base offset
+            ushort mapOffset = (ushort)(this.Lcdc.GetBit(6) ? 0x1C00 : 0x1800); // Base offset
             mapOffset += (ushort)((((this.WY + this.windowLy) & 0xFF) >> 3) * 32);
             int lineOffset = this.WX - 7;
             int y = (this.WY + this.windowLy) & 7;
             int x = (this.WX - 7) & 7;
             ushort tile = this.VRam[lineOffset + mapOffset];
-            if (!this.Lcdc[4] && tile < 128)
+            if (!this.Lcdc.GetBit(4) && tile < 128)
             {
                 tile += 256;
             }
@@ -578,7 +578,7 @@ namespace JAGBE.GB.Emulation
                     x = 0;
                     lineOffset = ((lineOffset + 1) & 31);
                     tile = this.VRam[lineOffset + mapOffset];
-                    if (!this.Lcdc[4] && tile < 128)
+                    if (!this.Lcdc.GetBit(4) && tile < 128)
                     {
                         tile += 256;
                     }
@@ -594,13 +594,13 @@ namespace JAGBE.GB.Emulation
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {
-                int pallet = sprite.Flags[4] ? this.objPallet1 : this.objPallet0;
+                int pallet = sprite.Flags.GetBit(4) ? this.objPallet1 : this.objPallet0;
                 int displayOffset = ((Height - this.LY - 1) * Width) + sprite.X;
-                int tileY = (sprite.Flags[6] ? (7 - (this.LY & 7)) : (this.LY & 7));
+                int tileY = (sprite.Flags.GetBit(6) ? (7 - (this.LY & 7)) : (this.LY & 7));
                 for (int x = 0; x < 8 && sprite.X + x < Width; x++)
                 {
-                    int palletIndex = GetPalletIndex(tileY, sprite.Flags[5] ? (7 - x) : x, sprite.Tile);
-                    if (IsSpritePixelVisible(sprite.X + x, palletIndex, !sprite.Flags[7], this.currLinePixelsTransparent[sprite.X + x]))
+                    int palletIndex = GetPalletIndex(tileY, sprite.Flags.GetBit(5) ? (7 - x) : x, sprite.Tile);
+                    if (IsSpritePixelVisible(sprite.X + x, palletIndex, !sprite.Flags.GetBit(7), this.currLinePixelsTransparent[sprite.X + x]))
                     {
                         this.displayMemory[displayOffset + x] = COLORS[GetColorIndex(pallet, palletIndex)];
                     }
@@ -652,7 +652,7 @@ namespace JAGBE.GB.Emulation
             {
                 case Cpu.MCycle:
                     this.STATMode = 2;
-                    return IRQ || this.STATUpper[5];
+                    return IRQ || this.STATUpper.GetBit(5);
 
                 case Cpu.MCycle * 10:
                     this.STATMode = 3;
@@ -662,14 +662,14 @@ namespace JAGBE.GB.Emulation
                 case 0:
                 case Cpu.MCycle * 53:
                     this.STATMode = 0;
-                    return IRQ || this.STATUpper[3];
+                    return IRQ || this.STATUpper.GetBit(3);
 
                 case (Cpu.MCycle * 113) + 3:
-                    return IRQ || this.STATUpper[3];
+                    return IRQ || this.STATUpper.GetBit(3);
 
                 default: // Nothing interesting is happening this cycle.
 #pragma warning disable S1067 // Expressions should not be too complex
-                    return IRQ || (this.STATMode == 2 && this.STATUpper[5]) || (this.STATMode == 0 && this.STATUpper[3]);
+                    return IRQ || (this.STATMode == 2 && this.STATUpper.GetBit(5)) || (this.STATMode == 0 && this.STATUpper.GetBit(3));
 #pragma warning restore S1067 // Expressions should not be too complex
             }
         }

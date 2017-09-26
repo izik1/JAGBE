@@ -4,8 +4,8 @@
     {
         public static int Call(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCycleI8();
-            GbUInt8 high = mem.ReadCycleI8();
+            byte low = mem.ReadCycleI8();
+            byte high = mem.ReadCycleI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
@@ -22,8 +22,8 @@
 
         public static int Jp(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCycleI8();
-            GbUInt8 high = mem.ReadCycleI8();
+            byte low = mem.ReadCycleI8();
+            byte high = mem.ReadCycleI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
                 return 3;
@@ -43,14 +43,14 @@
                 return 2;
             }
 
-            mem.R.Pc += (sbyte)(byte)mem.ReadCycleI8();
+            mem.R.Pc += (sbyte)mem.ReadCycleI8();
             mem.R.Pc++;
             return 3;
         }
 
         public static int Ret(Opcode op, GbMemory mem)
         {
-            GbUInt8 low = mem.ReadCyclePop();
+            byte low = mem.ReadCyclePop();
             mem.R.Pc = new GbUInt16(mem.ReadCyclePop(), low);
             mem.Update();
             mem.IME |= op.Dest != 0; // Unlike EI IME gets enabled right away.
@@ -71,7 +71,7 @@
                 return 2;
             }
 
-            GbUInt8 low = mem.ReadCyclePop();
+            byte low = mem.ReadCyclePop();
             mem.R.Pc = new GbUInt16(mem.ReadCyclePop(), low);
             mem.Update();
             return 5;
@@ -95,7 +95,7 @@
         /// <param name="src">The source.</param>
         /// <param name="flags">The flags.</param>
         /// <returns></returns>
-        private static bool GetConditionalJumpState(GbUInt8 dest, GbUInt8 src, GbUInt8 flags) =>
-            flags[src == 1 ? RFlags.ZF : RFlags.CF] ^ (dest != 0);
+        private static bool GetConditionalJumpState(byte dest, byte src, byte flags) =>
+            flags.GetBit(src == 1 ? RFlags.ZF : RFlags.CF) ^ (dest != 0);
     }
 }

@@ -51,17 +51,17 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="highByte">The high byte of this instance.</param>
         /// <param name="lowByte">The low byte of this instance.</param>
-        public GbUInt16(GbUInt8 highByte, GbUInt8 lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
+        public GbUInt16(byte highByte, byte lowByte) => this.value = (ushort)((highByte << 8) | lowByte);
 
         /// <summary>
         /// The high byte of this instance's value
         /// </summary>
-        public GbUInt8 HighByte => (GbUInt8)(this.value >> 8);
+        public byte HighByte => (byte)(this.value >> 8);
 
         /// <summary>
         /// The low byte of this instance's value
         /// </summary>
-        public GbUInt8 LowByte => (GbUInt8)this.value;
+        public byte LowByte => (byte)this.value;
 
         /// <summary>
         /// Implements the operator -.

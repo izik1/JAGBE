@@ -15,11 +15,11 @@ namespace JAGBE.GB.Emulation.Alu
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1038
             // Reimplemented on 8/26/2017 thanks to the previous link.
-            int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
+            int cIn = mem.R.F.GetBit(RFlags.CF) ? 1 : 0;
             int res = val + cIn + mem.R.A;
-            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZB : GbUInt8.MinValue).AssignBit(RFlags.HF,
+            mem.R.F = ((res & 0xFF) == 0 ? RFlags.ZB : byte.MinValue).AssignBit(RFlags.HF,
                 (mem.R.A & 0x0F) + (val & 0x0F) + cIn > 0x0F).AssignBit(RFlags.CF, res > 0xFF);
-            mem.R.A = (GbUInt8)res;
+            mem.R.A = (byte)res;
         });
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Add(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             byte s = (byte)(mem.R.A + val);
-            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZB : 0) |
+            mem.R.F = (byte)((s == 0 ? RFlags.ZB : 0) |
             ((((mem.R.A & 0x0F) + (val & 0x0F)) & 0x10) == 0x10 ? RFlags.HB : 0) | (s < mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
@@ -59,7 +59,7 @@ namespace JAGBE.GB.Emulation.Alu
             sbyte v = (sbyte)memory.ReadCycleI8();
             memory.Update();
             memory.Update();
-            memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : GbUInt8.MinValue)
+            memory.R.F = (((memory.R.Sp & 0x0F) + (v & 0x0F)) > 0x0F ? RFlags.HB : byte.MinValue)
                 .AssignBit(RFlags.CF, ((memory.R.Sp & 0xFF) + (v & 0xFF)) > 0xFF);
             memory.R.Sp += v;
             return 4;
@@ -74,7 +74,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 0 1 0</remarks>
         public static int And(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
-            mem.R.A = (GbUInt8)(mem.R.A & val);
+            mem.R.A = (byte)(mem.R.A & val);
             mem.R.F = mem.R.A == 0 ? RFlags.ZHB : RFlags.HB;
         });
 
@@ -88,7 +88,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Cp(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             int r = mem.R.A - val;
-            mem.R.F = (GbUInt8)((r == 0 ? RFlags.ZNB : RFlags.NB) |
+            mem.R.F = (byte)((r == 0 ? RFlags.ZNB : RFlags.NB) |
             ((mem.R.A & 0xF) < (r & 0xF) ? RFlags.HB : 0) | (r < 0 ? RFlags.CB : 0));
         });
 
@@ -101,7 +101,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected Flags: Z, C = Unaffected. N,H = 1</remarks>
         public static int Cpl(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
-            mem.R.A = (GbUInt8)~val;
+            mem.R.A = (byte)~val;
             mem.R.F |= RFlags.NHB;
         });
 
@@ -115,32 +115,32 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Daa(Opcode op, GbMemory mem)
         {
             int res = mem.R.A;
-            if (mem.R.F[RFlags.NF])
+            if (mem.R.F.GetBit(RFlags.NF))
             {
-                if (mem.R.F[RFlags.HF])
+                if (mem.R.F.GetBit(RFlags.HF))
                 {
                     res = (res - 6) & 0xFF;
                 }
 
-                if (mem.R.F[RFlags.CF])
+                if (mem.R.F.GetBit(RFlags.CF))
                 {
                     res -= 0x60;
                 }
             }
             else
             {
-                if (mem.R.F[RFlags.HF] || (res & 0xF) > 9)
+                if (mem.R.F.GetBit(RFlags.HF) || (res & 0xF) > 9)
                 {
                     res += 0x06;
                 }
 
-                if (mem.R.F[RFlags.CF] || res > 0x9F)
+                if (mem.R.F.GetBit(RFlags.CF) || res > 0x9F)
                 {
                     res += 0x60;
                 }
             }
 
-            mem.R.F = (GbUInt8)(mem.R.F & RFlags.NCB);
+            mem.R.F = (byte)(mem.R.F & RFlags.NCB);
             if ((res & 0x100) == 0x100)
             {
                 mem.R.F |= RFlags.CB;
@@ -153,7 +153,7 @@ namespace JAGBE.GB.Emulation.Alu
                 mem.R.F |= RFlags.ZB;
             }
 
-            mem.R.A = (GbUInt8)res;
+            mem.R.A = (byte)res;
             return 1;
         }
 
@@ -180,8 +180,8 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 1 H -</remarks>
         public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val) =>
         {
-            mem.R.F = (GbUInt8)(mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB);
-            return (GbUInt8)(val - 1);
+            mem.R.F = (byte)(mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB);
+            return (byte)(val - 1);
         });
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Inc8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val) =>
         {
             mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 255).Res(RFlags.NF).AssignBit(RFlags.HF, (((val & 0x0F) + 1) & 0x10) == 0x10);
-            return (GbUInt8)(val + 1);
+            return (byte)(val + 1);
         });
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Or(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A |= val;
-            mem.R.F = mem.R.A == GbUInt8.MinValue ? RFlags.ZB : GbUInt8.MinValue;
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : byte.MinValue;
         });
 
 #pragma warning disable S1067 // Expressions should not be too complex
@@ -237,11 +237,11 @@ namespace JAGBE.GB.Emulation.Alu
         {
             // https://github.com/eightlittlebits/elbgb/blob/dffc28001a7a01f93ef9e8abecd7161bcf03cc95/elbgb_core/CPU/LR35902.cs#L1084
             // Reimplemented on 8/26/2017 thanks to the previous link.
-            int cIn = mem.R.F[RFlags.CF] ? 1 : 0;
+            int cIn = mem.R.F.GetBit(RFlags.CF) ? 1 : 0;
             int res = mem.R.A - val - cIn;
-            mem.R.F = (GbUInt8)(((res & 0xFF) == 0 ? RFlags.ZNB : RFlags.NB) |
+            mem.R.F = (byte)(((res & 0xFF) == 0 ? RFlags.ZNB : RFlags.NB) |
             ((mem.R.A & 0xF) - (val & 0xF) - cIn < 0 ? RFlags.HB : 0) | (res < 0 ? RFlags.CB : 0));
-            mem.R.A = (GbUInt8)res;
+            mem.R.A = (byte)res;
         });
 
 #pragma warning restore S1067 // Expressions should not be too complex
@@ -256,7 +256,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Sub(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             byte s = (byte)(mem.R.A - val);
-            mem.R.F = (GbUInt8)((s == 0 ? RFlags.ZNB : RFlags.NB) |
+            mem.R.F = (byte)((s == 0 ? RFlags.ZNB : RFlags.NB) |
             ((mem.R.A & 0xF) < (val & 0xF) ? RFlags.HB : 0) | (s > mem.R.A ? RFlags.CB : 0));
             mem.R.A = s;
         });
@@ -271,7 +271,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Xor(Opcode op, GbMemory memory) => ArithOp8Func(op, memory, (mem, val) =>
         {
             mem.R.A ^= val;
-            mem.R.F = mem.R.A == 0 ? RFlags.ZB : GbUInt8.MinValue;
+            mem.R.F = mem.R.A == 0 ? RFlags.ZB : byte.MinValue;
         });
     }
 }

@@ -29,7 +29,7 @@
         public static int Run(GbMemory memory)
         {
             memory.Update(1);
-            byte opcode = (byte)memory.LdI8();
+            byte opcode = memory.LdI8();
             memory.Update(1);
             if (memory.HaltBugged)
             {
@@ -119,15 +119,15 @@
             ops[0x00] = new Opcode(0, 0, (a, b) => 1); // NOP
             ops[0x07] = new Opcode(0, 0, (op, mem) => // RLCA
             {
-                mem.R.F = (GbUInt8)((mem.R.A & 0x80) >> (7 - RFlags.CF));
-                mem.R.A = (GbUInt8)((mem.R.A << 1) | ((mem.R.F & RFlags.CB) >> RFlags.CF));
+                mem.R.F = (byte)((mem.R.A & 0x80) >> (7 - RFlags.CF));
+                mem.R.A = (byte)((mem.R.A << 1) | ((mem.R.F & RFlags.CB) >> RFlags.CF));
                 return 1;
             });
             ops[0x08] = new Opcode(0, 0, Alu.Loading.LdA16Sp);
             ops[0x0F] = new Opcode(0, 0, (op, mem) => // RRCA
             {
-                mem.R.F = (GbUInt8)((mem.R.A & 1) << RFlags.CF);
-                mem.R.A = (GbUInt8)((mem.R.A >> 1) | ((mem.R.F & RFlags.CB) << (7 - RFlags.CF)));
+                mem.R.F = (byte)((mem.R.A & 1) << RFlags.CF);
+                mem.R.A = (byte)((mem.R.A >> 1) | ((mem.R.F & RFlags.CB) << (7 - RFlags.CF)));
                 return 1;
             });
             ops[0x10] = new Opcode(0, 0, (op, mem) => // STOP
@@ -138,25 +138,25 @@
             });
             ops[0x17] = new Opcode(0, 0, (op, mem) => // RLA
             {
-                bool b = mem.R.A[7];
+                bool b = mem.R.A.GetBit(7);
                 mem.R.A <<= 1;
-                mem.R.A |= (byte)(mem.R.F[RFlags.CF] ? 1 : 0);
+                mem.R.A |= (byte)(mem.R.F.GetBit(RFlags.CF) ? 1 : 0);
                 mem.R.F = b ? RFlags.CB : (byte)0;
                 return 1;
             });
             ops[0x18] = new Opcode(0, 0, Alu.Branching.Jr8);
             ops[0x1F] = new Opcode(0, 0, (op, mem) => // RRA
             {
-                bool oldCf = mem.R.F[RFlags.CF];
-                mem.R.F = mem.R.A[0] ? RFlags.CB : (byte)0;
-                mem.R.A = (GbUInt8)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
+                bool oldCf = mem.R.F.GetBit(RFlags.CF);
+                mem.R.F = mem.R.A.GetBit(0) ? RFlags.CB : (byte)0;
+                mem.R.A = (byte)(mem.R.A >> 1 | (oldCf ? 0x80 : 0));
                 return 1;
             });
             ops[0x27] = new Opcode(0, 0, Alu.Arithmetic.Daa);
             ops[0x2F] = new Opcode(7, 7, Alu.Arithmetic.Cpl);
             ops[0x37] = new Opcode(0, 0, (op, mem) => // SCF
             {
-                mem.R.F = (GbUInt8)(mem.R.F & RFlags.ZB);
+                mem.R.F = (byte)(mem.R.F & RFlags.ZB);
                 mem.R.F |= RFlags.CB;
                 return 1;
             });

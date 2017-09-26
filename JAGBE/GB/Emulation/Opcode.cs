@@ -7,12 +7,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The destination operand.
         /// </summary>
-        internal readonly GbUInt8 Dest;
+        internal readonly byte Dest;
 
         /// <summary>
         /// The source operand.
         /// </summary>
-        internal readonly GbUInt8 Src;
+        internal readonly byte Src;
 
         /// <summary>
         /// The function.

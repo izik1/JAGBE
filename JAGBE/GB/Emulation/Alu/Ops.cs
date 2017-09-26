@@ -12,7 +12,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// </summary>
         /// <param name="mem">The memory.</param>
         /// <param name="valIn">The input value.</param>
-        internal delegate void ArithOp8(GbMemory mem, GbUInt8 valIn);
+        internal delegate void ArithOp8(GbMemory mem, byte valIn);
 
         /// <summary>
         /// A delegate for Bitwise operations.
@@ -20,7 +20,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <param name="mem">The memory.</param>
         /// <param name="valIn">The input value.</param>
         /// <returns>The result of the operation</returns>
-        internal delegate GbUInt8 BitOp(GbMemory mem, GbUInt8 valIn);
+        internal delegate byte BitOp(GbMemory mem, byte valIn);
 
         /// <summary>
         /// A framework for calling arithmetic operation instructions.
@@ -66,7 +66,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            GbUInt8 val = memory.ReadCycleHl();
+            byte val = memory.ReadCycleHl();
             memory.Update();
             memory.SetMappedMemoryHl(operation(memory, val));
             return 3;

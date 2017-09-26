@@ -7,7 +7,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The joypad status register.
         /// </summary>
-        internal GbUInt8 Status;
+        internal byte Status;
 
         /// <summary>
         /// The keys of the joypad
@@ -53,7 +53,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="p1">The p1.</param>
         /// <returns>The value of the joypad.</returns>
         private byte GetJoypad(byte p1) =>
-            (byte)((!this.Status[5] ? (p1 & 0xF) : !this.Status[4] ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
+            (byte)((!this.Status.GetBit(5) ? (p1 & 0xF) : !this.Status.GetBit(4) ? ((p1 >> 4) & 0xF) : 0xFF) | 0xC0);
 
         /// <summary>
         /// Called when input is recieved.

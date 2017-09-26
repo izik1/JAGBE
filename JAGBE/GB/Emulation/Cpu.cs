@@ -148,7 +148,7 @@ namespace JAGBE.GB.Emulation
             {
                 RomBanks = 2 << iRom[0x148],
                 Rom = new byte[(MemoryRange.ROMBANKSIZE * 2) << iRom[0x148]], // Set the rom size to what the cartrage says.
-                ERam = new GbUInt8[Cart.GetRamSize(iRom[0x149])],
+                ERam = new byte[Cart.GetRamSize(iRom[0x149])],
                 MBCMode = mbcMode == 0 ? MemoryBankController.None : MemoryBankController.MBC1
             };
 
@@ -251,7 +251,7 @@ namespace JAGBE.GB.Emulation
                 if (((b >> i) & 0x1) == 1)
                 {
                     newPc = new GbUInt16(0, (byte)((i * 8) + 0x40));
-                    this.memory.IF = (GbUInt8)(this.memory.IF & ~(1 << i));
+                    this.memory.IF = (byte)(this.memory.IF & ~(1 << i));
                     break;
                 }
             }

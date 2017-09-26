@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="GB\Assembly\Disassembler.cs" />
     <Compile Include="GB\Emulation\Apu.cs" />
+    <Compile Include="GB\Emulation\ByteExtensions.cs" />
     <Compile Include="GB\Emulation\Cart.cs" />
     <Compile Include="GB\Emulation\Cpu.cs" />
     <Compile Include="GB\Emulation\CpuState.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="GB\Emulation\Timer.cs" />
     <Compile Include="GB\Emulation\GBRegisters.cs" />
     <Compile Include="GB\Emulation\OpcodeFunc.cs" />
-    <Compile Include="GB\Emulation\GbUInt8.cs" />
     <Compile Include="GB\GameBoy.cs" />
     <Compile Include="GB\Emulation\GbUInt16.cs" />
     <Compile Include="GB\Emulation\MemoryBankController.cs" />

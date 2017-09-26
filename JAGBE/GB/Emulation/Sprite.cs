@@ -7,7 +7,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The Flags of this sprite.
         /// </summary>
-        internal readonly GbUInt8 Flags;
+        internal readonly byte Flags;
 
         /// <summary>
         /// The number of the tile that this sprite uses.
@@ -31,7 +31,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="y">The y.</param>
         /// <param name="tile">The tile.</param>
         /// <param name="flags">The flags.</param>
-        public Sprite(byte x, byte y, byte tile, GbUInt8 flags)
+        public Sprite(byte x, byte y, byte tile, byte flags)
         {
             this.X = x;
             this.Y = y;

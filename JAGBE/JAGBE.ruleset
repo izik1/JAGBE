@@ -246,6 +246,7 @@
     <Rule Id="CA5122" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0004" Action="Info" />
     <Rule Id="IDE0017WithoutSuggestion" Action="None" />
     <Rule Id="IDE0028WithoutSuggestion" Action="None" />
   </Rules>

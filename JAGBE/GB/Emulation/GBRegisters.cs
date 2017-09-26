@@ -43,12 +43,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the A register.
         /// </summary>
-        internal GbUInt8 A;
+        internal byte A;
 
         /// <summary>
         /// Gets or sets the B register.
         /// </summary>
-        internal GbUInt8 B
+        internal byte B
         {
             get => Bc.HighByte;
             set => Bc = new GbUInt16(value, Bc.LowByte);
@@ -57,7 +57,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the C register.
         /// </summary>
-        internal GbUInt8 C
+        internal byte C
         {
             get => Bc.LowByte;
             set => Bc = new GbUInt16(Bc.HighByte, value);
@@ -66,7 +66,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the D register.
         /// </summary>
-        internal GbUInt8 D
+        internal byte D
         {
             get => De.HighByte;
             set => De = new GbUInt16(value, De.LowByte);
@@ -75,7 +75,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the E register.
         /// </summary>
-        internal GbUInt8 E
+        internal byte E
         {
             get => De.LowByte;
             set => De = new GbUInt16(De.HighByte, value);
@@ -84,12 +84,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the F register.
         /// </summary>
-        internal GbUInt8 F { get; set; }
+        internal byte F { get; set; }
 
         /// <summary>
         /// Gets or sets the H register.
         /// </summary>
-        internal GbUInt8 H
+        internal byte H
         {
             get => Hl.HighByte;
             set => Hl = new GbUInt16(value, Hl.LowByte);
@@ -98,7 +98,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Gets or sets the L register.
         /// </summary>
-        internal GbUInt8 L
+        internal byte L
         {
             get => Hl.LowByte;
             set => Hl = new GbUInt16(Hl.HighByte, value);
@@ -143,7 +143,7 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="index"/> is less than zero or greater than seven
         /// </exception>
-        public GbUInt8 GetR8(int index)
+        public byte GetR8(int index)
         {
             switch (index)
             {
@@ -219,7 +219,7 @@ namespace JAGBE.GB.Emulation
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="index"/> is less than zero or greater than seven
         /// </exception>
-        public void SetR8(int index, GbUInt8 value)
+        public void SetR8(int index, byte value)
         {
             switch (index)
             {
