@@ -17,11 +17,13 @@ namespace JAGBE.GB.Emulation.Alu
         {
             if (code.Src != 6)
             {
-                memory.R.F = memory.R.F.AssignBit(RFlags.ZF, !memory.R.GetR8(code.Src)[(byte)code.Dest]).Res(RFlags.NF) | RFlags.HB;
+                memory.R.F = (GbUInt8)(memory.R.F.AssignBit(RFlags.ZF, !memory.R.GetR8(code.Src)[(byte)code.Dest])
+                    .Res(RFlags.NF) | RFlags.HB);
                 return 1;
             }
 
-            memory.R.F = memory.R.F.AssignBit(RFlags.ZF, !memory.ReadCycleHl()[(byte)code.Dest]).Res(RFlags.NF) | RFlags.HB;
+            memory.R.F = (GbUInt8)(memory.R.F.AssignBit(RFlags.ZF, !memory.ReadCycleHl()[(byte)code.Dest])
+                .Res(RFlags.NF) | RFlags.HB);
             return 2;
         }
 

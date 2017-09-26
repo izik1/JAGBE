@@ -19,7 +19,6 @@ namespace JAGBE.GB.Emulation.Alu
         /// </summary>
         /// <param name="mem">The memory.</param>
         /// <param name="valIn">The input value.</param>
-        /// <param name="dest">The dest.</param>
         /// <returns>The result of the operation</returns>
         internal delegate GbUInt8 BitOp(GbMemory mem, GbUInt8 valIn);
 

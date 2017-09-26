@@ -118,14 +118,6 @@ namespace JAGBE.GB.Emulation
         public static bool operator !=(GbUInt8 u8a, GbUInt8 u8b) => !(u8a.value == u8b.value);
 
         /// <summary>
-        /// Implements the operator |.
-        /// </summary>
-        /// <param name="u8a">The u8a.</param>
-        /// <param name="u8b">The u8b.</param>
-        /// <returns>The result of the operator.</returns>
-        public static GbUInt8 operator |(GbUInt8 u8a, GbUInt8 u8b) => (GbUInt8)(u8a.value | u8b.value);
-
-        /// <summary>
         /// Implements the operator ==.
         /// </summary>
         /// <param name="u8a">The u8a.</param>

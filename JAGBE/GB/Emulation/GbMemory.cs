@@ -299,7 +299,7 @@ namespace JAGBE.GB.Emulation
 
             if (number == 0xF)
             {
-                return this.IF | 0xE0;
+                return (GbUInt8)(this.IF | 0xE0);
             }
 
             if (number <= 0x3F)

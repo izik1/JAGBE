@@ -180,7 +180,7 @@ namespace JAGBE.GB.Emulation.Alu
         /// <remarks>Affected flags: Z 1 H -</remarks>
         public static int Dec8(Opcode op, GbMemory memory) => BitOpFunc(op, memory, (mem, val) =>
         {
-            mem.R.F = mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB;
+            mem.R.F = (GbUInt8)(mem.R.F.AssignBit(RFlags.ZF, val == 1).AssignBit(RFlags.HF, (val & 0xF) == 0) | RFlags.NB);
             return (GbUInt8)(val - 1);
         });
 
