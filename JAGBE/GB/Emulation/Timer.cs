@@ -79,7 +79,7 @@
         /// Always increments by one every tick. Reading from 0xFF04 with return the upper 8 bits of
         /// this register. Writing to 0xFF04 will reset this register to 0.
         /// </remarks>
-        private GbUInt16 sysTimer;
+        private ushort sysTimer;
 
         public byte this[byte index]
         {
@@ -87,7 +87,7 @@
             {
                 switch (index)
                 {
-                    case 4: return this.sysTimer.HighByte;
+                    case 4: return (byte)(this.sysTimer >> 8);
                     case 5: return this.tima;
                     case 6: return this.tma;
                     case 7: return (byte)(this.tac | 0xF8);
@@ -139,8 +139,8 @@
 
             this.prevTimaOverflow = this.timaOverflow;
             this.sysTimer++;
-            bool b = (this.tac & 0b100) == 0b100 && (this.tac == 0b100 ? this.sysTimer.HighByte.GetBit(1) :
-                (this.sysTimer & (1 << (((this.tac & 3) * 2) + 1))) > 0);
+            bool b = (this.tac & 0b100) == 0b100 &&
+                (this.sysTimer & (1 << (this.tac == 0b100 ? 9 : (((this.tac & 3) * 2) + 1)))) > 0;
             if (this.prevTimerIn && !b)
             {
                 this.tima++;
