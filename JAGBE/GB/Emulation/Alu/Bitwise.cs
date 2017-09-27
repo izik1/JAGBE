@@ -41,9 +41,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            byte val = memory.ReadCycleHl();
-            memory.Update();
-            memory.SetMappedMemoryHl(val.Res(opcode.Dest));
+            memory.WriteCycleHl(memory.ReadCycleHl().Res(opcode.Dest));
             return 3;
         }
 
@@ -114,9 +112,7 @@ namespace JAGBE.GB.Emulation.Alu
                 return 1;
             }
 
-            byte val = memory.ReadCycleHl();
-            memory.Update();
-            memory.SetMappedMemoryHl((byte)(val | (1 << opcode.Dest)));
+            memory.WriteCycleHl((byte)(memory.ReadCycleHl() | (1 << opcode.Dest)));
             return 3;
         }
 

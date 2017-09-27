@@ -19,8 +19,7 @@ namespace JAGBE.GB.Emulation.Alu
                 }
                 else
                 {
-                    memory.Update();
-                    memory.SetMappedMemory(memory.R.Hl, memory.R.GetR8(op.Src));
+                    memory.WriteCycle(memory.R.Hl, memory.R.GetR8(op.Src));
                 }
 
                 return 2;
@@ -40,8 +39,7 @@ namespace JAGBE.GB.Emulation.Alu
             }
             else
             {
-                mem.Update();
-                mem.SetMappedMemory(new GbUInt16(high, low), mem.R.A);
+                mem.WriteCycle(new GbUInt16(high, low), mem.R.A);
             }
 
             return 4;
@@ -51,10 +49,8 @@ namespace JAGBE.GB.Emulation.Alu
         {
             byte low = mem.ReadCycleI8();
             byte high = mem.ReadCycleI8();
-            mem.Update();
-            mem.SetMappedMemory(new GbUInt16(high, low), mem.R.Sp.LowByte);
-            mem.Update();
-            mem.SetMappedMemory((GbUInt16)(new GbUInt16(high, low) + 1), mem.R.Sp.HighByte);
+            mem.WriteCycle(new GbUInt16(high, low), mem.R.Sp.LowByte);
+            mem.WriteCycle((GbUInt16)(new GbUInt16(high, low) + 1), mem.R.Sp.HighByte);
             return 5;
         }
 
@@ -70,8 +66,7 @@ namespace JAGBE.GB.Emulation.Alu
             byte val = mem.ReadCycleI8();
             if (op.Dest == 6)
             {
-                mem.Update();
-                mem.SetMappedMemory(mem.R.Hl, val);
+                mem.WriteCycle(mem.R.Hl, val);
                 return 3;
             }
 
@@ -87,8 +82,7 @@ namespace JAGBE.GB.Emulation.Alu
             }
             else
             {
-                mem.Update();
-                mem.SetMappedMemory(new GbUInt16(0xFF, mem.ReadCycleI8()), mem.R.A);
+                mem.WriteCycle(new GbUInt16(0xFF, mem.ReadCycleI8()), mem.R.A);
             }
 
             return 3;
@@ -106,14 +100,13 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int LdR16(Opcode op, GbMemory mem)
         {
-            mem.Update();
             if (op.Src == 8)
             {
-                mem.SetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Dest), mem.R.A);
+                mem.WriteCycle((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Dest), mem.R.A);
             }
             else
             {
-                mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Src));
+                mem.R.A = mem.ReadCycle((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Src));
             }
 
             if (op.Src == 2 || op.Dest == 2)
@@ -159,10 +152,8 @@ namespace JAGBE.GB.Emulation.Alu
         {
             GbUInt16 r = mem.R.GetR16Af(op.Dest);
             mem.Update();
-            mem.Update();
-            mem.Push(r.HighByte);
-            mem.Update();
-            mem.Push(r.LowByte);
+            mem.WriteCyclePush(r.HighByte);
+            mem.WriteCyclePush(r.LowByte);
             return 4;
         }
     }

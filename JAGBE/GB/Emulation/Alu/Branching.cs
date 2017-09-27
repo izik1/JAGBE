@@ -12,11 +12,7 @@
             }
 
             mem.Update();
-            mem.Update();
-            mem.Push(mem.R.Pc.HighByte);
-            mem.Update();
-            mem.Push(mem.R.Pc.LowByte);
-            mem.R.Pc = new GbUInt16(high, low);
+            mem.Call(new GbUInt16(high, low));
             return 6;
         }
 
@@ -80,11 +76,7 @@
         public static int Rst(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.Update();
-            mem.Push(mem.R.Pc.HighByte);
-            mem.Update();
-            mem.Push(mem.R.Pc.LowByte);
-            mem.R.Pc = new GbUInt16(0, (byte)(op.Dest * 8));
+            mem.Call(new GbUInt16(0, (byte)(op.Dest * 8)));
             return 4;
         }
 

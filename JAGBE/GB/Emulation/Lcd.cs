@@ -164,12 +164,6 @@ namespace JAGBE.GB.Emulation
 
         internal bool VRamBlocked => this.STATMode == 3;
 
-        /// <summary>
-        /// Gets or sets the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.
-        /// </summary>
-        /// <value>The <see cref="GbUInt8"/>.</value>
-        /// <param name="index">The index.</param>
-        /// <returns>the <see cref="GbUInt8"/> at the specified <paramref name="index"/>.</returns>
         public byte this[byte index]
         {
             get

@@ -242,8 +242,8 @@ namespace JAGBE.GB.Emulation
             // Interrupt to service might be decided on the falling edge of second push's M-clock. So
             // timing might be: delay, delay, push, push, discover interrupt/handle pc, delay delay
 
-            this.memory.Update(10);
-            this.memory.Push(this.memory.R.Pc.HighByte);
+            this.memory.Update(6);
+            this.memory.WriteCyclePush(this.memory.R.Pc.HighByte);
             GbUInt16 newPc = 0;
             int b = this.memory.IER & this.memory.IF & 0x1F;
             for (int i = 0; i < 5; i++)
@@ -256,8 +256,7 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            this.memory.Update();
-            this.memory.Push(this.memory.R.Pc.LowByte);
+            this.memory.WriteCyclePush(this.memory.R.Pc.LowByte);
             this.memory.R.Pc = newPc;
             this.memory.Update(2);
             this.delay += MCycle * 4;

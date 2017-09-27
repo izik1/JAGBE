@@ -103,20 +103,11 @@ namespace JAGBE.GB.Emulation
         {
             switch (index)
             {
-                case 0:
-                    return this.Bc;
-
-                case 1:
-                    return this.De;
-
-                case 2:
-                    return this.Hl;
-
-                case 3:
-                    return new GbUInt16(this.A, this.F);
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                case 0: return this.Bc;
+                case 1: return this.De;
+                case 2: return this.Hl;
+                case 3: return new GbUInt16(this.A, this.F);
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -132,20 +123,11 @@ namespace JAGBE.GB.Emulation
         {
             switch (index)
             {
-                case 0:
-                    return this.Bc;
-
-                case 1:
-                    return this.De;
-
-                case 2:
-                    return this.Hl;
-
-                case 3:
-                    return this.Sp;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                case 0: return this.Bc;
+                case 1: return this.De;
+                case 2: return this.Hl;
+                case 3: return this.Sp;
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
@@ -162,32 +144,15 @@ namespace JAGBE.GB.Emulation
         {
             switch (index)
             {
-                case 0:
-                    return this.B;
-
-                case 1:
-                    return this.C;
-
-                case 2:
-                    return this.D;
-
-                case 3:
-                    return this.E;
-
-                case 4:
-                    return this.H;
-
-                case 5:
-                    return this.L;
-
-                case 6:
-                    throw new ArgumentException(nameof(index));
-
-                case 7:
-                    return this.A;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                case 0: return this.B;
+                case 1: return this.C;
+                case 2: return this.D;
+                case 3: return this.E;
+                case 4: return this.H;
+                case 5: return this.L;
+                case 6: throw new ArgumentException(nameof(index));
+                case 7: return this.A;
+                default: throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 

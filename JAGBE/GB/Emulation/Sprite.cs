@@ -17,12 +17,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The offset from the left side of the screen in pixels.
         /// </summary>
-        internal readonly byte X;
+        internal readonly short X;
 
         /// <summary>
         /// The offset from the top of the screen in pixels.
         /// </summary>
-        internal readonly byte Y;
+        internal readonly short Y;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Sprite"/> struct.
@@ -31,7 +31,7 @@ namespace JAGBE.GB.Emulation
         /// <param name="y">The y.</param>
         /// <param name="tile">The tile.</param>
         /// <param name="flags">The flags.</param>
-        public Sprite(byte x, byte y, byte tile, byte flags)
+        public Sprite(short x, short y, byte tile, byte flags)
         {
             this.X = x;
             this.Y = y;

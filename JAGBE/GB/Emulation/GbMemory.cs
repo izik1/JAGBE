@@ -144,12 +144,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets value of memory at HL.
-        /// </summary>
-        /// <returns></returns>
-        public byte GetMappedMemoryHl() => GetMappedMemory(this.R.Hl, false);
-
-        /// <summary>
         /// Gets active rom bank.
         /// </summary>
         /// <returns></returns>
@@ -168,6 +162,13 @@ namespace JAGBE.GB.Emulation
         /// Updates this instance.
         /// </summary>
         public void Update() => Update(Cpu.MCycle);
+
+        internal void Call(GbUInt16 address)
+        {
+            WriteCyclePush(this.R.Pc.HighByte);
+            WriteCyclePush(this.R.Pc.LowByte);
+            this.R.Pc = address;
+        }
 
         /// <summary>
         /// Gets the memory at <paramref name="address"/>.
@@ -197,17 +198,11 @@ namespace JAGBE.GB.Emulation
             return val;
         }
 
-        internal byte ReadCycleI8() => ReadCycle(this.R.Pc++);
-
         internal byte ReadCycleHl() => ReadCycle(this.R.Hl);
 
-        internal byte ReadCyclePop() => this.ReadCycle(this.R.Sp++);
+        internal byte ReadCycleI8() => ReadCycle(this.R.Pc++);
 
-        /// <summary>
-        /// Pushes the specified <paramref name="value"/> onto the stack.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        internal void Push(byte value) => SetMappedMemory(--this.R.Sp, value);
+        internal byte ReadCyclePop() => this.ReadCycle(this.R.Sp++);
 
         /// <summary>
         /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
@@ -244,11 +239,16 @@ namespace JAGBE.GB.Emulation
             }
         }
 
-        /// <summary>
-        /// Sets the memory at HL to value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        internal void SetMappedMemoryHl(byte value) => SetMappedMemory(this.R.Hl, value);
+        internal void WriteCycle(GbUInt16 address, byte value)
+        {
+            this.Update(Cpu.MCycle); // Should be ???
+            SetMappedMemory(address, value);
+            this.Update(0); // MCycle-previous update length.
+        }
+
+        internal void WriteCycleHl(byte value) => WriteCycle(this.R.Hl, value);
+
+        internal void WriteCyclePush(byte value) => WriteCycle(--this.R.Sp, value);
 
         private static bool HasBusConflict(GbUInt16 a1, GbUInt16 a2) =>
             (UsesMainBus(a1) && UsesMainBus(a2)) || (UsesVRam(a1) && UsesVRam(a2));
@@ -256,6 +256,9 @@ namespace JAGBE.GB.Emulation
         private static bool UsesMainBus(GbUInt16 address) => address < 0x8000 || (address >= 0xA000 && address < 0xFE00);
 
         private static bool UsesVRam(GbUInt16 address) => address >= 0x8000 && address < 0xA000;
+
+        private int GetERamAddress(GbUInt16 address) =>
+            (address + (this.Mbc1ModeFlag * this.MappedRamBank * MemoryRange.ERAMBANKSIZE)) % this.ERam.Length;
 
         /// <summary>
         /// Gets data from ERAM.
@@ -421,9 +424,6 @@ namespace JAGBE.GB.Emulation
                 this.ERam[GetERamAddress(address)] = value;
             }
         }
-
-        private int GetERamAddress(GbUInt16 address) =>
-            (address + (this.Mbc1ModeFlag * this.MappedRamBank * MemoryRange.ERAMBANKSIZE)) % this.ERam.Length;
 
         /// <summary>
         /// Sets the io registers.

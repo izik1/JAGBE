@@ -193,8 +193,7 @@
             ops[0xE0] = new Opcode(0, 7, Alu.Loading.LdH);
             ops[0xE2] = new Opcode(0, 0, (op, mem) => // LD (C),A
             {
-                mem.Update();
-                mem.SetMappedMemory((GbUInt16)(0xFF00 + mem.R.C), mem.R.A);
+                mem.WriteCycle((GbUInt16)(0xFF00 + mem.R.C), mem.R.A);
                 return 2;
             });
             ops[0xD3] = InvalidOpcode;
