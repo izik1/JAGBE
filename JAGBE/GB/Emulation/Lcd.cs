@@ -218,7 +218,7 @@ namespace JAGBE.GB.Emulation
 
                     case 0x6:
                         this.DmaLdAddr = (GbUInt16)(value << 8);
-                        this.dmaLdTimer = 4;
+                        this.dmaLdTimer = Cpu.MCycle;
                         break;
 
                     case 0x7:
@@ -390,7 +390,7 @@ namespace JAGBE.GB.Emulation
                 this.displayMemory[i] = WHITE;
             }
 
-            this.STATUpper = (byte)(this.STATUpper & 0x78);
+            this.STATUpper &= 0x78;
         }
 
         private bool DrawSprite()
@@ -632,13 +632,12 @@ namespace JAGBE.GB.Emulation
             if (this.dmaLdTimer > 0)
             {
                 this.dmaLdTimer--;
-            }
-
-            if (this.dmaLdTimer == 0)
-            {
-                this.Dma = 160;
-                this.DmaAddress = this.DmaLdAddr;
-                this.dmaLdTimer = -1;
+                if (this.dmaLdTimer == 0)
+                {
+                    this.Dma = 160;
+                    this.DmaAddress = this.DmaLdAddr;
+                    this.dmaLdTimer = -1;
+                }
             }
         }
 
@@ -662,9 +661,6 @@ namespace JAGBE.GB.Emulation
                 case 0:
                 case Cpu.MCycle * 53:
                     this.STATMode = 0;
-                    return IRQ || this.STATUpper.GetBit(3);
-
-                case (Cpu.MCycle * 113) + 3:
                     return IRQ || this.STATUpper.GetBit(3);
 
                 default: // Nothing interesting is happening this cycle.
