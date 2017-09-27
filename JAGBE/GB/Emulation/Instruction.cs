@@ -76,11 +76,11 @@
         private static Opcode[] GetNmOps()
         {
             Opcode[] ops = new Opcode[0x100];
-            for (int i = 0; i < 0x40; i++)
+            for (int i = 0x40; i < 0x80; i++)
             {
-                if (i != 0x36)
+                if (i != 0x76)
                 {
-                    ops[i + 0x40] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Loading.Ld8);
+                    ops[i] = new Opcode((byte)((i >> 3) & 7), (byte)(i & 7), Alu.Loading.Ld8);
                 }
             }
 

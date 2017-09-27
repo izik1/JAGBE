@@ -66,7 +66,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private int Dma;
 
-        private GbUInt16 DmaLdAddr;
+        private ushort DmaLdAddr;
 
         private int dmaLdTimer = -1;
 
@@ -135,6 +135,7 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// Initializes a new instance of the <see cref="Lcd"/> class.
         /// </summary>
+        /// <param name="memory">The memory.</param>
         public Lcd(GbMemory memory)
         {
             for (int i = 0; i < this.displayMemory.Length; i++)
@@ -148,13 +149,12 @@ namespace JAGBE.GB.Emulation
         /// <summary>
         /// The DMA address
         /// </summary>
-        internal GbUInt16 DmaAddress { get; private set; }
+        internal ushort DmaAddress { get; private set; }
 
         private readonly bool[] currLinePixelsTransparent = new bool[160];
 
         /// <summary>
-        /// the Ly as visible to the cpu FIXME: don't hook this up yet, it does wierd things to
-        /// display emulation.
+        /// the Ly as visible to the cpu.
         /// </summary>
         private int visibleLy;
 
@@ -174,9 +174,9 @@ namespace JAGBE.GB.Emulation
                     case 0x41: return (byte)(this.STATUpper | 0x80 | this.STATMode);
                     case 0x42: return this.SCY;
                     case 0x43: return this.SCX;
-                    case 0x44: return (byte)this.LY;
+                    case 0x44: return (byte)this.visibleLy;
                     case 0x45: return this.LYC;
-                    case 0x46: return this.DmaAddress.HighByte;
+                    case 0x46: return (byte)(this.DmaAddress >> 8);
                     case 0x47: return this.bgPallet;
                     case 0x48: return this.objPallet0;
                     case 0x49: return this.objPallet1;
@@ -211,7 +211,7 @@ namespace JAGBE.GB.Emulation
                         break;
 
                     case 0x6:
-                        this.DmaLdAddr = (GbUInt16)(value << 8);
+                        this.DmaLdAddr = (ushort)(value << 8);
                         this.dmaLdTimer = Cpu.MCycle;
                         break;
 
@@ -329,22 +329,21 @@ namespace JAGBE.GB.Emulation
             {
                 this.windowLy = 0;
                 this.STATMode = 0;
-                return this.STATUpper.GetBit(3);
+                return LyCp() || this.STATUpper.GetBit(3);
             }
 
-            bool IRQ = this.STATUpper.GetBit(4) || this.STATUpper.GetBit(5);
             if (this.cy == Cpu.MCycle)
             {
                 this.mem.IF |= 1;
                 this.STATMode = 1;
             }
 
-            return LyCp() || IRQ;
+            return LyCp() || this.STATUpper.GetBit(4) || this.STATUpper.GetBit(5);
         }
 
         private bool LyCp()
         {
-            if ((this.cy != 0 && this.LYC == this.LY) || (this.cy == 0 && this.LYC == 0))
+            if ((this.cy >= Cpu.MCycle && this.LYC == this.LY) || (this.cy < Cpu.MCycle && this.LYC == 0))
             {
                 this.STATUpper |= 4;
                 return this.STATUpper.GetBit(6);
@@ -531,10 +530,7 @@ namespace JAGBE.GB.Emulation
                 }
             }
 
-            while (DrawSprite())
-            {
-                // Draw a sprite.
-            }
+            while (DrawSprite()) {/*Draw a sprite.*/}
         }
 
         /// <summary>
