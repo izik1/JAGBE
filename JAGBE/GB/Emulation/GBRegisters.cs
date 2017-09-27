@@ -11,9 +11,9 @@ namespace JAGBE.GB.Emulation
 #pragma warning restore S3898 // Value types should implement "IEquatable<T>"
     {
         /// <summary>
-        /// Gets or sets the AF register.
+        /// Gets or sets the A register.
         /// </summary>
-        internal GbUInt16 Af => new GbUInt16(this.A, this.F);
+        internal byte A;
 
         /// <summary>
         /// Gets or sets the BC register.
@@ -24,6 +24,11 @@ namespace JAGBE.GB.Emulation
         /// Gets or sets the DE register.
         /// </summary>
         internal GbUInt16 De;
+
+        /// <summary>
+        /// Gets or sets the F register.
+        /// </summary>
+        internal byte F;
 
         /// <summary>
         /// Gets or sets the HL register.
@@ -39,11 +44,6 @@ namespace JAGBE.GB.Emulation
         /// Gets or sets the Stack Pointer.
         /// </summary>
         internal GbUInt16 Sp;
-
-        /// <summary>
-        /// Gets or sets the A register.
-        /// </summary>
-        internal byte A;
 
         /// <summary>
         /// Gets or sets the B register.
@@ -82,11 +82,6 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Gets or sets the F register.
-        /// </summary>
-        internal byte F { get; set; }
-
-        /// <summary>
         /// Gets or sets the H register.
         /// </summary>
         internal byte H
@@ -104,16 +99,7 @@ namespace JAGBE.GB.Emulation
             set => Hl = new GbUInt16(Hl.HighByte, value);
         }
 
-        /// <summary>
-        /// Gets the 16-bit register at <paramref name="index"/>
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="UseAf">if set to <see langword="true"/> returns AF instead of SP.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
-        /// </exception>
-        public GbUInt16 GetR16(int index, bool UseAf)
+        public GbUInt16 GetR16Af(int index)
         {
             switch (index)
             {
@@ -127,7 +113,36 @@ namespace JAGBE.GB.Emulation
                     return this.Hl;
 
                 case 3:
-                    return UseAf ? this.Af : this.Sp;
+                    return new GbUInt16(this.A, this.F);
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(index));
+            }
+        }
+
+        /// <summary>
+        /// Gets the 16-bit register at <paramref name="index"/>
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when <paramref name="index"/> is less than 0 or greater than 3
+        /// </exception>
+        public GbUInt16 GetR16Sp(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return this.Bc;
+
+                case 1:
+                    return this.De;
+
+                case 2:
+                    return this.Hl;
+
+                case 3:
+                    return this.Sp;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(index));

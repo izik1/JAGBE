@@ -40,7 +40,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int AddHl(Opcode op, GbMemory mem)
         {
             mem.Update();
-            GbUInt16 val = mem.R.GetR16(op.Src, false);
+            GbUInt16 val = mem.R.GetR16Sp(op.Src);
             mem.R.F = mem.R.F.Res(RFlags.NF).AssignBit(RFlags.HF, (((mem.R.Hl & 0xFFF) + (val & 0xFFF)) & 0x1000) == 0x1000)
                 .AssignBit(RFlags.CF, val + mem.R.Hl < mem.R.Hl);
             mem.R.Hl += val;
@@ -167,7 +167,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Dec16(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) - 1);
+            mem.R.SetR16(op.Dest, mem.R.GetR16Sp(op.Dest) - 1);
             return 2;
         }
 
@@ -194,7 +194,7 @@ namespace JAGBE.GB.Emulation.Alu
         public static int Inc16(Opcode op, GbMemory mem)
         {
             mem.Update();
-            mem.R.SetR16(op.Dest, mem.R.GetR16(op.Dest, false) + (GbUInt16)1);
+            mem.R.SetR16(op.Dest, mem.R.GetR16Sp(op.Dest) + (GbUInt16)1);
             return 2;
         }
 

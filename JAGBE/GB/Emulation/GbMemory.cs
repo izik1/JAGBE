@@ -262,9 +262,6 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns>ERam</returns>
-        /// <exception cref="InvalidOperationException">
-        /// Thrown when <see cref="MBCMode"/> is invalid
-        /// </exception>
         private byte GetERamMemory(GbUInt16 address)
         {
             if (!this.ERamEnabled)
@@ -379,7 +376,7 @@ namespace JAGBE.GB.Emulation
 
             if (readAddress < 0xFF80) // 0xFF00-FF7F
             {
-                return GetIoReg((byte)(readAddress - 0xFF00));
+                return GetIoReg(readAddress.LowByte);
             }
 
             if (readAddress < 0xFFFF) // 0xFF80-FFFE
@@ -403,7 +400,7 @@ namespace JAGBE.GB.Emulation
                 return this.BootRom[address];
             }
 
-            if (this.Rom == null || (address + (bank * MemoryRange.ROMBANKSIZE) >= this.Rom.Length))
+            if (address + (bank * MemoryRange.ROMBANKSIZE) >= this.Rom.Length)
             {
                 Logger.LogWarning("Out of range read, bank: " + bank.ToString());
                 return 0xFF;

@@ -109,11 +109,11 @@ namespace JAGBE.GB.Emulation.Alu
             mem.Update();
             if (op.Src == 8)
             {
-                mem.SetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16(op.Dest, false), mem.R.A);
+                mem.SetMappedMemory((op.Dest == 2 || op.Dest == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Dest), mem.R.A);
             }
             else
             {
-                mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16(op.Src, false));
+                mem.R.A = mem.GetMappedMemory((op.Src == 2 || op.Src == 3) ? mem.R.Hl : mem.R.GetR16Sp(op.Src));
             }
 
             if (op.Src == 2 || op.Dest == 2)
@@ -157,7 +157,7 @@ namespace JAGBE.GB.Emulation.Alu
 
         public static int Push(Opcode op, GbMemory mem)
         {
-            GbUInt16 r = mem.R.GetR16(op.Dest, true);
+            GbUInt16 r = mem.R.GetR16Af(op.Dest);
             mem.Update();
             mem.Update();
             mem.Push(r.HighByte);
