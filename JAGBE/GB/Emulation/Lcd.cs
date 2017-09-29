@@ -182,7 +182,7 @@ namespace JAGBE.GB.Emulation
                     case 0x49: return this.objPallet1;
                     case 0x4A: return this.WY;
                     case 0x4B: return this.WX;
-                    default: return byte.MaxValue;
+                    default: return 0xFF;
                 }
             }
 
@@ -291,7 +291,6 @@ namespace JAGBE.GB.Emulation
                 return;
             }
 
-            this.disabled = false;
             bool IRQ = this.LY < 144 ? UpdateLine() : this.LY == 144 ?
                 UpdateVblankSwitch() : LyCp() || (this.STATUpper & 0x30) > 0;
 
@@ -312,6 +311,7 @@ namespace JAGBE.GB.Emulation
 
             if (this.LY == 153 && this.cy == Cpu.MCycle)
             {
+                this.disabled = false;
                 this.visibleLy = 0;
             }
 
@@ -367,7 +367,7 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         private void Disable()
         {
-            if (this.disabled)
+            if (this.disabled && this.LY == 0 && this.cy == 0)
             {
                 return;
             }
@@ -448,6 +448,11 @@ namespace JAGBE.GB.Emulation
 
         private void RenderLine()
         {
+            if (this.disabled)
+            {
+                return;
+            }
+
             if (this.Lcdc.GetBit(0))
             {
                 ScanLine();
