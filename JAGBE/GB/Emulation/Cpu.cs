@@ -33,6 +33,11 @@ namespace JAGBE.GB.Emulation
         private readonly HashSet<ushort> breakPoints = new HashSet<ushort>();
 
         /// <summary>
+        /// The list of addresses this instance will exit <see cref="breakMode"/> at.
+        /// </summary>
+        private readonly HashSet<ushort> unbreakPoints = new HashSet<ushort>();
+
+        /// <summary>
         /// The delay until the next cycle.
         /// </summary>
         private int delay;
@@ -90,6 +95,8 @@ namespace JAGBE.GB.Emulation
         /// </summary>
         /// <param name="address">The address.</param>
         public void AddBreakPoint(ushort address) => this.breakPoints.Add(address);
+
+        public void AddUnbreakPoint(ushort address) => this.unbreakPoints.Add(address);
 
         /// <summary>
         /// Gets the LCD's display memory a <see cref="byte"/>[].
@@ -196,6 +203,13 @@ namespace JAGBE.GB.Emulation
                 this.breakMode = true;
                 Logger.LogInfo("hit breakpoint $" + this.Pc.ToString("X4"));
                 Logger.Instance.SetMinLogLevel(0);
+            }
+
+            if (this.unbreakPoints.Contains((ushort)this.Pc) && this.breakMode)
+            {
+                this.breakMode = false;
+                Logger.LogInfo("hit unbreakpoint $" + this.Pc.ToString("X4"));
+                Logger.Instance.SetMinLogLevel(1);
             }
 
             if (this.breakMode)

@@ -32,15 +32,14 @@
 
         public static int Jr8(Opcode op, GbMemory mem)
         {
-            mem.Update();
+            byte val = mem.ReadCycleI8();
             if (op.Src != 0 && GetConditionalJumpState(op.Dest, op.Src, mem.R.F))
             {
-                mem.R.Pc++;
                 return 2;
             }
 
-            mem.R.Pc += (sbyte)mem.ReadCycleI8();
-            mem.R.Pc++;
+            mem.Update();
+            mem.R.Pc += (sbyte)val;
             return 3;
         }
 

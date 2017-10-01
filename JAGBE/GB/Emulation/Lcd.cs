@@ -328,7 +328,6 @@ namespace JAGBE.GB.Emulation
             if (this.cy == 0)
             {
                 this.windowLy = 0;
-                this.STATMode = 0;
                 return LyCp() || this.STATUpper.GetBit(3);
             }
 
