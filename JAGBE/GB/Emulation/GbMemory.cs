@@ -202,7 +202,7 @@ namespace JAGBE.GB.Emulation
 
         internal byte ReadCycleI8() => ReadCycle(this.R.Pc++);
 
-        internal byte ReadCyclePop() => this.ReadCycle(this.R.Sp++);
+        internal byte ReadCyclePop() => ReadCycle(this.R.Sp++);
 
         /// <summary>
         /// Sets the memory at <paramref name="pointer"/> to <paramref name="value"/>.
@@ -510,7 +510,7 @@ namespace JAGBE.GB.Emulation
             }
             else if (pointer <= 0xFF7F)
             {
-                SetIoRegisters((byte)(pointer - 0xFF00), value);
+                SetIoRegisters(pointer.LowByte, value);
             }
             else if (pointer <= 0xFFFE)
             {

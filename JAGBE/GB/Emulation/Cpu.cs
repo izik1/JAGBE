@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using JAGBE.GB.Assembly;
 using JAGBE.GB.Input;
 using JAGBE.Logging;
@@ -203,6 +204,7 @@ namespace JAGBE.GB.Emulation
                 this.breakMode = true;
                 Logger.LogInfo("hit breakpoint $" + this.Pc.ToString("X4"));
                 Logger.Instance.SetMinLogLevel(0);
+                this.delay = 0;
             }
 
             if (this.unbreakPoints.Contains((ushort)this.Pc) && this.breakMode)
@@ -228,6 +230,7 @@ namespace JAGBE.GB.Emulation
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandleHungMode()
         {
             this.memory.Update();

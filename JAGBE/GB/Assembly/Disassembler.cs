@@ -62,7 +62,8 @@ namespace JAGBE.GB.Assembly
         /// </summary>
         /// <param name="memory">The memory.</param>
         /// <returns>A string representing the instruction at <paramref name="memory"/>.R.PC</returns>
-        public static string DisassembleInstruction(GbMemory memory) => DisassembleInstructionInternal(memory);
+        public static string DisassembleInstruction(GbMemory memory) => "0x" +
+            memory.GetMappedMemory(memory.R.Pc).ToString("X2") + " (" + DisassembleInstructionInternal(memory) + ")";
 
         /// <summary>
         /// Disassembles an arithmetic instruction.
@@ -120,7 +121,7 @@ namespace JAGBE.GB.Assembly
         /// <returns>A string representing the instruction at <paramref name="memory"/>.R.PC</returns>
         private static string DisassembleInstructionInternal(GbMemory memory)
         {
-            byte b = (byte)memory.GetMappedMemory(memory.R.Pc);
+            byte b = memory.GetMappedMemory(memory.R.Pc);
             if (b >= 0x40 && b < 0xC0)
             {
                 if (b < 0x80)
@@ -140,7 +141,7 @@ namespace JAGBE.GB.Assembly
 
             if (b == 0xCB)
             {
-                return DisassembleInstructionCb((byte)memory.GetMappedMemory((ushort)(memory.R.Pc + 1)));
+                return DisassembleInstructionCb(memory.GetMappedMemory((ushort)(memory.R.Pc + 1)));
             }
 
             return nmOpStrings[b];

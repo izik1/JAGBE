@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace JAGBE.Logging
 {
@@ -37,24 +38,28 @@ namespace JAGBE.Logging
         /// Logs the <paramref name="message"/> at error priority.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void LogError(string message) => Instance.WriteError(message);
 
         /// <summary>
         /// Logs the <paramref name="message"/> at information priority.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void LogInfo(string message) => Instance.WriteInfo(message);
 
         /// <summary>
         /// Logs the <paramref name="message"/> at verbose priority.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void LogVerbose(string message) => Instance.WriteVerbose(message);
 
         /// <summary>
         /// Logs the <paramref name="message"/> at warning priority.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void LogWarning(string message) => Instance.WriteWarning(message);
 
         /// <summary>
@@ -62,36 +67,42 @@ namespace JAGBE.Logging
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <exception cref="ArgumentNullException">writer</exception>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void Redirect(TextWriter writer) => this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
 
         /// <summary>
         /// Sets the minimum log level.
         /// </summary>
         /// <param name="minPriority">The minimum priority.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void SetMinLogLevel(ushort minPriority) => this.minPriority = minPriority;
 
         /// <summary>
         /// Writes the error.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void WriteError(string message) => WriteLine(4, message);
 
         /// <summary>
         /// Writes the information.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void WriteInfo(string message) => WriteLine(2, message);
 
         /// <summary>
         /// Writes the verbose.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void WriteVerbose(string message) => WriteLine(1, message);
 
         /// <summary>
         /// Writes the warning.
         /// </summary>
         /// <param name="message">The message.</param>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public void WriteWarning(string message) => WriteLine(3, message);
 
         /// <summary>
@@ -100,6 +111,7 @@ namespace JAGBE.Logging
         /// <param name="priority">The priority.</param>
         /// <param name="message">The message.</param>
         /// <exception cref="ArgumentException">When <paramref name="priority"/> is 0</exception>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void WriteLine(ushort priority, string message)
         {
             if (priority == 0)
