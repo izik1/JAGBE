@@ -47,17 +47,17 @@ namespace JAGBE.GB.Emulation
         internal readonly byte[] HRam = new byte[MemoryRange.HRAMSIZE];
 
         /// <summary>
-        /// The Interupt Enable Register
+        /// The interrupt Enable Register
         /// </summary>
         internal byte IER;
 
         /// <summary>
-        /// The Interupt Flags register
+        /// The interrupt Flags register
         /// </summary>
         internal byte IF;
 
         /// <summary>
-        /// The Interupt Master Enable register
+        /// The interrupt Master Enable register
         /// </summary>
         internal bool IME;
 

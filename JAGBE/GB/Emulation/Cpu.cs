@@ -243,9 +243,9 @@ namespace JAGBE.GB.Emulation
         }
 
         /// <summary>
-        /// Handles the interupts.
+        /// Handles the Interrupts.
         /// </summary>
-        private void HandleInterupts()
+        private void HandleInterrupts()
         {
             if (!this.memory.IME || (this.memory.IER & this.memory.IF & 0x1F) == 0)
             {
@@ -282,7 +282,7 @@ namespace JAGBE.GB.Emulation
         private void HandleOkayMode()
         {
             this.memory.Update(2);
-            HandleInterupts();
+            HandleInterrupts();
             HandleBreakPoints();
             this.delay += Instruction.Run(this.memory) * MCycle;
         }
