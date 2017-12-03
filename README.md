@@ -64,6 +64,7 @@ MoonEye acceptance tests:
 |call_timing2|:white_check_mark:||
 |di_timing-GS|:white_check_mark:||
 |div_timing|:white_check_mark:||
+|ei_sequence|:white_check_mark:||
 |ei_timing|:white_check_mark:||
 |gpu/hblank_ly_scx_timing-GS|:x:|'Test Failed'|
 |gpu/intr_1_2_timing-GS|:x:|D incorrect.|

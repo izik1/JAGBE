@@ -230,7 +230,6 @@
             ops[0xFB] = new Opcode(0, 0, (op, mem) => // EI
             {
                 mem.NextIMEValue = true;
-                mem.IME = false;
                 return 1;
             });
             ops[0xFC] = InvalidOpcode;

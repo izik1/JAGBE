@@ -123,6 +123,9 @@ namespace JAGBETests.RomTests.mooneye
         public void Div_timing() => TestDisplayOut(BasePath + "div_timing.gb", "gLcCnRta6x+9hIQm+320dn8ErOqS9fFYGCKsAuZXQ2E=", true);
 
         [TestMethod]
+        public void EI_sequence() => TestDisplayOut(BasePath + "ei_sequence.gb", "ht3PysRCn5dex16fcrs+5DY7xZlqpWw8PzrKGEFuQPI=", true);
+
+        [TestMethod]
         public void EI_timing() => TestDisplayOut(BasePath + "ei_timing.gb", "jPm4UvL49A9TOhdjVuUCOctyOBxcpInzC1frlVtyq1s=", true);
 
         [TestMethod]
