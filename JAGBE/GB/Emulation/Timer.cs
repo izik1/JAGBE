@@ -77,9 +77,10 @@
         /// </summary>
         /// <remarks>
         /// Always increments by one every tick. Reading from 0xFF04 with return the upper 8 bits of
-        /// this register. Writing to 0xFF04 will reset this register to 0.
+        /// this register. Writing to 0xFF04 will reset this register to 0. Starts incrememnting 8
+        /// t-cycles before the first boot rom instruction is fetched.
         /// </remarks>
-        private ushort sysTimer;
+        private ushort sysTimer = 8;
 
         public byte this[byte index]
         {
