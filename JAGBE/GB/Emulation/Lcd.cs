@@ -424,7 +424,7 @@ namespace JAGBE.GB.Emulation
 
         private static int GetColorIndex(int pallet, int index) => (pallet >> (index * 2)) & 3;
 
-        private bool IsSpriteVisible(Sprite sprite)
+        private bool IsSpriteVisible(in Sprite sprite)
         {
             if (sprite.Y <= this.LY && sprite.Y + 8 > this.LY)
             {

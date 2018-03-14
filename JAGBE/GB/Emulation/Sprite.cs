@@ -2,7 +2,7 @@
 
 namespace JAGBE.GB.Emulation
 {
-    internal struct Sprite : IEquatable<Sprite>
+    internal readonly struct Sprite : IEquatable<Sprite>
     {
         /// <summary>
         /// The Flags of this sprite.
