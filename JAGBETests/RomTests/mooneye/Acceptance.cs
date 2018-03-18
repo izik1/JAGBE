@@ -108,15 +108,22 @@ namespace JAGBETests.RomTests.mooneye
         public void Call_cc_timing() => TestDisplayOut(BasePath + "call_cc_timing.gb", GenericSuccessSha, true);
 
         [TestMethod]
-        public void Call_cc_timing2() => TestDisplayOut(BasePath + "call_cc_timing2.gb",
-                "EZ8Ocq7AbyRk4zUgQH6U+OwdKTgx6hx3C02JJ1oPNGY=", true, "wqZ9ZsSSV+6kxTzO2wijXA5oEvjFrcD/We7RuPx9I9A=");
+        public void Call_cc_timing2() => TestDisplayOut(
+            BasePath + "call_cc_timing2.gb",
+            "EZ8Ocq7AbyRk4zUgQH6U+OwdKTgx6hx3C02JJ1oPNGY=",
+            true,
+            "wqZ9ZsSSV+6kxTzO2wijXA5oEvjFrcD/We7RuPx9I9A=");
 
         [TestMethod]
         public void Call_timing() => TestDisplayOut(BasePath + "call_timing.gb", GenericSuccessSha, true);
 
         [TestMethod]
-        public void Call_timing2() => TestDisplayOut(BasePath + "call_timing2.gb",
-            "OMI3OTF6vOiPJgXRblMrjHtjSkmZ1UUWn0O9OEaLev8=", true, "UH90vAIjthK2Ql6NvhcrZ328v1LPr3WaTV3+T9CmNhU=");
+        public void Call_timing2() => TestDisplayOut(
+            BasePath + "call_timing2.gb",
+            "OMI3OTF6vOiPJgXRblMrjHtjSkmZ1UUWn0O9OEaLev8=",
+            true,
+            "UH90vAIjthK2Ql6NvhcrZ328v1LPr3WaTV3+T9CmNhU=",
+            "4fTOF4PHkgFNiPROLlPEx8039UG1BhpCHCSqa5zMAeM=");
 
         [TestMethod]
         public void DI_timing_GS() => TestDisplayOut(BasePath + "di_timing-GS.gb",

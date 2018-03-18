@@ -151,6 +151,11 @@ namespace JAGBE.GB.Emulation
 
         public void Update(int TCycles)
         {
+            if (TCycles < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(TCycles));
+            }
+
             for (int i = 0; i < TCycles; i++)
             {
                 this.lcd.Tick();
