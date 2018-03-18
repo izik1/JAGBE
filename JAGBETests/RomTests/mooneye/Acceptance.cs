@@ -39,10 +39,10 @@ namespace JAGBETests.RomTests.mooneye
         }
 
         [TestClass]
-        [TestCategory("mooneye-gb_hwtests/acceptance/gpu")]
+        [TestCategory("mooneye-gb_hwtests/acceptance/ppu")]
         public class Gpu
         {
-            private const string Path = BasePath + "gpu/";
+            private const string Path = BasePath + "ppu/";
 
             [TestMethod]
             public void Hblank_ly_scx_timing_GS() => TestDisplayOut(Path + "hblank_ly_scx_timing-GS.gb",
