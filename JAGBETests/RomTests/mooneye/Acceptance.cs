@@ -85,6 +85,9 @@ namespace JAGBETests.RomTests.mooneye
                 GenericSuccessSha, true, "jdbPrSP9VfYmciq/OTBRLs3IHxppU6Qqrx/LxiJS+aw=");
 
             [TestMethod]
+            public void StatLycOnoff() => TestDisplayOut(Path + "stat_lyc_onoff.gb", "", false, "L6c488ziTNv00GDnJiCBT/6C4E1Y8jryXjTWVxHDplc=");
+
+            [TestMethod]
             public void Vblank_stat_intr_GS() => TestDisplayOut(Path + "vblank_stat_intr-GS.gb",
                 "XAo3aFzglcyC+bPnKvD3W/Q12qExk2ICtktNEl9TIXE=", false, "Kj5h/BhF8WIWM5OLOauNYziiYLeQ7FPRL8kBLgTEoqg=");
         }
