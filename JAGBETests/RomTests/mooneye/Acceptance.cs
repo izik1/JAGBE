@@ -92,6 +92,23 @@ namespace JAGBETests.RomTests.mooneye
                 "XAo3aFzglcyC+bPnKvD3W/Q12qExk2ICtktNEl9TIXE=", false, "Kj5h/BhF8WIWM5OLOauNYziiYLeQ7FPRL8kBLgTEoqg=");
         }
 
+        [TestClass]
+        [TestCategory("mooneye-gb_hwtests/acceptance/oam_dma")]
+        public class OamDma
+        {
+            private const string Path = BasePath + "oam_dma/";
+
+            [TestMethod]
+            public void Basic() => TestDisplayOut(Path + "basic.gb", GenericSuccessSha, true);
+
+            [TestMethod]
+            public void RegRead() => TestDisplayOut(Path + "reg_read.gb", GenericSuccessSha, true);
+
+            [TestMethod]
+            public void SourcesDmgAbcxMgbS() => TestDisplayOut(Path + "sources-dmgABCXmgbS.gb",
+                "", false, "MdrWd7GjIgan3J11CfVTXj4i9+N3nYWfitVA4X4TRZg=");
+        }
+
         [TestMethod]
         public void Add_sp_e_timing() => TestDisplayOut(BasePath + "add_sp_e_timing.gb",
             "AF0bKMH5fWBBpulG3afxT26PawXvJcurFwZfRTFMyTE=", true);

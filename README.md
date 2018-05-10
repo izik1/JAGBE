@@ -66,6 +66,9 @@ MoonEye acceptance tests:
 |div_timing|:white_check_mark:||
 |ei_sequence|:white_check_mark:||
 |ei_timing|:white_check_mark:||
+|oam_dma/basic|:white_check_mark:||
+|oam_dma/reg_read|:white_check_mark:||
+|oam_dma/sources-dmgABCXmgbS|:x:|'Fail: $FE00'|
 |ppu/hblank_ly_scx_timing-GS|:x:|'Test Failed'|
 |ppu/intr_1_2_timing-GS|:x:|D incorrect.|
 |ppu/intr_2_0_timing|:x:|D,E Incorrect|
