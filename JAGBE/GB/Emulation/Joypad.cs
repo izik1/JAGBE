@@ -63,7 +63,7 @@ namespace JAGBE.GB.Emulation
         private void OnInput(object sender, InputEventArgs e)
         {
             this.prevKeys = this.keys;
-            this.keys = e.value;
+            this.keys = e.Value;
         }
     }
 }

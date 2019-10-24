@@ -11,12 +11,12 @@ namespace JAGBE.GB.Input
         /// <summary>
         /// The value of this instance
         /// </summary>
-        public readonly byte value;
+        public readonly byte Value;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InputEventArgs"/> class.
         /// </summary>
         /// <param name="val">The value.</param>
-        public InputEventArgs(byte val) => this.value = val;
+        public InputEventArgs(byte val) => Value = val;
     }
 }
