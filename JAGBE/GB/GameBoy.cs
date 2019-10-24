@@ -18,13 +18,13 @@ namespace JAGBE.GB
         /// <param name="rom">The rom.</param>
         /// <param name="bootRom">The boot rom.</param>
         /// <param name="inputHandler">The input handler.</param>
-        internal GameBoy(byte[] rom, byte[] bootRom, Input.IInputHandler inputHandler) => this.cpu = new Cpu(bootRom, rom, inputHandler);
+        internal GameBoy(byte[] rom, byte[] bootRom, Input.IInputHandler inputHandler) => cpu = new Cpu(bootRom, rom, inputHandler);
 
         /// <summary>
         /// Updates the cpu using the given <paramref name="targetUpdateRate"/> to determine the
         /// number of ticks to run.
         /// </summary>
         /// <param name="targetUpdateRate">The target update rate.</param>
-        internal void Update(int targetUpdateRate) => this.cpu.Tick(this.cpu.BreakMode ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
+        internal void Update(int targetUpdateRate) => cpu.Tick(cpu.BreakMode ? 160 : Cpu.ClockSpeedHz / targetUpdateRate);
     }
 }
